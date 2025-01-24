@@ -1,5 +1,5 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@main",
+  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@fix-templateUrl",
   "useCompilerFolder": true
 }
