@@ -1,9 +1,9 @@
 Param([Hashtable]$parameters) 
 
-$Needs = $ENV:NeedsContext | ConvertFrom-Json
+$Needs=$ENV:NeedsContext | ConvertFrom-Json
 $containerConfig = $Needs."CUSTOM-CreateAlpaca-Container".outputs
 
-if (!$Env:ContainerStarted) {
+if (!$Env:ContainerStarted){
     Write-Host "::group::Wait for image to be ready"
     Wait-ForImage -token $Env:_token -containerName $containerConfig.containerID
     Write-Host "::endgroup::"
@@ -13,9 +13,9 @@ if (!$Env:ContainerStarted) {
 }
 
 Write-Host Get password from SecureString
-$password = ConvertFrom-SecureString -SecureString $parameters.bcAuthContext.Password -AsPlainText
+$password=ConvertFrom-SecureString -SecureString $parameters.bcAuthContext.Password -AsPlainText
 
 Publish-BCAppToDevEndpoint -containerUrl $parameters.Environment `
-    -containerUser $parameters.bcAuthContext.username `
-    -containerPassword $password `
-    -path $parameters.appFile
+                           -containerUser $parameters.bcAuthContext.username `
+                           -containerPassword $password `
+                           -path $parameters.appFile

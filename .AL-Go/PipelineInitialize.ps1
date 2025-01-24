@@ -1,8 +1,8 @@
-$Needs = $ENV:NeedsContext | ConvertFrom-Json
+$Needs=$ENV:NeedsContext | ConvertFrom-Json
 $containerConfig = $Needs."CUSTOM-CreateAlpaca-Container".outputs
 
 $password = ConvertTo-SecureString -String $containerConfig.containerPassword -AsPlainText
-$myAuthContext = @{"username" = $containerConfig.containerUser; "Password" = $password }
+$myAuthContext = @{"username"=$containerConfig.containerUser; "Password"=$password}
 $myEnvironment = $containerConfig.containerURL
 
 Set-Variable -Name 'bcAuthContext' -value $myAuthcontext -scope 1
