@@ -1,5 +1,10 @@
 {
   "type": "PTE",
   "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@fix-templateUrl",
-  "useCompilerFolder": true
+  "templateSha": "",
+  "useCompilerFolder": true,
+  "runs-on": "ubuntu-latest",
+  "shell": "pwsh",
+  "githubRunner": "ubuntu-latest",
+  "githubRunnerShell": "pwsh"
 }

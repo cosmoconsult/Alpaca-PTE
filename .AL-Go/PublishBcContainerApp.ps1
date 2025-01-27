@@ -1,7 +1,7 @@
 Param([Hashtable]$parameters) 
 
 $Needs=$ENV:NeedsContext | ConvertFrom-Json
-$containerConfig = $Needs."CUSTOM-CreateAlpacaContainer".outputs
+$containerConfig = $Needs."CUSTOM-CreateAlpaca-Container".outputs
 
 if (!$Env:ContainerStarted){
     Write-Host "::group::Wait for image to be ready"
