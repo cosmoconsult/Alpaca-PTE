@@ -1,7 +1,7 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/freddydk/AL-Go@customize",
-  "templateSha": "38fd7bf8dd4bb70e6db628cd9feceb75901b3399",
+  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@fix-templateUrl",
+  "templateSha": "",
   "useCompilerFolder": true,
   "runs-on": "ubuntu-latest",
   "shell": "pwsh",
