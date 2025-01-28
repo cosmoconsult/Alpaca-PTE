@@ -6,7 +6,7 @@ param (
 Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force
 
 $Needs=$ENV:needsContext | ConvertFrom-Json
-$containerConfig = $Needs."CUSTOM-CreateAlpaca-Container".outputs
+$containerConfig = $Needs."CustomJob-CreateAlpaca-Container".outputs
 
 $owner = $Env:GITHUB_REPOSITORY_OWNER
 $repository = $Env:GITHUB_REPOSITORY

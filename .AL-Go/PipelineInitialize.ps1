@@ -1,5 +1,5 @@
 $Needs=$ENV:NeedsContext | ConvertFrom-Json
-$containerConfig = $Needs."CUSTOM-CreateAlpaca-Container".outputs
+$containerConfig = $Needs."CustomJob-CreateAlpaca-Container".outputs
 
 $password = ConvertTo-SecureString -String $containerConfig.containerPassword -AsPlainText
 $myAuthContext = @{"username"=$containerConfig.containerUser; "Password"=$password}
