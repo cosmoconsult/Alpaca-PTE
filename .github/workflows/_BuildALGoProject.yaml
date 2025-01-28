@@ -46,14 +46,10 @@ on:
         required: false
         default: ''
         type: string
-      publishThisBuildArtifacts:
-        description: Flag indicating whether this build artifacts should be published
-        type: boolean
-        default: false
-      publishArtifacts:
-        description: Flag indicating whether the artifacts should be published
-        type: boolean
-        default: false
+      artifactsRetentionDays:
+        description: Number of days to keep the artifacts
+        type: number
+        default: 0
       artifactsNameSuffix:
         description: Suffix to add to the artifacts names
         required: false
@@ -101,7 +97,8 @@ jobs:
         with:
           shell: ${{ inputs.shell }}
           project: ${{ inputs.project }}
-          get: useCompilerFolder,keyVaultCodesignCertificateName,doNotSignApps,doNotRunTests,artifact,generateDependencyArtifact,trustedSigning
+          buildMode: ${{ inputs.buildMode }}
+          get: useCompilerFolder,keyVaultCodesignCertificateName,doNotSignApps,doNotRunTests,artifact,generateDependencyArtifact,trustedSigning,useGitSubmodules
 
       - name: Read secrets
         id: ReadSecrets
@@ -110,7 +107,16 @@ jobs:
         with:
           shell: ${{ inputs.shell }}
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: '${{ inputs.secrets }},appDependencySecrets,AZURE_CREDENTIALS,cicdAuthContext'
+          getSecrets: '${{ inputs.secrets }},appDependencySecrets,AZURE_CREDENTIALS,-gitSubmodulesToken,cicdAuthContext'
+
+      - name: Checkout Submodules
+        if: env.useGitSubmodules != 'false' && env.useGitSubmodules != ''
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.checkoutRef }}
+          lfs: true
+          submodules: ${{ env.useGitSubmodules }}
+          token: '${{ fromJson(steps.ReadSecrets.outputs.Secrets).gitSubmodulesToken }}'
 
       - name: Determine ArtifactUrl
         uses: freddydk/AL-Go/Actions/DetermineArtifactUrl@customize
@@ -121,7 +127,7 @@ jobs:
 
       - name: Cache Business Central Artifacts
         if: env.useCompilerFolder == 'True' && inputs.useArtifactCache && env.artifactCacheKey
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: .artifactcache
           key: ${{ env.artifactCacheKey }}
@@ -171,59 +177,35 @@ jobs:
           buildMode: ${{ inputs.buildMode }}
           suffix: ${{ inputs.artifactsNameSuffix }}
 
-      - name: Upload thisbuild artifacts - apps
-        if: inputs.publishThisBuildArtifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        with:
-          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
-          path: '${{ inputs.project }}/.buildartifacts/Apps/'
-          if-no-files-found: ignore
-          retention-days: 1
-
-      - name: Upload thisbuild artifacts - dependencies
-        if: inputs.publishThisBuildArtifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        with:
-          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildDependenciesArtifactsName }}
-          path: '${{ inputs.project }}/.buildartifacts/Dependencies/'
-          if-no-files-found: ignore
-          retention-days: 1
-
-      - name: Upload thisbuild artifacts - test apps
-        if: inputs.publishThisBuildArtifacts
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        with:
-          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
-          path: '${{ inputs.project }}/.buildartifacts/TestApps/'
-          if-no-files-found: ignore
-          retention-days: 1
-
       - name: Publish artifacts - apps
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        if: inputs.publishArtifacts
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+        if: inputs.artifactsRetentionDays >= 0
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.AppsArtifactsName }}
           path: '${{ inputs.project }}/.buildartifacts/Apps/'
           if-no-files-found: ignore
+          retention-days: ${{ inputs.artifactsRetentionDays }}
 
       - name: Publish artifacts - dependencies
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        if: inputs.publishArtifacts && env.generateDependencyArtifact == 'True'
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+        if: inputs.artifactsRetentionDays >= 0 && env.generateDependencyArtifact == 'True'
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.DependenciesArtifactsName }}
           path: '${{ inputs.project }}/.buildartifacts/Dependencies/'
           if-no-files-found: ignore
+          retention-days: ${{ inputs.artifactsRetentionDays }}
 
       - name: Publish artifacts - test apps
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
-        if: inputs.publishArtifacts
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+        if: inputs.artifactsRetentionDays >= 0
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.TestAppsArtifactsName }}
           path: '${{ inputs.project }}/.buildartifacts/TestApps/'
           if-no-files-found: ignore
+          retention-days: ${{ inputs.artifactsRetentionDays }}
 
       - name: Publish artifacts - build output
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.BuildOutputArtifactsName }}
@@ -231,7 +213,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - container event log
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.ContainerEventLogArtifactsName }}
@@ -239,7 +221,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - test results
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         if: (success() || failure()) && (hashFiles(format('{0}/.buildartifacts/TestResults.xml',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.TestResultsArtifactsName }}
@@ -247,7 +229,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - bcpt test results
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         if: (success() || failure()) && (hashFiles(format('{0}/.buildartifacts/bcptTestResults.json',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.BcptTestResultsArtifactsName }}
@@ -255,7 +237,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - page scripting test results
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         if: (success() || failure()) && (hashFiles(format('{0}/.buildartifacts/PageScriptingTestResults.xml',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.PageScriptingTestResultsArtifactsName }}
@@ -263,7 +245,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - page scripting test result details
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         if: (success() || failure())
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.PageScriptingTestResultDetailsArtifactsName }}
