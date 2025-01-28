@@ -40,6 +40,7 @@ jobs:
       buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
       baselineWorkflowRunId: ${{ steps.determineProjectsToBuild.outputs.BaselineWorkflowRunId }}
       workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
+      artifactsRetentionDays: ${{ steps.DetermineWorkflowDepth.outputs.ArtifactsRetentionDays }}
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
@@ -64,11 +65,13 @@ jobs:
         uses: freddydk/AL-Go/Actions/ReadSettings@customize
         with:
           shell: pwsh
+          get: shortLivedArtifactsRetentionDays
 
       - name: Determine Workflow Depth
         id: DetermineWorkflowDepth
         run: |
           Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "WorkflowDepth=$($env:workflowDepth)"
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "ArtifactsRetentionDays=$($env:shortLivedArtifactsRetentionDays)"
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
@@ -97,8 +100,9 @@ jobs:
       projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
       baselineWorkflowRunId: ${{ needs.Initialization.outputs.baselineWorkflowRunId }}
       secrets: 'licenseFileUrl,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
-      publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
+      artifactsRetentionDays: ${{ fromJson(needs.Initialization.outputs.artifactsRetentionDays) }}
       artifactsNameSuffix: 'PR${{ github.event.number }}'
+      needsContext:  ${{ toJson(needs) }}
 
   StatusCheck:
     needs: [ Initialization, Build, CustomJob-RemoveAlpaca-Container ]
@@ -127,7 +131,7 @@ jobs:
 
   CustomJob-CreateAlpaca-Container:
     if: ${{ always() }}
-    runs-on: [ ubuntu-latest ]    
+    runs-on: [ ubuntu-latest ]
     permissions: read-all
     outputs:
       containerID: ${{ steps.CreateContainer.outputs.containerID }}
@@ -141,7 +145,7 @@ jobs:
         shell: pwsh
         run: |
           ./.alpaca/PowerShell/Create-DockerContainer.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
-          
+
   CustomJob-RemoveAlpaca-Container:
     needs: [ CustomJob-CreateAlpaca-Container, Build ]
     if: ${{ always() }}
