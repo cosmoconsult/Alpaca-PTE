@@ -101,7 +101,7 @@ jobs:
       artifactsNameSuffix: 'PR${{ github.event.number }}'
 
   StatusCheck:
-    needs: [ Initialization, Build ]
+    needs: [ Initialization, Build, CustomJob-RemoveAlpaca-Container ]
     if: (!cancelled())
     runs-on: [ ubuntu-latest ]
     name: Pull Request Status Check

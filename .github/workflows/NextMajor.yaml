@@ -84,7 +84,7 @@ jobs:
       artifactsNameSuffix: 'NextMajor'
 
   PostProcess:
-    needs: [ Initialization, Build ]
+    needs: [ Initialization, Build, CustomJob-RemoveAlpaca-Container ]
     if: always()
     runs-on: [ ubuntu-latest ]
     steps:

@@ -329,7 +329,7 @@ jobs:
           artifacts: '.artifacts'
 
   PostProcess:
-    needs: [ Initialization, Build, Deploy, Deliver, DeployALDoc ]
+    needs: [ Initialization, Build, Deploy, Deliver, DeployALDoc, CustomJob-RemoveAlpaca-Container ]
     if: (!cancelled())
     runs-on: [ ubuntu-latest ]
     steps:
