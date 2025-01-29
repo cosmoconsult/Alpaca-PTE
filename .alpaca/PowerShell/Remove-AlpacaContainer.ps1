@@ -20,7 +20,6 @@ Write-Host "Delete Container $containerID"
 
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
 
-
 $QueryParams = @{
     "api-version" = "0.12"
 }

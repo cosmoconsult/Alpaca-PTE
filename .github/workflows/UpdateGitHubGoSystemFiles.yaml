@@ -113,7 +113,7 @@ jobs:
           currentJobContext: ${{ toJson(job) }}
 
   CustomJob-UpdateAlpacaFiles:
-    name: 'Update COSMO Alpaca system files'
+    name: 'Update COSMO Alpaca System Files'
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout
@@ -172,7 +172,7 @@ jobs:
           $directCommit = $true
   
           if ($env:directCommit -ne 'true') {
-            Write-Host "::Error::Updating Alpaca System files need direct commit activated, please activate direct commit"
+            Write-Host "::Error::Updating COSMO Alpaca System files need direct commit activated, please activate direct commit"
             exit 1
           }
   
@@ -219,14 +219,11 @@ jobs:
           $templateOwner = $env:templateUrl.Split('/')[3]
           $templateInfo = "$templateOwner/$($env:templateUrl.Split('/')[4])"
   
-  
           Write-Host Execute Update
           $commitMessage = "[$($env:updateBranch)] Update COSMO Alpaca System Files from $templateInfo -  $templateSha"
           $env:GH_TOKEN = $env:token
   
-  
           $serverUrl, $branch = CloneIntoNewFolder -actor $env:actor -token $token -updateBranch $($env:updateBranch) -DirectCommit $directCommit -newBranchPrefix 'update-al-go-system-files'
-  
   
           invoke-git status
   
@@ -243,10 +240,6 @@ jobs:
             Copy-Item -Path "$templateFolder\$subFolder\.alpaca\*" -Destination .\.alpaca\ -Recurse -Exclude
           }
   
-  
-  
           if (!(CommitFromNewFolder -serverUrl $serverUrl -commitMessage $commitMessage -branch $branch)) {
-            OutputNotice -message "No updates available for AL-Go for GitHub."
+            OutputNotice -message "No updates available for COSMO Alpaca."
           }
-  
-  
