@@ -220,7 +220,7 @@ jobs:
           $templateInfo = "$templateOwner/$($env:templateUrl.Split('/')[4])"
   
           Write-Host Execute Update
-          $commitMessage = "[$($env:updateBranch)] Update COSMO Alpaca System Files from $templateInfo -  $templateSha"
+          $commitMessage = "[$($env:updateBranch)] Update COSMO Alpaca System Files from $templateInfo -  $templateSha [skip ci]"
           $env:GH_TOKEN = $env:token
   
           $serverUrl, $branch = CloneIntoNewFolder -actor $env:actor -token $token -updateBranch $($env:updateBranch) -DirectCommit $directCommit -newBranchPrefix 'update-al-go-system-files'
@@ -231,7 +231,7 @@ jobs:
           $subFolder=(Get-ChildItem $templateFolder).Name
   
           if (Test-Path .\.alpaca) {
-            #Delete all files except configs
+            # Delete all files except configs
             Remove-Item .\.alpaca\* -Recurse -Exclude *.json
             # .alpaca folder does already exit, do not overwrite configs
             Copy-Item -Path "$templateFolder\$subFolder\.alpaca\*" -Destination .\.alpaca\ -Recurse -Exclude *.json
