@@ -1,7 +1,7 @@
 {
   "type": "PTE",
   "templateUrl": "https://github.com/freddydk/AL-Go@customize",
-  "templateSha": "1355bcaf593cb93b354ad0ab34e8662b64bd2080",
+  "templateSha": "38fd7bf8dd4bb70e6db628cd9feceb75901b3399",
   "useCompilerFolder": true,
   "runs-on": "ubuntu-latest",
   "shell": "pwsh",
