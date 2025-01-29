@@ -137,7 +137,7 @@ jobs:
         name: Create COSMO Alpaca Container
         shell: pwsh
         run: |
-          ./.alpaca/PowerShell/Create-DockerContainer.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+          ./.alpaca/PowerShell/Create-AlpacaContainer.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
 
   CustomJob-RemoveAlpaca-Container:
     needs: [ CustomJob-CreateAlpaca-Container, Build ]
@@ -150,4 +150,4 @@ jobs:
       - name: Remove COSMO Alpaca Container
         shell: pwsh
         run: |
-          ./.alpaca/PowerShell/Remove-DockerContainer.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+          ./.alpaca/PowerShell/Remove-AlpacaContainer.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
