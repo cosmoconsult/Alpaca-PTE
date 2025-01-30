@@ -170,7 +170,7 @@ jobs:
         run: |
           if ($env:downloadLatest -ne 'true') {
             Write-Host "Running Update COSMO Alpaca System files should always download latest version of the template repository. Setting DownloadLatest to true"
-            $downloadLatest = $true
+            $env:downloadLatest = $true
           }
           if ($env:directCommit -ne 'true') {
             Write-Host "::Error::Updating COSMO Alpaca System files need direct commit activated, please activate direct commit"
@@ -214,7 +214,7 @@ jobs:
               $env:downloadLatest = $true
           }
   
-          $templateFolder = DownloadTemplateRepository -headers $headers -templateUrl $env:templateUrl -templateSha ([ref]$templateSha) -downloadLatest $downloadLatest
+          $templateFolder = DownloadTemplateRepository -headers $headers -templateUrl $env:templateUrl -templateSha ([ref]$templateSha) -downloadLatest $env:downloadLatest
           Write-Host "Template Folder: $templateFolder"
           $templateBranch = $env:templateUrl.Split('@')[1]
           $templateOwner = $env:templateUrl.Split('/')[3]
@@ -224,7 +224,7 @@ jobs:
           $commitMessage = "[$($env:updateBranch)] Update COSMO Alpaca System Files from $templateInfo -  $templateSha [skip ci]"
           $env:GH_TOKEN = $env:token
   
-          $serverUrl, $branch = CloneIntoNewFolder -actor $env:actor -token $token -updateBranch $($env:updateBranch) -DirectCommit $directCommit -newBranchPrefix 'update-al-go-system-files'
+          $serverUrl, $branch = CloneIntoNewFolder -actor $env:actor -token $token -updateBranch $($env:updateBranch) -DirectCommit $env:directCommit -newBranchPrefix 'update-al-go-system-files'
   
           invoke-git status
   
