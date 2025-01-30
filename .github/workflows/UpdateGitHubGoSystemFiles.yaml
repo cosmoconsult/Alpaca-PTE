@@ -229,7 +229,7 @@ jobs:
               $env:downloadLatest = $true
           }
   
-          $templateFolder = DownloadTemplateRepository -headers $headers -templateUrl $env:templateUrl -templateSha ([ref]$templateSha) -downloadLatest $env:downloadLatest
+          $templateFolder = DownloadTemplateRepository -headers $headers -templateUrl $env:templateUrl -templateSha ([ref]$templateSha) -downloadLatest ([bool]$env:downloadLatest)
           Write-Host "Template Folder: $templateFolder"
           $templateBranch = $env:templateUrl.Split('@')[1]
           $templateOwner = $env:templateUrl.Split('/')[3]
@@ -239,7 +239,7 @@ jobs:
           $commitMessage = "[$($env:updateBranch)] Update COSMO Alpaca System Files from $templateInfo -  $templateSha [skip ci]"
           $env:GH_TOKEN = $env:token
   
-          $serverUrl, $branch = CloneIntoNewFolder -actor $env:actor -token $token -updateBranch $($env:updateBranch) -DirectCommit $env:directCommit -newBranchPrefix 'update-al-go-system-files'
+          $serverUrl, $branch = CloneIntoNewFolder -actor $env:actor -token $token -updateBranch $($env:updateBranch) -DirectCommit ([bool]$env:directCommit) -newBranchPrefix 'update-al-go-system-files'
   
           invoke-git status
   
