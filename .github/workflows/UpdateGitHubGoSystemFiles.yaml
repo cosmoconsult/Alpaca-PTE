@@ -161,16 +161,17 @@ jobs:
         shell: pwsh
         env:
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
-          downloadLatest: $true
+          downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
           templateUrl: ${{ env.templateUrl }}
-          directCommit: '${{ github.event.inputs.directCommit }}'
+          directCommit: '${{ env.directCommit }}'
           updateBranch: ${{ github.ref_name }}
           actor: ${{ github.actor }}
         run: |
-          $downloadLatest = $true
-          $directCommit = $true
-  
+          if ($env:downloadLatest -ne 'true') {
+            Write-Host "Running Update COSMO Alpaca System files should always download latest version of the template repository. Setting DownloadLatest to true"
+            $downloadLatest = $true
+          }
           if ($env:directCommit -ne 'true') {
             Write-Host "::Error::Updating COSMO Alpaca System files need direct commit activated, please activate direct commit"
             exit 1
@@ -230,14 +231,20 @@ jobs:
           Write-Host Update Files Here
           $subFolder=(Get-ChildItem $templateFolder).Name
   
+            if (-Not (Test-Path "$templateFolder\$subFolder\.alpaca")) {
+              # No .alpaca folder found in template repository, exit
+              OutputNotice -message "No COSMO Alpaca related files found in the template repository, nothing to update."
+              exit 0
+            }
+
           if (Test-Path .\.alpaca) {
             # Delete all files except configs
             Remove-Item .\.alpaca\* -Recurse -Exclude *.json
-            # .alpaca folder does already exit, do not overwrite configs
+            # .alpaca folder does already exist, do not overwrite configs
             Copy-Item -Path "$templateFolder\$subFolder\.alpaca\*" -Destination .\.alpaca\ -Recurse -Exclude *.json
           } else {
             # .alpaca folder does not exist, copy everything
-            Copy-Item -Path "$templateFolder\$subFolder\.alpaca\*" -Destination .\.alpaca\ -Recurse -Exclude
+            Copy-Item -Path "$templateFolder\$subFolder\.alpaca\*" -Destination .\.alpaca\ -Recurse
           }
   
           if (!(CommitFromNewFolder -serverUrl $serverUrl -commitMessage $commitMessage -branch $branch)) {
