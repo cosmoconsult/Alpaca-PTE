@@ -11,7 +11,7 @@ $owner = $Env:GITHUB_REPOSITORY_OWNER
 $repository = $Env:GITHUB_REPOSITORY
 $repository = $repository.replace($owner, "")
 $repository = $repository.replace("/", "")
-#$branch = $Env:GITHUB_REF_NAME
+$branch = $Env:GITHUB_REF_NAME
 
 $containerID = $containerConfig.containerID
 
