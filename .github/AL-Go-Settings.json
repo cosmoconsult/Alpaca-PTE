@@ -1,6 +1,6 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@main",
+  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@improve-update",
   "templateSha": "",
   "useCompilerFolder": true,
   "runs-on": "ubuntu-latest",
