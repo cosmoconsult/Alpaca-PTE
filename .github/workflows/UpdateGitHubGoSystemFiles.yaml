@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/cosmoconsult/Alpaca-PTE@main)
+        description: Template Repository URL (current is https://github.com/freddydk/AL-Go@customize)
         required: false
         default: ''
       downloadLatest:
@@ -138,7 +138,7 @@ jobs:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
-
+  
       - name: Override templateUrl
         env:
           newTemplateUrl: ${{ github.event.inputs.templateUrl }}
@@ -251,7 +251,7 @@ jobs:
               OutputNotice -message "No COSMO Alpaca related files found in the template repository, nothing to update."
               exit 0
             }
-
+  
           if (Test-Path .\.alpaca) {
             # Delete all files except configs
             Remove-Item .\.alpaca\* -Recurse -Exclude *.json
