@@ -138,6 +138,17 @@ jobs:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
+
+      - name: Override templateUrl
+        env:
+          newTemplateUrl: ${{ github.event.inputs.templateUrl }}
+        run: |
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+          $templateUrl = $ENV:newTemplateUrl
+          if ($templateUrl) {
+            Write-Host "Using Template Url: $templateUrl"
+            Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "templateUrl=$templateUrl"
+          }
   
       - name: Calculate Input
         env:
