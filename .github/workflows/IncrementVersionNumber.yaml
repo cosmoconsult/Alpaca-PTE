@@ -26,12 +26,6 @@ on:
         type: boolean
         default: false
 
-permissions:
-  actions: read
-  contents: write
-  id-token: write
-  pull-requests: write
-
 defaults:
   run:
     shell: pwsh
@@ -44,6 +38,11 @@ jobs:
   IncrementVersionNumber:
     needs: [ ]
     runs-on: [ ubuntu-latest ]
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+      pull-requests: write
     steps:
       - name: Dump Workflow Information
         uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@customize
