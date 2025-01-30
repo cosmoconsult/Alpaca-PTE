@@ -33,7 +33,6 @@ $body = @"
 }
 "@
 
-
 $QueryParams = @{
     "api-version" = "0.12"
 }
@@ -43,9 +42,6 @@ $containerID=$containerConfig.id
 $containerUser=$containerConfig.username
 $containerPassword=$containerConfig.Password
 $containerURL=$containerConfig.webUrl
-
-
-
 
 Write-Output containerID=$containerID >> $ENV:GITHUB_OUTPUT
 Write-Output containerUser=$containerUser >> $ENV:GITHUB_OUTPUT
