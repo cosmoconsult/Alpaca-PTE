@@ -15,6 +15,8 @@ Write-Host "Starting container for $owner/$repository and ref $branch"
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
 $headers.add("Content-Type", "application/json")
 
+$config = Translate-WorkflowName-To-ConfigName 
+
 $body = @"
 {
     "source": {
@@ -22,6 +24,7 @@ $body = @"
         "repo": "$repository",
         "branch": "$branch"
     },
+    "containerConfiguration": "$config",
     "workflow": {
         "actor": "$($Env:GITHUB_ACTOR)",
         "workflowName": "$($Env:GITHUB_WORKFLOW)",
@@ -31,6 +34,7 @@ $body = @"
     }
 }
 "@
+
 
 $QueryParams = @{
     "api-version" = "0.12"
