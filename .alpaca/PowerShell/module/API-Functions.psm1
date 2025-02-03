@@ -68,3 +68,13 @@ function Get-AuthenticationHeader {
 }
 
 Export-ModuleMember -Function Get-AuthenticationHeader
+
+function Translate-WorkflowName-To-ConfigName {
+    switch($ENV:GITHUB_WORKFLOW) {
+        "NextMajor" { return "NextMajor" }
+        "NextMinor" { return "NextMinor" }
+        default { return "current" }
+    }
+}
+
+Export-ModuleMember -Function Translate-WorkflowName-To-ConfigName
