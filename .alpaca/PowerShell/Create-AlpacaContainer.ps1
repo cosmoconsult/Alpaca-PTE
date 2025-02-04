@@ -2,7 +2,7 @@ param (
     [string]$token
 )
 
-Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force
+Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force -DisableNameChecking
 
 $owner = $Env:GITHUB_REPOSITORY_OWNER
 $repository = $Env:GITHUB_REPOSITORY
