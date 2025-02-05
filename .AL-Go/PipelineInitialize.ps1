@@ -10,7 +10,7 @@ Set-Variable -Name 'environment' -value $myEnvironment -scope 1
 
 Write-Host -ForegroundColor Green 'INITIALIZE Auth context successful'
 
-Import-Module (Join-Path $ENV:GITHUB_WORKSPACE "\.alpaca\PowerShell\module\alpaca-functions.psd1") -Scope Global -Force
+Import-Module (Join-Path $ENV:GITHUB_WORKSPACE "\.alpaca\PowerShell\module\alpaca-functions.psd1") -Scope Global -Force -DisableNameChecking
 
 
 Write-Host Get packagesFolder Folder

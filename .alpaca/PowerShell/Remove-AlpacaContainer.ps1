@@ -2,7 +2,7 @@ param (
     [string]$token
 )
 
-Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force
+Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force -DisableNameChecking
 
 $Needs = $ENV:needsContext | ConvertFrom-Json
 $containerConfig = $Needs."CustomJob-CreateAlpaca-Container".outputs
