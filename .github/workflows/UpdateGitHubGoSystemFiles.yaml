@@ -153,12 +153,25 @@ jobs:
           currentJobContext: ${{ toJson(job) }}
 
   CustomJob-UpdateAlpacaFiles:
-    name: 'Update COSMO Alpaca System Files'
+    name: "[${{ matrix.branch }}] Update COSMO Alpaca System Files"
+    needs: [ Initialize ]
     runs-on: [ ubuntu-latest ]
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
+      fail-fast: false
+
     steps:
+      - name: Dump Workflow Information
+        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@customize
+        with:
+          shell: pwsh
+
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-  
+        with:
+          ref: ${{ matrix.branch }}
+
       - name: Initialize the workflow
         id: init
         uses: freddydk/AL-Go/Actions/WorkflowInitialize@customize
@@ -169,8 +182,8 @@ jobs:
         uses: freddydk/AL-Go/Actions/ReadSettings@customize
         with:
           shell: pwsh
-          get: templateUrl
-  
+          get: commitOptions
+
       - name: Read secrets
         id: ReadSecrets
         uses: freddydk/AL-Go/Actions/ReadSecrets@customize
@@ -178,45 +191,36 @@ jobs:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
-  
-      - name: Override templateUrl
-        env:
-          newTemplateUrl: ${{ github.event.inputs.templateUrl }}
-        run: |
-          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-          $templateUrl = $ENV:newTemplateUrl
-          if ($templateUrl) {
-            Write-Host "Using Template Url: $templateUrl"
-            Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "templateUrl=$templateUrl"
-          }
-  
-      - name: Calculate Input
+
+      - name: Calculate Commit Options
         env:
           directCommit: '${{ github.event.inputs.directCommit }}'
-          downloadLatest: ${{ github.event.inputs.downloadLatest }}
-          eventName: ${{ github.event_name }}
+          downloadLatest: '${{ github.event.inputs.downloadLatest }}'
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-          $directCommit = $ENV:directCommit
-          $downloadLatest = $ENV:downloadLatest
-          Write-Host $ENV:eventName
-          if ($ENV:eventName -eq 'schedule') {
-            Write-Host "Running Update AL-Go System Files on a schedule. Setting DirectCommit and DownloadLatest to true"
-            $directCommit = $true
-            $downloadLatest = $true
+          if('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            Write-Host "Using inputs from workflow_dispatch event"
+            $directCommit = $env:directCommit
+            $downloadLatest = $env:downloadLatest
+          }
+          else {
+            Write-Host "Using inputs from commitOptions setting"
+            $commitOptions = $env:commitOptions | ConvertFrom-Json # Available from ReadSettings step
+            $directCommit=$(-not $commitOptions.createPullRequest)
+            $downloadLatest=$true
           }
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
   
-      - name: 'Run Update COSMO Alpaca System files'
+      - name: 'Update COSMO Alpaca System Files'
         shell: pwsh
         env:
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
           update: 'Y'
-          templateUrl: ${{ env.templateUrl }}
+          templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
           directCommit: '${{ env.directCommit }}'
-          updateBranch: ${{ github.ref_name }}
+          updateBranch: ${{ matrix.branch }}
           actor: ${{ github.actor }}
         run: |
           if (-not $env:token) {
