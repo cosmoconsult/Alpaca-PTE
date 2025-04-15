@@ -1,7 +1,12 @@
 function Get-BackendURL {
     $AlpacaSettings = Get-AlpacaSettings
     $BackendURL= $AlpacaSettings.backendURL
-    if ($BackendURL -notlike "*/") { $BackendURL = $BackendURL + "/"}
+    if ([string]::IsNullOrWhiteSpace($BackendURL)) {
+        $BackendURL = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
+    }
+    elseif ($BackendURL -notlike "*/") {
+        $BackendURL = $BackendURL + "/"
+    }
     return $BackendURL
 }
 

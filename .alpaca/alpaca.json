@@ -1,3 +1,20 @@
 {
-    "backendUrl": "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
+    "containerConfigurations": [
+        {
+            "name": "default",
+            "artifacts": []
+        },
+        {
+            "name": "current",
+            "inheritFromWorkflow": "Test Current"
+        },
+        {
+            "name": "NextMajor",
+            "inheritFromWorkflow": "Test Next Major"
+        },
+        {
+            "name": "NextMinor",
+            "inheritFromWorkflow": "Test Next Minor"
+        }
+    ]
 }
