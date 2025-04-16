@@ -160,18 +160,18 @@ jobs:
       matrix:
         branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
       fail-fast: false
-
+  
     steps:
       - name: Dump Workflow Information
         uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@customize
         with:
           shell: pwsh
-
+  
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ matrix.branch }}
-
+  
       - name: Initialize the workflow
         id: init
         uses: freddydk/AL-Go/Actions/WorkflowInitialize@customize
@@ -183,7 +183,7 @@ jobs:
         with:
           shell: pwsh
           get: commitOptions
-
+  
       - name: Read secrets
         id: ReadSecrets
         uses: freddydk/AL-Go/Actions/ReadSecrets@customize
@@ -191,7 +191,7 @@ jobs:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
-
+  
       - name: Calculate Commit Options
         env:
           directCommit: '${{ github.event.inputs.directCommit }}'
