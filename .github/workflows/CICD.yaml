@@ -160,10 +160,13 @@ jobs:
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'ghTokenWorkflow'
+          getSecrets: 'ghTokenWorkflow,CustomALGoSystemFilesSecrets'
 
       - name: Check for updates to AL-Go system files
         uses: freddydk/AL-Go/Actions/CheckForUpdates@customize
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
           shell: pwsh
           templateUrl: ${{ env.templateUrl }}
