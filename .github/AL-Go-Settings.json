@@ -6,5 +6,7 @@
   "runs-on": "ubuntu-latest",
   "shell": "pwsh",
   "githubRunner": "ubuntu-latest",
-  "githubRunnerShell": "pwsh"
+  "githubRunnerShell": "pwsh",
+  "artifact": "////latest",
+  "cacheImageName": ""
 }
