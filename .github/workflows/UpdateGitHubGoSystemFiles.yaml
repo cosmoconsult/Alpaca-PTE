@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/cosmoconsult/Alpaca-PTE@main)
+        description: Template Repository URL (current is https://github.com/freddydk/AL-Go@customize)
         required: false
         default: ''
       downloadLatest:
@@ -133,6 +133,9 @@ jobs:
 
       - name: Update AL-Go system files
         uses: freddydk/AL-Go/Actions/CheckForUpdates@customize
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
           shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
