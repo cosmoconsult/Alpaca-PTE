@@ -12,6 +12,7 @@ Write-Host -ForegroundColor Green 'INITIALIZE Auth context successful'
 
 Import-Module (Join-Path $ENV:GITHUB_WORKSPACE "\.alpaca\PowerShell\module\alpaca-functions.psd1") -Scope Global -Force -DisableNameChecking
 
+$bcContainerHelperConfig.doNotRemovePackagesFolderIfExists = $true
 
 Write-Host Get packagesFolder Folder
 $packagesFolder = CheckRelativePath -baseFolder $baseFolder -sharedFolder $sharedFolder -path $packagesFolder -name "packagesFolder"
