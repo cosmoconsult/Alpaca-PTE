@@ -3,6 +3,7 @@
   "templateUrl": "https://github.com/freddydk/AL-Go@customize",
   "templateSha": "e2ac67f9137415e3888290424ce012f992c139b1",
   "useCompilerFolder": true,
+  "doNotRemovePackagesFolderIfExists": true,
   "runs-on": "ubuntu-latest",
   "shell": "pwsh",
   "githubRunner": "ubuntu-latest",

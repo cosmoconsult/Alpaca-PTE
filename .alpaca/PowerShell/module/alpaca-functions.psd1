@@ -14,22 +14,22 @@
     # GUID = ''
     
     # Author of this module
-    Author            = 'Cosmo Consult'
+    Author            = 'COSMO CONSULT'
     
     # Company or vendor of this module
-    CompanyName       = 'Cosmo Consult '
+    CompanyName       = 'COSMO CONSULT'
     
     # Copyright statement for this module
-    Copyright         = '© 2025 Cosmo Consult. All rights reserved.'
+    Copyright         = '© 2025 COSMO CONSULT. All rights reserved.'
     
 
     NestedModules     = @('API-Functions.psm1',
-                          'Get-AlpacaSettings.psm1',
-                          'Get-ExtendedErrorMessage.psm1',
-                          'Get-Dependency-Apps.psm1',
-                          'Publish-BCAppToDevEndpoint.psm1',
-                          'Wait-ForAlpacaContainer.psm1',
-                          'Wait-ForImage.psm1')
+        'Get-AlpacaSettings.psm1',
+        'Get-ExtendedErrorMessage.psm1',
+        'Get-DependencyApps.psm1',
+        'Publish-BCAppToDevEndpoint.psm1',
+        'Wait-ForAlpacaContainer.psm1',
+        'Wait-ForImage.psm1')
 
     # Functions to export from this module
     FunctionsToExport = '*'
