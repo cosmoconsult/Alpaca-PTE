@@ -74,7 +74,7 @@ jobs:
   UpdateALGoSystemFiles:
     name: "[${{ matrix.branch }}] Update AL-Go System Files"
     needs: [ Initialize, CustomJob-UpdateAlpacaFiles ]
-    runs-on: [ ubuntu-latest ]
+    runs-on: windows-latest
     strategy:
       matrix:
         branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
@@ -243,7 +243,7 @@ jobs:
           Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/refs/heads/customize/Actions/Github-Helper.psm1" -OutFile ./Github-Helper.psm1
           Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/refs/heads/customize/Actions/CheckForUpdates/CheckForUpdates.HelperFunctions.ps1" -OutFile ./CheckForUpdates.HelperFunctions.ps1
           Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/settings.schema.json" -OutFile ./settings.schema.json
-
+  
           Write-Host Import AL-Go-Helper.ps1
           . ./AL-Go-Helper.ps1
           . ./CheckForUpdates.HelperFunctions.ps1
