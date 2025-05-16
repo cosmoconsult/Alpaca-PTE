@@ -216,99 +216,13 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
   
       - name: Update COSMO Alpaca system files
-        shell: pwsh
+        uses: cosmoconsult/Alpaca-Actions/UpdateAlpacaSystemFiles@main
         env:
-          actor: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
           templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
-          directCommit: '${{ env.directCommit }}'
+          directCommit: ${{ env.directCommit }}
           updateBranch: ${{ matrix.branch }}
-        run: |
-          if (-not $env:token) {
-            Write-Host "::Error::A personal access token with permissions to modify Workflows is needed. You must either run the action 'Initialize for usage with COSMO Alpaca' on the repository or manually add a secret called GhTokenWorkflow containing a personal access token. You can Generate a new token from https://github.com/settings/tokens. Make sure that the workflow scope is checked."
-            exit 1
-          }
-          if ($env:downloadLatest -ne 'true') {
-            Write-Host "Running Update COSMO Alpaca System files should always download latest version of the template repository. Setting DownloadLatest to true"
-            $env:downloadLatest = $true
-          }
-          if ($env:directCommit -ne 'true') {
-            Write-Host "::Error::Updating COSMO Alpaca System files need direct commit activated, please activate direct commit"
-            exit 1
-          }
-  
-          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/AL-Go-Helper.ps1" -OutFile ./AL-Go-Helper.ps1
-          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/Github-Helper.psm1" -OutFile ./Github-Helper.psm1
-          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/CheckForUpdates/CheckForUpdates.HelperFunctions.ps1" -OutFile ./CheckForUpdates.HelperFunctions.ps1
-          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/settings.schema.json" -OutFile ./settings.schema.json
-  
-          Write-Host Import AL-Go-Helper.ps1
-          . ./AL-Go-Helper.ps1
-          . ./CheckForUpdates.HelperFunctions.ps1
-  
-          if ($env:token) {
-              # Specified token is GhTokenWorkflow secret - decode from base 64
-              Write-Host "Using ghTokenWorkflow secret"
-              $token = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:token))
-          }
-  
-          Write-Host Get Template
-          $headers = @{
-            "Accept" = "application/vnd.github.baptiste-preview+json"
-            "Authorization" = "Bearer $token"
-          }
-  
-          if (-not $env:templateUrl.Contains('@')) {
-              $env:templateUrl += "@main"
-          }
-          if ($env:templateUrl -notlike "https://*") {
-              $env:templateUrl = "https://github.com/$templateUrl"
-          }
-          # Remove www part (if exists)
-          $env:templateUrl = $env:templateUrl -replace "^(https:\/\/)(www\.)(.*)$", '$1$3'
-  
-          $repoSettings = ReadSettings -project '' -workflowName '' -userName '' -branchName '' | ConvertTo-HashTable -recurse
-          $templateSha = $repoSettings.templateSha
-  
-          # If templateUrl has changed, download latest version of the template repository (ignore templateSha)
-          if ($repoSettings.templateUrl -ne $env:templateUrl -or $templateSha -eq '') {
-              $env:downloadLatest = $true
-          }
-  
-          $templateFolder = DownloadTemplateRepository -headers $headers -templateUrl $env:templateUrl -templateSha ([ref]$templateSha) -downloadLatest ([bool]$env:downloadLatest)
-          Write-Host "Template Folder: $templateFolder"
-          $templateBranch = $env:templateUrl.Split('@')[1]
-          $templateOwner = $env:templateUrl.Split('/')[3]
-          $templateInfo = "$templateOwner/$($env:templateUrl.Split('/')[4])"
-  
-          Write-Host Execute Update
-          $commitMessage = "[$($env:updateBranch)] Update COSMO Alpaca System Files from $templateInfo -  $templateSha [skip ci]"
-          $env:GH_TOKEN = $env:token
-  
-          $serverUrl, $branch = CloneIntoNewFolder -actor $env:actor -token $token -updateBranch $($env:updateBranch) -DirectCommit ([bool]$env:directCommit) -newBranchPrefix 'update-al-go-system-files'
-  
-          invoke-git status
-  
-          Write-Host Update Files Here
-          $subFolder=(Get-ChildItem $templateFolder).Name
-  
-            if (-Not (Test-Path "$templateFolder\$subFolder\.alpaca")) {
-              # No .alpaca folder found in template repository, exit
-              OutputNotice -message "No COSMO Alpaca related files found in the template repository, nothing to update."
-              exit 0
-            }
-  
-          if (Test-Path .\.alpaca) {
-            # Delete all files except configs
-            Remove-Item .\.alpaca\* -Recurse -Exclude *.json
-            # .alpaca folder does already exist, do not overwrite configs
-            Copy-Item -Path "$templateFolder\$subFolder\.alpaca\*" -Destination .\.alpaca\ -Recurse -Exclude *.json
-          } else {
-            # .alpaca folder does not exist, copy everything
-            Copy-Item -Path "$templateFolder\$subFolder\.alpaca\*" -Destination .\.alpaca\ -Recurse
-          }
-  
-          if (!(CommitFromNewFolder -serverUrl $serverUrl -commitMessage $commitMessage -branch $branch)) {
-            OutputNotice -message "No updates available for COSMO Alpaca."
-          }
