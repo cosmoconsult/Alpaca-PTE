@@ -215,15 +215,15 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
   
-      - name: 'Update COSMO Alpaca System Files'
+      - name: 'Update COSMO Alpaca system files'
         shell: pwsh
         env:
+          actor: ${{ github.actor }}
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
           templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
           directCommit: '${{ env.directCommit }}'
           updateBranch: ${{ matrix.branch }}
-          actor: ${{ github.actor }}
         run: |
           if (-not $env:token) {
             Write-Host "::Error::A personal access token with permissions to modify Workflows is needed. You must either run the action 'Initialize for usage with COSMO Alpaca' on the repository or manually add a secret called GhTokenWorkflow containing a personal access token. You can Generate a new token from https://github.com/settings/tokens. Make sure that the workflow scope is checked."
