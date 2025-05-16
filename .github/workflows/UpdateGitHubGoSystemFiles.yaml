@@ -74,7 +74,7 @@ jobs:
   UpdateALGoSystemFiles:
     name: "[${{ matrix.branch }}] Update AL-Go System Files"
     needs: [ Initialize, CustomJob-UpdateAlpacaFiles ]
-    runs-on: [ ubuntu-latest ]
+    runs-on: windows-latest
     strategy:
       matrix:
         branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
@@ -158,7 +158,7 @@ jobs:
   CustomJob-UpdateAlpacaFiles:
     name: "[${{ matrix.branch }}] Update COSMO Alpaca System Files"
     needs: [ Initialize ]
-    runs-on: [ ubuntu-latest ]
+    runs-on: windows-latest
     strategy:
       matrix:
         branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
@@ -215,16 +215,15 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
   
-      - name: 'Update COSMO Alpaca System Files'
+      - name: Update COSMO Alpaca system files
         shell: pwsh
         env:
+          actor: ${{ github.actor }}
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
-          update: 'Y'
           templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
           directCommit: '${{ env.directCommit }}'
           updateBranch: ${{ matrix.branch }}
-          actor: ${{ github.actor }}
         run: |
           if (-not $env:token) {
             Write-Host "::Error::A personal access token with permissions to modify Workflows is needed. You must either run the action 'Initialize for usage with COSMO Alpaca' on the repository or manually add a secret called GhTokenWorkflow containing a personal access token. You can Generate a new token from https://github.com/settings/tokens. Make sure that the workflow scope is checked."
@@ -239,9 +238,10 @@ jobs:
             exit 1
           }
   
-          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/refs/heads/customize/Actions/AL-Go-Helper.ps1" -OutFile ./AL-Go-Helper.ps1
-          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/refs/heads/customize/Actions/Github-Helper.psm1" -OutFile ./Github-Helper.psm1
-          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/refs/heads/customize/Actions/CheckForUpdates/CheckForUpdates.HelperFunctions.ps1" -OutFile ./CheckForUpdates.HelperFunctions.ps1
+          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/AL-Go-Helper.ps1" -OutFile ./AL-Go-Helper.ps1
+          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/Github-Helper.psm1" -OutFile ./Github-Helper.psm1
+          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/CheckForUpdates/CheckForUpdates.HelperFunctions.ps1" -OutFile ./CheckForUpdates.HelperFunctions.ps1
+          Invoke-WebRequest "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/settings.schema.json" -OutFile ./settings.schema.json
   
           Write-Host Import AL-Go-Helper.ps1
           . ./AL-Go-Helper.ps1
