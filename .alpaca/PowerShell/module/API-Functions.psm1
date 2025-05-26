@@ -1,6 +1,6 @@
 function Get-BackendURL {
     $AlpacaSettings = Get-AlpacaSettings
-    $BackendURL= $AlpacaSettings.backendURL
+    $BackendURL = $AlpacaSettings.backendURL
     if ([string]::IsNullOrWhiteSpace($BackendURL)) {
         $BackendURL = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
     }
@@ -11,7 +11,7 @@ function Get-BackendURL {
 }
 
 function Get-k8sAPIUrl {
-    $BackendURL=Get-BackendURL
+    $BackendURL = Get-BackendURL
     return $BackendURL + "api/docker/release/"
 }
 
@@ -25,7 +25,7 @@ function Get-K8sEndpointUrlWithParam {
         [string]$ressource,
         [string]$routeSuffix,
         [Hashtable] $QueryParams
-        )
+    )
     $url = Get-k8sAPIUrl
     $url = $url + $controller  
 
@@ -62,24 +62,24 @@ function Get-AuthenticationHeader {
         [string]$owner,
         [Parameter(Mandatory = $true)]
         [string]$repository
-        )
+    )
     $headers = @{
-        Authorization="Bearer $token"
-        "Authorization-GitHub"="$token"
-        "Authorization-Owner"="$owner"
-        "Authorization-Repository"="$repository"
+        Authorization              = "Bearer $token"
+        "Authorization-GitHub"     = "$token"
+        "Authorization-Owner"      = "$owner"
+        "Authorization-Repository" = "$repository"
     }
     return $headers
 }
 
 Export-ModuleMember -Function Get-AuthenticationHeader
 
-function Translate-WorkflowName-To-ConfigName {
-    switch($ENV:GITHUB_WORKFLOW) {
+function Get-ConfigNameForWorkflowName {
+    switch ($ENV:GITHUB_WORKFLOW) {
         "NextMajor" { return "NextMajor" }
         "NextMinor" { return "NextMinor" }
         default { return "current" }
     }
 }
 
-Export-ModuleMember -Function Translate-WorkflowName-To-ConfigName
+Export-ModuleMember -Function Get-ConfigNameForWorkflowName

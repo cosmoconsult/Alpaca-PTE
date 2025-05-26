@@ -15,7 +15,7 @@ Write-Host "Starting container for $owner/$repository and ref $branch"
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
 $headers.add("Content-Type", "application/json")
 
-$config = Translate-WorkflowName-To-ConfigName 
+$config = Get-ConfigNameForWorkflowName 
 
 $body = @"
 {
