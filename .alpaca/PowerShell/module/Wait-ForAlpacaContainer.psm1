@@ -42,7 +42,7 @@ function Wait-ForAlpacaContainer {
                 "api-version" = "0.12"
                 tail = 5000
             }
-            $apiUrl = Get-K8sEndpointUrlWithParam -controller "task" -ressource $containerName -routeSuffix "logs"  -QueryParams $QueryParams
+            $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "task" -ressource $containerName -routeSuffix "logs"  -QueryParams $QueryParams
                 
             while ($waitForContainer) {  
 

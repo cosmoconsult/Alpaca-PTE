@@ -22,7 +22,7 @@ function Wait-ForImage {
         $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
         $headers.add("Content-Type","application/json")
 
-        $apiUrl = Get-K8sEndpointUrlWithParam -controller "service" -ressource $containerName -routeSuffix "status"  -QueryParams $QueryParams
+        $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "service" -ressource $containerName -routeSuffix "status"  -QueryParams $QueryParams
         
         Write-Host "Get status from $apiUrl"
 

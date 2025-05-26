@@ -38,7 +38,7 @@ function Get-DependencyApps {
     $QueryParams = @{
         "api-version" = "0.12"
     }
-    $apiUrl = Get-K8sEndpointUrlWithParam -controller "Container" -endpoint "GitHub/GetBuildContainerArtifacts" -QueryParams $QueryParams
+    $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -endpoint "GitHub/GetBuildContainerArtifacts" -QueryParams $QueryParams
     $artifacts = Invoke-RestMethod $apiUrl -Method 'GET' -Headers $headers -Body $body -AllowInsecureRedirect
 
     foreach ($artifact in $artifacts) {

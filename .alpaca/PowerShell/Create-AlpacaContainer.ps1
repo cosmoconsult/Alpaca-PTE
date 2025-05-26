@@ -10,6 +10,8 @@ $repository = $repository.replace($owner, "")
 $repository = $repository.replace("/", "")
 $branch = $Env:GITHUB_REF_NAME
 
+Initialize-AlpacaBackend -token $token -owner $owner
+
 Write-Host "Starting container for $owner/$repository and ref $branch"
 
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
@@ -39,7 +41,7 @@ $body = @"
 $QueryParams = @{
     "api-version" = "0.12"
 }
-$apiUrl = Get-K8sEndpointUrlWithParam -controller "Container" -endpoint "GitHub/Build" -QueryParams $QueryParams
+$apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -endpoint "GitHub/Build" -QueryParams $QueryParams
 $containerConfig = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body $body -AllowInsecureRedirect
 $containerID = $containerConfig.id
 $containerUser = $containerConfig.username

@@ -1,24 +1,52 @@
-function Get-BackendURL {
-    $AlpacaSettings = Get-AlpacaSettings
-    $BackendURL = $AlpacaSettings.backendURL
-    if ([string]::IsNullOrWhiteSpace($BackendURL)) {
-        $BackendURL = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
-    }
-    elseif ($BackendURL -notlike "*/") {
-        $BackendURL = $BackendURL + "/"
-    }
-    return $BackendURL
-}
-
-function Get-k8sAPIUrl {
-    $BackendURL = Get-BackendURL
-    return $BackendURL + "api/docker/release/"
-}
-
-Export-ModuleMember -Function Get-k8sAPIUrl
-
-function Get-K8sEndpointUrlWithParam {
+function Initialize-AlpacaBackend {
     Param(
+        [Parameter(Mandatory = $true)]
+        [string]$token,
+        [Parameter(Mandatory = $true)]
+        [string]$owner
+    )
+    if (![string]::IsNullOrWhiteSpace($ENV:ALPACA_BACKEND_URL)) {
+        exit # Alpaca backend URL is already set, no need to reinitialize
+    }
+
+    Write-Host "Initializing Alpaca backend for owner: $owner"
+    $headers = Get-AuthenticationHeader -token $token
+    $headers.add("Content-Type", "application/json")
+
+    $queryParams = @{
+        "api-version" = "0.12"
+    }
+    $apiUrl = Get-AlpacaEndpointUrlWithParam -api "alpaca" -controller "GitHub/Owner" -QueryParams $queryParams
+    $owner = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body @($owner) -AllowInsecureRedirect
+    Write-Host "DEBUG: Owner response: $($owner | ConvertTo-Json -Depth 10)"
+    if ($owner.backendUrl) {
+        $backendUrl = $owner.backendUrl
+        if ($backendUrl -notlike "*/") {
+            $backendUrl = $backendUrl + "/"
+        }
+        Write-Host "DEBUG: Setting ALPACA_BACKEND_URL to: $backendUrl"
+        $ENV:ALPACA_BACKEND_URL = $backendUrl
+    }
+}
+
+Export-ModuleMember -Function Initialize-AlpacaBackend
+
+function Get-AlpacaBackendUrl {
+    if (![string]::IsNullOrWhiteSpace($ENV:ALPACA_BACKEND_URL)) {
+        # Alpaca backend URL is set
+        return $ENV:ALPACA_BACKEND_URL
+    }
+    else {
+        # Default backend URL
+        return "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
+    }
+}
+
+function Get-AlpacaEndpointUrlWithParam {
+    Param(
+        [Parameter(Mandatory = $false)]
+        [ValidateSet("k8s", "alpaca")]
+        [string]$api = "k8s",
         [Parameter(Mandatory = $true)]
         [string]$controller,
         [string]$endpoint,
@@ -26,7 +54,12 @@ function Get-K8sEndpointUrlWithParam {
         [string]$routeSuffix,
         [Hashtable] $QueryParams
     )
-    $url = Get-k8sAPIUrl
+    $url = Get-AlpacaBackendUrl
+    Write-Host "DEBUG: Using backend Base URL: $url"
+    switch ($api) {
+        "k8s" { $url = $url + "api/docker/release/" }
+        "alpaca" { $url = $url + "api/alpaca/release/" }
+    }
     $url = $url + $controller  
 
     if ($endpoint) {
@@ -51,23 +84,25 @@ function Get-K8sEndpointUrlWithParam {
     return $url
 }
 
-
-Export-ModuleMember -Function Get-K8sEndpointUrlWithParam
+Export-ModuleMember -Function Get-AlpacaEndpointUrlWithParam
 
 function Get-AuthenticationHeader {
     Param(
         [Parameter(Mandatory = $true)]
         [string]$token,
-        [Parameter(Mandatory = $true)]
         [string]$owner,
-        [Parameter(Mandatory = $true)]
         [string]$repository
     )
     $headers = @{
-        Authorization              = "Bearer $token"
-        "Authorization-GitHub"     = "$token"
-        "Authorization-Owner"      = "$owner"
-        "Authorization-Repository" = "$repository"
+        Authorization          = "Bearer $token"
+        "Authorization-GitHub" = "$token"
+        "Authorization-Owner"  = "$owner"
+    }
+    if ($owner) {
+        $headers.add("Authorization-Owner", $owner)
+    }
+    if ($repository) {
+        $headers.add("Authorization-Repository", $repository)
     }
     return $headers
 }
