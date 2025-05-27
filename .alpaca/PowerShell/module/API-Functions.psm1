@@ -17,7 +17,7 @@ function Initialize-AlpacaBackend {
         "includeRepos" = "false"
     }
     $apiUrl = Get-AlpacaEndpointUrlWithParam -api "alpaca" -controller "GitHub/Owner" -ressource $owner -QueryParams $queryParams
-    $owner = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -AllowInsecureRedirect
+    $owner = Invoke-RestMethod $apiUrl -Method 'GET' -Headers $headers -AllowInsecureRedirect
     Write-Host "DEBUG: Owner response: $($owner | ConvertTo-Json)"
     if ($owner.backendUrl) {
         $backendUrl = $owner.backendUrl
