@@ -1,48 +1,12 @@
-function Initialize-AlpacaBackend {
-    Param(
-        [Parameter(Mandatory = $true)]
-        [string]$token,
-        [Parameter(Mandatory = $true)]
-        [string]$owner,
-        [Parameter(Mandatory = $true)]
-        [string]$repository
-    )
-    if (![string]::IsNullOrWhiteSpace($ENV:ALPACA_BACKEND_URL)) {
-        exit # Alpaca backend URL is already set, no need to reinitialize
-    }
-
-    Write-Host "Initializing Alpaca backend"
-    $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
-    $headers.add("Content-Type", "application/json")
-
-    $queryParams = @{
-        "includeRepos" = "false"
-    }
-    $apiUrl = Get-AlpacaEndpointUrlWithParam -api "alpaca" -controller "GitHub/Owner" -ressource $owner -QueryParams $queryParams
-    $owner = Invoke-RestMethod $apiUrl -Method 'GET' -Headers $headers -AllowInsecureRedirect
-    Write-Host "DEBUG: Owner response: $($owner | ConvertTo-Json)"
-    if ($owner.backendUrl) {
-        $backendUrl = $owner.backendUrl
-        if ($backendUrl -notlike "*/") {
-            $backendUrl = $backendUrl + "/"
-        }
-        Write-Host "DEBUG: Setting ALPACA_BACKEND_URL to: $backendUrl"
-        $ENV:ALPACA_BACKEND_URL = $backendUrl
-    }
-}
-
-Export-ModuleMember -Function Initialize-AlpacaBackend
-
 function Get-AlpacaBackendUrl {
-    if (![string]::IsNullOrWhiteSpace($ENV:ALPACA_BACKEND_URL)) {
-        # Alpaca backend URL is set
-        return $ENV:ALPACA_BACKEND_URL
+    $backendUrl = $ENV:VARS_ALPACA_BACKEND_URL
+    if ([string]::IsNullOrWhiteSpace($backendURL)) {
+        $backendURL = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
     }
-    else {
-        # Default backend URL
-        #return "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
-        return "https://ppi-demo.westeurope.cloudapp.azure.com/"
+    elseif ($backendURL -notlike "*/") {
+        $backendURL = $backendURL + "/"
     }
+    return $backendURL
 }
 
 function Get-AlpacaEndpointUrlWithParam {
