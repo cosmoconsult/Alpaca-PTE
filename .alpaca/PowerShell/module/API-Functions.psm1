@@ -1,6 +1,5 @@
 function Get-AlpacaBackendUrl {
     $backendUrl = $ENV:ALPACA_BACKEND_URL
-    Write-Host "DEBUG: Backend URL set in environment variable: $backendUrl"
     if ([string]::IsNullOrWhiteSpace($backendURL)) {
         $backendURL = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
     }
@@ -23,7 +22,6 @@ function Get-AlpacaEndpointUrlWithParam {
         [Hashtable] $QueryParams
     )
     $url = Get-AlpacaBackendUrl
-    Write-Host "DEBUG: Using backend Base URL: $url"
     switch ($api) {
         "k8s" { $url = $url + "api/docker/release/" }
         "alpaca" { $url = $url + "api/alpaca/release/" }
