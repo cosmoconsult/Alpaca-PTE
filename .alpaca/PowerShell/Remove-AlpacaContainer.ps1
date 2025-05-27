@@ -13,7 +13,7 @@ $repository = $repository.replace($owner, "")
 $repository = $repository.replace("/", "")
 $branch = $Env:GITHUB_REF_NAME
 
-Initialize-AlpacaBackend -token $token -owner $owner
+Initialize-AlpacaBackend -token $token -owner $owner -repository $repository
 
 $containerID = $containerConfig.containerID
 
