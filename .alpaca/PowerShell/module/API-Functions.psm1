@@ -1,5 +1,6 @@
 function Get-AlpacaBackendUrl {
-    $backendUrl = $ENV:VARS_ALPACA_BACKEND_URL
+    $backendUrl = $ENV:ALPACA_BACKEND_URL
+    Write-Host "DEBUG: Backend URL set in environment variable: $backendUrl"
     if ([string]::IsNullOrWhiteSpace($backendURL)) {
         $backendURL = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
     }
