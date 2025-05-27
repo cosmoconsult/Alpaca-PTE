@@ -3,24 +3,22 @@ function Initialize-AlpacaBackend {
         [Parameter(Mandatory = $true)]
         [string]$token,
         [Parameter(Mandatory = $true)]
-        [string]$owner,
-        [Parameter(Mandatory = $true)]
-        [string]$repository
+        [string]$owner
     )
     if (![string]::IsNullOrWhiteSpace($ENV:ALPACA_BACKEND_URL)) {
         exit # Alpaca backend URL is already set, no need to reinitialize
     }
 
-    Write-Host "Initializing Alpaca backend for owner: $owner"
-    $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
+    Write-Host "Initializing Alpaca backend"
+    $headers = Get-AuthenticationHeader -token $token -owner $owner
     $headers.add("Content-Type", "application/json")
 
     $queryParams = @{
         "includeRepos" = "false"
     }
-    $apiUrl = Get-AlpacaEndpointUrlWithParam -api "alpaca" -controller "GitHub/Owner" -QueryParams $queryParams
-    $owner = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body @($owner) -AllowInsecureRedirect
-    Write-Host "DEBUG: Owner response: $($owner | ConvertTo-Json -Depth 10)"
+    $apiUrl = Get-AlpacaEndpointUrlWithParam -api "alpaca" -controller "GitHub/Owner" -ressource $owner -QueryParams $queryParams
+    $owner = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -AllowInsecureRedirect
+    Write-Host "DEBUG: Owner response: $($owner | ConvertTo-Json)"
     if ($owner.backendUrl) {
         $backendUrl = $owner.backendUrl
         if ($backendUrl -notlike "*/") {
@@ -40,7 +38,8 @@ function Get-AlpacaBackendUrl {
     }
     else {
         # Default backend URL
-        return "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
+        #return "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
+        return "https://ppi-demo.westeurope.cloudapp.azure.com/"
     }
 }
 
@@ -92,16 +91,18 @@ function Get-AuthenticationHeader {
     Param(
         [Parameter(Mandatory = $true)]
         [string]$token,
-        [Parameter(Mandatory = $true)]
         [string]$owner,
-        [Parameter(Mandatory = $true)]
         [string]$repository
     )
     $headers = @{
-        Authorization              = "Bearer $token"
-        "Authorization-GitHub"     = "$token"
-        "Authorization-Owner"      = "$owner"
-        "Authorization-Repository" = "$repository"
+        Authorization          = "Bearer $token"
+        "Authorization-GitHub" = "$token"
+    }
+    if ($owner) {
+        $headers.add("Authorization-Owner", $owner)
+    }
+    if ($repository) {
+        $headers.add("Authorization-Repository", $repository)
     }
     return $headers
 }
