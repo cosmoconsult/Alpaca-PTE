@@ -3,16 +3,14 @@ function Initialize-AlpacaBackend {
         [Parameter(Mandatory = $true)]
         [string]$token,
         [Parameter(Mandatory = $true)]
-        [string]$owner,
-        [Parameter(Mandatory = $true)]
-        [string]$repository
+        [string]$owner
     )
     if (![string]::IsNullOrWhiteSpace($ENV:ALPACA_BACKEND_URL)) {
         exit # Alpaca backend URL is already set, no need to reinitialize
     }
 
     Write-Host "Initializing Alpaca backend"
-    $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
+    $headers = Get-AuthenticationHeader -token $token -owner $owner
     $headers.add("Content-Type", "application/json")
 
     $queryParams = @{
@@ -26,8 +24,8 @@ function Initialize-AlpacaBackend {
         if ($backendUrl -notlike "*/") {
             $backendUrl = $backendUrl + "/"
         }
-        Write-Host "DEBUG: Setting ALPACA_BACKEND_URL to: $backendUrl"
-        $ENV:ALPACA_BACKEND_URL = $backendUrl
+        Write-Host "DEBUG: Setting ALPACA_BACKEND_URL environment variable to: $backendUrl"
+        Write-Output "ALPACA_BACKEND_URL=$backendUrl" >> $ENV:GITHUB_ENV
     }
 }
 
@@ -93,16 +91,18 @@ function Get-AuthenticationHeader {
     Param(
         [Parameter(Mandatory = $true)]
         [string]$token,
-        [Parameter(Mandatory = $true)]
         [string]$owner,
-        [Parameter(Mandatory = $true)]
         [string]$repository
     )
     $headers = @{
-        Authorization              = "Bearer $token"
-        "Authorization-GitHub"     = "$token"
-        "Authorization-Owner"      = "$owner"
-        "Authorization-Repository" = "$repository"
+        Authorization          = "Bearer $token"
+        "Authorization-GitHub" = "$token"
+    }
+    if ($owner) {
+        $headers.add("Authorization-Owner", $owner)
+    }
+    if ($repository) {
+        $headers.add("Authorization-Repository", $repository)
     }
     return $headers
 }
