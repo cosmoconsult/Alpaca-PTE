@@ -13,10 +13,7 @@ function Initialize-AlpacaBackend {
     $headers = Get-AuthenticationHeader -token $token
     $headers.add("Content-Type", "application/json")
 
-    $queryParams = @{
-        "api-version" = "0.12"
-    }
-    $apiUrl = Get-AlpacaEndpointUrlWithParam -api "alpaca" -controller "GitHub/Owner" -QueryParams $queryParams
+    $apiUrl = Get-AlpacaEndpointUrlWithParam -api "alpaca" -controller "GitHub/Owner"
     $owner = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body @($owner) -AllowInsecureRedirect
     Write-Host "DEBUG: Owner response: $($owner | ConvertTo-Json -Depth 10)"
     if ($owner.backendUrl) {
