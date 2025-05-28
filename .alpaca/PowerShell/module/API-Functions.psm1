@@ -63,7 +63,6 @@ function Get-AuthenticationHeader {
     )
     $headers = @{
         Authorization              = "Bearer $token"
-        "Authorization-GitHub"     = "$token"
         "Authorization-Owner"      = "$owner"
         "Authorization-Repository" = "$repository"
     }
