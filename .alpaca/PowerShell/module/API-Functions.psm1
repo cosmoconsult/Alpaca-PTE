@@ -1,12 +1,12 @@
 function Get-AlpacaBackendUrl {
     $backendUrl = $ENV:ALPACA_BACKEND_URL
-    if ([string]::IsNullOrWhiteSpace($backendURL)) {
-        $backendURL = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
+    if ([string]::IsNullOrWhiteSpace($backendUrl)) {
+        $backendUrl = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
     }
-    elseif ($backendURL -notlike "*/") {
-        $backendURL = $backendURL + "/"
+    elseif ($backendUrl -notlike "*/") {
+        $backendUrl = $backendUrl + "/"
     }
-    return $backendURL
+    return $backendUrl
 }
 
 function Get-AlpacaEndpointUrlWithParam {
