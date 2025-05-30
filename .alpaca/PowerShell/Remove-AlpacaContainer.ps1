@@ -22,5 +22,5 @@ $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $rep
 $QueryParams = @{
     "api-version" = "0.12"
 }
-$apiUrl = Get-K8sEndpointUrlWithParam -controller "Container" -ressource $containerID -QueryParams $QueryParams
-Invoke-RestMethod $apiUrl -Method 'DELETE' -Headers $headers -Body $body -AllowInsecureRedirect
+$apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -ressource $containerID -QueryParams $QueryParams
+Invoke-RestMethod $apiUrl -Method 'DELETE' -Headers $headers -AllowInsecureRedirect

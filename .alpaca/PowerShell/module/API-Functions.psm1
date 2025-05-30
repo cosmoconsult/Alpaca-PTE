@@ -1,32 +1,31 @@
-function Get-BackendURL {
-    $AlpacaSettings = Get-AlpacaSettings
-    $BackendURL= $AlpacaSettings.backendURL
-    if ([string]::IsNullOrWhiteSpace($BackendURL)) {
-        $BackendURL = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
+function Get-AlpacaBackendUrl {
+    $backendUrl = $ENV:ALPACA_BACKEND_URL
+    if ([string]::IsNullOrWhiteSpace($backendUrl)) {
+        $backendUrl = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
     }
-    elseif ($BackendURL -notlike "*/") {
-        $BackendURL = $BackendURL + "/"
+    elseif ($backendUrl -notlike "*/") {
+        $backendUrl = $backendUrl + "/"
     }
-    return $BackendURL
+    return $backendUrl
 }
 
-function Get-k8sAPIUrl {
-    $BackendURL=Get-BackendURL
-    return $BackendURL + "api/docker/release/"
-}
-
-Export-ModuleMember -Function Get-k8sAPIUrl
-
-function Get-K8sEndpointUrlWithParam {
+function Get-AlpacaEndpointUrlWithParam {
     Param(
+        [Parameter(Mandatory = $false)]
+        [ValidateSet("k8s", "alpaca")]
+        [string]$api = "k8s",
         [Parameter(Mandatory = $true)]
         [string]$controller,
         [string]$endpoint,
         [string]$ressource,
         [string]$routeSuffix,
         [Hashtable] $QueryParams
-        )
-    $url = Get-k8sAPIUrl
+    )
+    $url = Get-AlpacaBackendUrl
+    switch ($api) {
+        "k8s" { $url = $url + "api/docker/release/" }
+        "alpaca" { $url = $url + "api/alpaca/release/" }
+    }
     $url = $url + $controller  
 
     if ($endpoint) {
@@ -51,8 +50,7 @@ function Get-K8sEndpointUrlWithParam {
     return $url
 }
 
-
-Export-ModuleMember -Function Get-K8sEndpointUrlWithParam
+Export-ModuleMember -Function Get-AlpacaEndpointUrlWithParam
 
 function Get-AuthenticationHeader {
     Param(
@@ -62,24 +60,23 @@ function Get-AuthenticationHeader {
         [string]$owner,
         [Parameter(Mandatory = $true)]
         [string]$repository
-        )
+    )
     $headers = @{
-        Authorization="Bearer $token"
-        "Authorization-GitHub"="$token"
-        "Authorization-Owner"="$owner"
-        "Authorization-Repository"="$repository"
+        Authorization              = "Bearer $token"
+        "Authorization-Owner"      = "$owner"
+        "Authorization-Repository" = "$repository"
     }
     return $headers
 }
 
 Export-ModuleMember -Function Get-AuthenticationHeader
 
-function Translate-WorkflowName-To-ConfigName {
-    switch($ENV:GITHUB_WORKFLOW) {
+function Get-ConfigNameForWorkflowName {
+    switch ($ENV:GITHUB_WORKFLOW) {
         "NextMajor" { return "NextMajor" }
         "NextMinor" { return "NextMinor" }
         default { return "current" }
     }
 }
 
-Export-ModuleMember -Function Translate-WorkflowName-To-ConfigName
+Export-ModuleMember -Function Get-ConfigNameForWorkflowName

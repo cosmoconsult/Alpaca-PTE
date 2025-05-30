@@ -15,7 +15,7 @@ Write-Host "Starting container for $owner/$repository and ref $branch"
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
 $headers.add("Content-Type", "application/json")
 
-$config = Translate-WorkflowName-To-ConfigName 
+$config = Get-ConfigNameForWorkflowName 
 
 $body = @"
 {
@@ -35,11 +35,10 @@ $body = @"
 }
 "@
 
-
 $QueryParams = @{
     "api-version" = "0.12"
 }
-$apiUrl = Get-K8sEndpointUrlWithParam -controller "Container" -endpoint "GitHub/Build" -QueryParams $QueryParams
+$apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -endpoint "GitHub/Build" -QueryParams $QueryParams
 $containerConfig = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body $body -AllowInsecureRedirect
 $containerID = $containerConfig.id
 $containerUser = $containerConfig.username

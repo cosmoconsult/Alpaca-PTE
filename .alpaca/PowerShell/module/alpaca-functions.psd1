@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------
-#---     Copyright (c) Cosmo Consult.  All rights reserved.            ---
+#---     Copyright (c) COSMO CONSULT.  All rights reserved.            ---
 #-------------------------------------------------------------------------
 
 @{
@@ -25,8 +25,8 @@
 
     NestedModules     = @('API-Functions.psm1',
         'Get-AlpacaSettings.psm1',
-        'Get-ExtendedErrorMessage.psm1',
         'Get-DependencyApps.psm1',
+        'Get-ExtendedErrorMessage.psm1',
         'Publish-BCAppToDevEndpoint.psm1',
         'Wait-ForAlpacaContainer.psm1',
         'Wait-ForImage.psm1')
