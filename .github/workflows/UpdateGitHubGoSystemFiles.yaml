@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/cosmoconsult/Alpaca-PTE@update-freddy)
+        description: Template Repository URL (current is https://github.com/cosmoconsult/Alpaca-PTE@main)
         required: false
         default: ''
       downloadLatest:
