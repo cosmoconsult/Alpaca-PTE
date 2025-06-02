@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/settings.schema.json",
   "artifact": "////nextminor",
   "versioningStrategy": 15
 }

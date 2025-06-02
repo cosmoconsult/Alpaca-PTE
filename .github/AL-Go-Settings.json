@@ -1,8 +1,7 @@
 {
-  "$schema": "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/settings.schema.json",
   "type": "PTE",
-  "templateUrl": "https://github.com/freddydk/AL-Go@customize",
-  "templateSha": "9801efc30a175668faa57e47660cca3145255f4e",
+  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@update-freddy",
+  "templateSha": "",
   "useCompilerFolder": true,
   "doNotRemovePackagesFolderIfExists": true,
   "runs-on": "ubuntu-latest",

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/freddydk/AL-Go@customize)
+        description: Template Repository URL (current is https://github.com/cosmoconsult/Alpaca-PTE@update-freddy)
         required: false
         default: ''
       downloadLatest:
@@ -109,7 +109,7 @@ jobs:
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'ghTokenWorkflow'
+          getSecrets: 'ghTokenWorkflow,CustomALGoSystemFilesSecrets'
 
       - name: Calculate Commit Options
         env:
