@@ -45,11 +45,26 @@ function Get-DependencyApps {
         if ($artifact.target -eq 'App') {
             if ($artifact.type -eq 'Url') {
                 Write-Host "::group::Downloading $($artifact.name) from $($artifact.url)"
-                
-                $tempArchive = "$([System.IO.Path]::GetTempFileName()).zip"
+
                 $tempFolder = ([System.IO.Path]::GetRandomFileName())
-                Invoke-WebRequest -Uri $artifact.url -OutFile $tempArchive
-                Expand-Archive -Path $tempArchive -DestinationPath $tempFolder -Force
+                
+                if ($artifact.url -match "^https?://") {
+                    $tempArchive = "$([System.IO.Path]::GetTempFileName()).zip"
+                    Invoke-WebRequest -Uri $artifact.url -OutFile $tempArchive
+                    Expand-Archive -Path $tempArchive -DestinationPath $tempFolder -Force
+                }
+                elseif ($artifact.url -match "^C:\\azurefileshare" -and (($artifact.url -like "*.zip") -or ($artifact.url -like "*.app"))) {
+                    if ($artifact.url -like "*.zip") {
+                        Expand-Archive -Path $artifact.url -DestinationPath $tempFolder -Force
+                    }
+                    else {
+                        New-Item -Path $tempFolder -ItemType Directory -Force | Out-Null
+                        Copy-Item -Path $artifact.url -Destination $tempFolder -Force
+                    }
+                }
+                else {
+                    throw "Unsupported artifact URL: $($artifact.url)"
+                }
 
                 Write-Host "Extracted files:"
                 
