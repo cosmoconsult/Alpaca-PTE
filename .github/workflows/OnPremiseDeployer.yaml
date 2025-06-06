@@ -1,0 +1,104 @@
+name: Install or Update AL-Go OnPremise Deployer
+
+on:
+  workflow_dispatch:
+  #schedule:
+  #  - cron: '0 19 * * 2,4'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: powershell
+
+jobs:
+  InstallUpdateOnPremiseDeployer:
+    name: 'Install/Update AL-Go OnPremise Deployer'
+    runs-on: [windows-latest]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+    - name: Initialize the workflow
+      id: init
+      uses: microsoft/AL-Go-Actions/WorkflowInitialize@v7.1
+      with:
+        shell: powershell
+
+    - name: Read settings
+      uses: microsoft/AL-Go-Actions/ReadSettings@v7.1
+      with:
+        shell: powershell
+        get: UpdateOnPremiseDeployerSchedule
+
+    - name: Read secrets
+      id: ReadSecrets
+      uses: microsoft/AL-Go-Actions/ReadSecrets@v7.1
+      with:
+        shell: powershell
+        gitHubSecrets: ${{ toJson(secrets) }}
+        getSecrets: 'ghTokenWorkflow'
+
+    - name: Install/Update AL-Go OnPremise Deployer
+      run: |
+        try {
+          Write-Output "Starting AL-Go OnPremise Deployer installation/update..."
+          Write-Host
+          Write-Host "     _    _           ____  ___                   "
+          Write-Host "    / \  | |         / ___|/ _ \                  "
+          Write-Host "   / _ \ | |   _____| |  _| | | |                 "
+          Write-Host "  / ___ \| |__|_____| |_| | |_| |                 "
+          Write-Host " /_/__ \_\_____|__   \____|\___/       _          "
+          Write-Host "  / _ \ _ __ |  _ \ _ __ ___ _ __ ___ (_)___  ___ "
+          Write-Host " | | | | '_ \| |_) | '__/ _ \ '_ ` _ \| / __|/ _ \"
+          Write-Host " | |_| | | | |  __/| | |  __/ | | | | | \__ \  __/"
+          Write-Host "  \___/|_| |_|_|   |_|  \___|_| |_| |_|_|___/\___|"
+          Write-Host " |  _ \  ___ _ __ | | ___  _   _  ___ _ __        "
+          Write-Host " | | | |/ _ \ '_ \| |/ _ \| | | |/ _ \ '__|       "
+          Write-Host " | |_| |  __/ |_) | | (_) | |_| |  __/ |          "
+          Write-Host " |____/ \___| .__/|_|\___/ \__, |\___|_|          "
+          Write-Host "            |_|            |___/                  "
+          Write-Host
+        
+          # Define paths and URLs
+          $helperBasePath = "..\..\_actions\microsoft\AL-Go-Actions\"
+          $deployerBaseUrl = "https://raw.githubusercontent.com/akoniecki/AL-Go-OnPremise-Deployer/main/"
+          $filesToDownload = @(".github/workflows/OnPremiseDeployer.yaml", ".github/DeployToOnPremise.ps1")
+    
+          # Import helpers
+          $alGoActionsPath = Get-ChildItem -Path $helperBasePath -Directory | Sort-Object Name -Descending | Select-Object -First 1
+          if ($null -eq $alGoActionsPath) { throw "AL-Go-Actions directory not found." }
+          . (Join-Path -Path $alGoActionsPath.FullName -ChildPath "AL-Go-Helper.ps1" -Resolve)
+          Invoke-Expression -Command (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/microsoft/AL-Go-Actions/main/CheckForUpdates/yamlclass.ps1").Content
+    
+          # Validate token
+          $ReadSecretsOutputJson = '${{ steps.ReadSecrets.outputs.Secrets }}'
+          $ReadSecretsOutput = $ReadSecretsOutputJson | ConvertFrom-Json
+          $token = $ReadSecretsOutput.ghTokenWorkflow
+          $token = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($token))
+          #Write-Output $token
+          if (-not $token) {
+            throw "A personal access token with permissions to modify Workflows is needed. Add a secret called GhTokenWorkflow containing a personal access token from https://github.com/settings/tokens with workflow scope checked."
+          }
+
+          $update = Test-Path ".github\DeployToOnPremise.ps1"
+    
+          # Get the latest AL-Go OnPremise Deployer
+          Write-Output "Downloading the latest AL-Go OnPremise Deployer files..."
+          $serverUrl, $branch = CloneIntoNewFolder -actor $ENV:GITHUB_ACTOR -token $token -DirectCommit $true -newBranchPrefix 'update-al-go-onpremise-deployer'
+          foreach ($file in $filesToDownload) {
+            $outputPath = $file.Replace("/", "\")
+            Invoke-WebRequest -Uri ($deployerBaseUrl + $file) -OutFile $outputPath
+          }
+          Write-Output "AL-Go OnPremise Deployer files downloaded successfully."
+    
+          # Commit changes
+          $commitMessage = if ($update) { "Update AL-Go OnPremise Deployer" } else { "Install AL-Go OnPremise Deployer" }
+          CommitFromNewFolder -serverUrl $serverUrl -commitMessage $commitMessage -branch $branch
+          Write-Output "Successful!"
+        } catch {
+          Write-Error ("An error occurred: " + $_.Exception.Message)
+          exit 1
+        }
