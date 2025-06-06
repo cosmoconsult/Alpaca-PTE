@@ -2,8 +2,8 @@ name: Install or Update AL-Go OnPremise Deployer
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 19 * * 2,4'
+  #schedule:
+  #  - cron: '0 19 * * 2,4'
 
 permissions:
   contents: read
@@ -78,7 +78,7 @@ jobs:
           $ReadSecretsOutput = $ReadSecretsOutputJson | ConvertFrom-Json
           $token = $ReadSecretsOutput.ghTokenWorkflow
           $token = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($token))
-          Write-Output $token
+          #Write-Output $token
           if (-not $token) {
             throw "A personal access token with permissions to modify Workflows is needed. Add a secret called GhTokenWorkflow containing a personal access token from https://github.com/settings/tokens with workflow scope checked."
           }
