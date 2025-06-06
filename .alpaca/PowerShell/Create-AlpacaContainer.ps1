@@ -31,7 +31,13 @@ $body = @"
         "WorkflowRef": "$($Env:GITHUB_WORKFLOW_REF)",
         "RunID": "$($Env:GITHUB_RUN_ID)",
         "Repository": "$($Env:GITHUB_REPOSITORY)"
-    }
+    },
+    "customNugetFeeds": [
+        {
+            "feedUrl": "",
+            "pat": ""
+        }
+    ]
 }
 "@
 
