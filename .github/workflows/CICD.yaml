@@ -23,7 +23,6 @@ env:
   workflowDepth: 1
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
 
 jobs:
   Initialization:
@@ -167,7 +166,6 @@ jobs:
         uses: freddydk/AL-Go/Actions/CheckForUpdates@customize
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
           shell: pwsh
           templateUrl: ${{ env.templateUrl }}
