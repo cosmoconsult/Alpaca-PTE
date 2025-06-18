@@ -1,8 +1,7 @@
 {
-  "$schema": "https://raw.githubusercontent.com/freddydk/AL-Go/customize/Actions/settings.schema.json",
   "type": "PTE",
   "templateUrl": "https://github.com/freddydk/AL-Go@customize",
-  "templateSha": "7efa243dcf32f6de0c35a846292b72757f37d894",
+  "templateSha": "",
   "useCompilerFolder": true,
   "doNotRemovePackagesFolderIfExists": true,
   "runs-on": "ubuntu-latest",
