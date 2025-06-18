@@ -167,7 +167,6 @@ jobs:
         uses: freddydk/AL-Go/Actions/CheckForUpdates@customize
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
           shell: pwsh
           templateUrl: ${{ env.templateUrl }}
