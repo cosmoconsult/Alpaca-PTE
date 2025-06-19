@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/cosmoconsult/AL-Go/main/Actions/settings.schema.json",
   "country": "w1",
   "appFolders": [],
   "testFolders": [],
