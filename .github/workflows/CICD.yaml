@@ -23,7 +23,6 @@ env:
   workflowDepth: 1
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
 
 jobs:
   Initialization:
@@ -49,7 +48,7 @@ jobs:
       powerPlatformSolutionFolder: ${{ steps.DeterminePowerPlatformSolutionFolder.outputs.powerPlatformSolutionFolder }}
     steps:
       - name: Dump Workflow Information
-        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@customize
+        uses: cosmoconsult/AL-Go/Actions/DumpWorkflowInfo@main
         with:
           shell: pwsh
 
@@ -60,13 +59,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@customize
+        uses: cosmoconsult/AL-Go/Actions/WorkflowInitialize@main
         with:
           shell: pwsh
 
       - name: Read settings
         id: ReadSettings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: pwsh
           get: type,powerPlatformSolutionFolder,useGitSubmodules
@@ -74,7 +73,7 @@ jobs:
       - name: Read submodules token
         id: ReadSubmodulesToken
         if: env.useGitSubmodules != 'false' && env.useGitSubmodules != ''
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSecrets@main
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -95,7 +94,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@customize
+        uses: cosmoconsult/AL-Go/Actions/DetermineProjectsToBuild@main
         with:
           shell: pwsh
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -108,7 +107,7 @@ jobs:
 
       - name: Determine Delivery Target Secrets
         id: DetermineDeliveryTargetSecrets
-        uses: freddydk/AL-Go/Actions/DetermineDeliveryTargets@customize
+        uses: cosmoconsult/AL-Go/Actions/DetermineDeliveryTargets@main
         with:
           shell: pwsh
           projectsJson: '${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}'
@@ -116,7 +115,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSecrets@main
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -124,7 +123,7 @@ jobs:
 
       - name: Determine Delivery Targets
         id: DetermineDeliveryTargets
-        uses: freddydk/AL-Go/Actions/DetermineDeliveryTargets@customize
+        uses: cosmoconsult/AL-Go/Actions/DetermineDeliveryTargets@main
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -134,7 +133,7 @@ jobs:
 
       - name: Determine Deployment Environments
         id: DetermineDeploymentEnvironments
-        uses: freddydk/AL-Go/Actions/DetermineDeploymentEnvironments@customize
+        uses: cosmoconsult/AL-Go/Actions/DetermineDeploymentEnvironments@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -150,21 +149,21 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: pwsh
           get: templateUrl
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSecrets@main
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
 
       - name: Check for updates to AL-Go system files
-        uses: freddydk/AL-Go/Actions/CheckForUpdates@customize
+        uses: cosmoconsult/AL-Go/Actions/CheckForUpdates@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -221,7 +220,7 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: pwsh
 
@@ -230,7 +229,7 @@ jobs:
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
       - name: Build Reference Documentation
-        uses: freddydk/AL-Go/Actions/BuildReferenceDocumentation@customize
+        uses: cosmoconsult/AL-Go/Actions/BuildReferenceDocumentation@main
         with:
           shell: pwsh
           artifacts: '.artifacts'
@@ -267,7 +266,7 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: ${{ matrix.shell }}
           get: type,powerPlatformSolutionFolder
@@ -281,7 +280,7 @@ jobs:
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSecrets@main
         with:
           shell: ${{ matrix.shell }}
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -289,7 +288,7 @@ jobs:
 
       - name: Deploy to Business Central
         id: Deploy
-        uses: freddydk/AL-Go/Actions/Deploy@customize
+        uses: cosmoconsult/AL-Go/Actions/Deploy@main
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -301,7 +300,7 @@ jobs:
 
       - name: Deploy to Power Platform
         if: env.type == 'PTE' && env.powerPlatformSolutionFolder != ''
-        uses: freddydk/AL-Go/Actions/DeployPowerPlatform@customize
+        uses: cosmoconsult/AL-Go/Actions/DeployPowerPlatform@main
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -329,20 +328,20 @@ jobs:
           path: '.artifacts'
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: pwsh
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSecrets@main
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ matrix.deliveryTarget }}Context'
 
       - name: Deliver
-        uses: freddydk/AL-Go/Actions/Deliver@customize
+        uses: cosmoconsult/AL-Go/Actions/Deliver@main
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -362,7 +361,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@customize
+        uses: cosmoconsult/AL-Go/Actions/WorkflowPostProcess@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:

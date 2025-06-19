@@ -1,7 +1,8 @@
 {
+  "$schema": "https://raw.githubusercontent.com/cosmoconsult/AL-Go/main/Actions/settings.schema.json",
   "type": "PTE",
   "templateUrl": "https://github.com/cosmoconsult/AL-Go@main",
-  "templateSha": "",
+  "templateSha": "8c51fa44f7c0405ee428aaf6c6b4d4c67ecb1600",
   "useCompilerFolder": true,
   "doNotRemovePackagesFolderIfExists": true,
   "runs-on": "ubuntu-latest",

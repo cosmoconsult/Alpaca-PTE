@@ -78,7 +78,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@customize
+        uses: cosmoconsult/AL-Go/Actions/DumpWorkflowInfo@main
         with:
           shell: pwsh
 
@@ -87,26 +87,26 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@customize
+        uses: cosmoconsult/AL-Go/Actions/WorkflowInitialize@main
         with:
           shell: pwsh
 
       - name: Read settings
         id: ReadSettings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: pwsh
           get: templateUrl,repoName,type,powerPlatformSolutionFolder
 
       - name: Validate Workflow Input
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: freddydk/AL-Go/Actions/ValidateWorkflowInput@customize
+        uses: cosmoconsult/AL-Go/Actions/ValidateWorkflowInput@main
         with:
           shell: pwsh
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSecrets@main
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -115,12 +115,12 @@ jobs:
 
       - name: Determine Projects
         id: determineProjects
-        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@customize
+        uses: cosmoconsult/AL-Go/Actions/DetermineProjectsToBuild@main
         with:
           shell: pwsh
 
       - name: Check for updates to AL-Go system files
-        uses: freddydk/AL-Go/Actions/CheckForUpdates@customize
+        uses: cosmoconsult/AL-Go/Actions/CheckForUpdates@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -130,7 +130,7 @@ jobs:
           downloadLatest: true
 
       - name: Determine artifacts for release
-        uses: freddydk/AL-Go/Actions/DetermineArtifactsForRelease@customize
+        uses: cosmoconsult/AL-Go/Actions/DetermineArtifactsForRelease@main
         id: determineArtifactsForRelease
         with:
           shell: pwsh
@@ -141,7 +141,7 @@ jobs:
 
       - name: Prepare release notes
         id: createreleasenotes
-        uses: freddydk/AL-Go/Actions/CreateReleaseNotes@customize
+        uses: cosmoconsult/AL-Go/Actions/CreateReleaseNotes@main
         with:
           shell: pwsh
           buildVersion: ${{ github.event.inputs.buildVersion }}
@@ -190,13 +190,13 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: pwsh
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSecrets@main
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -240,7 +240,7 @@ jobs:
             });
 
       - name: Deliver to NuGet
-        uses: freddydk/AL-Go/Actions/Deliver@customize
+        uses: cosmoconsult/AL-Go/Actions/Deliver@main
         if: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).nuGetContext != '' }}
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
@@ -253,7 +253,7 @@ jobs:
           atypes: 'Apps,TestApps'
 
       - name: Deliver to Storage
-        uses: freddydk/AL-Go/Actions/Deliver@customize
+        uses: cosmoconsult/AL-Go/Actions/Deliver@main
         if: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).storageContext != '' }}
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
@@ -297,13 +297,13 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: pwsh
 
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSecrets@main
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -311,7 +311,7 @@ jobs:
           useGhTokenWorkflowForPush: '${{ github.event.inputs.useGhTokenWorkflow }}'
 
       - name: Update Version Number
-        uses: freddydk/AL-Go/Actions/IncrementVersionNumber@customize
+        uses: cosmoconsult/AL-Go/Actions/IncrementVersionNumber@main
         with:
           shell: pwsh
           token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
@@ -329,7 +329,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@customize
+        uses: cosmoconsult/AL-Go/Actions/WorkflowPostProcess@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
