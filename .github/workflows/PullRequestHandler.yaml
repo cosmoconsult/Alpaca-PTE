@@ -29,7 +29,7 @@ jobs:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
     runs-on: windows-latest
     steps:
-      - uses: freddydk/AL-Go/Actions/VerifyPRChanges@customize
+      - uses: cosmoconsult/AL-Go/Actions/VerifyPRChanges@main
 
   Initialization:
     needs: [ PregateCheck ]
@@ -46,7 +46,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@customize
+        uses: cosmoconsult/AL-Go/Actions/DumpWorkflowInfo@main
         with:
           shell: pwsh
 
@@ -58,13 +58,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@customize
+        uses: cosmoconsult/AL-Go/Actions/WorkflowInitialize@main
         with:
           shell: pwsh
 
       - name: Read settings
         id: ReadSettings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
         with:
           shell: pwsh
           get: shortLivedArtifactsRetentionDays
@@ -77,7 +77,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: freddydk/AL-Go/Actions/DetermineProjectsToBuild@customize
+        uses: cosmoconsult/AL-Go/Actions/DetermineProjectsToBuild@main
         with:
           shell: pwsh
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -116,7 +116,7 @@ jobs:
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: freddydk/AL-Go/Actions/PullRequestStatusCheck@customize
+        uses: cosmoconsult/AL-Go/Actions/PullRequestStatusCheck@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -124,7 +124,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: freddydk/AL-Go/Actions/WorkflowPostProcess@customize
+        uses: cosmoconsult/AL-Go/Actions/WorkflowPostProcess@main
         if: success() || failure()
         env:
           GITHUB_TOKEN: ${{ github.token }}
