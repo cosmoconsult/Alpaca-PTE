@@ -16,6 +16,7 @@ env:
   workflowDepth: 1
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+  ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
 
 jobs:
   Initialization:
