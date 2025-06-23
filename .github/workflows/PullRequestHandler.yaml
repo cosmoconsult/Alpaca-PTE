@@ -22,14 +22,13 @@ env:
   workflowDepth: 1
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
 
 jobs:
   PregateCheck:
     if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
     runs-on: windows-latest
     steps:
-      - uses: cosmoconsult/AL-Go/Actions/VerifyPRChanges@main
+      - uses: microsoft/AL-Go/Actions/VerifyPRChanges@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
 
   Initialization:
     needs: [ PregateCheck ]
@@ -46,7 +45,7 @@ jobs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
     steps:
       - name: Dump Workflow Information
-        uses: cosmoconsult/AL-Go/Actions/DumpWorkflowInfo@main
+        uses: microsoft/AL-Go/Actions/DumpWorkflowInfo@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
           shell: pwsh
 
@@ -58,13 +57,13 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: cosmoconsult/AL-Go/Actions/WorkflowInitialize@main
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
           shell: pwsh
 
       - name: Read settings
         id: ReadSettings
-        uses: cosmoconsult/AL-Go/Actions/ReadSettings@main
+        uses: microsoft/AL-Go/Actions/ReadSettings@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
           shell: pwsh
           get: shortLivedArtifactsRetentionDays
@@ -77,7 +76,7 @@ jobs:
 
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: cosmoconsult/AL-Go/Actions/DetermineProjectsToBuild@main
+        uses: microsoft/AL-Go/Actions/DetermineProjectsToBuild@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
           shell: pwsh
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -116,7 +115,7 @@ jobs:
     steps:
       - name: Pull Request Status Check
         id: PullRequestStatusCheck
-        uses: cosmoconsult/AL-Go/Actions/PullRequestStatusCheck@main
+        uses: microsoft/AL-Go/Actions/PullRequestStatusCheck@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -124,7 +123,7 @@ jobs:
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: cosmoconsult/AL-Go/Actions/WorkflowPostProcess@main
+        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         if: success() || failure()
         env:
           GITHUB_TOKEN: ${{ github.token }}
