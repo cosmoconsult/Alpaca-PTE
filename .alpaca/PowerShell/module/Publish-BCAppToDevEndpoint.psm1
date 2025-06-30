@@ -73,10 +73,11 @@ function Publish-BCAppToDevEndpoint {
             $success = $true
         }
         catch {
+            $ErrorMessage = Get-ExtendedErrorMessage -errorRecord $_
+            $ErrorMessage -split [Environment]::NewLine | % { Write-Host "::error::$_" }
+
             $tries = $tries + 1
             if ($tries -ge $maxTries) {
-                $ErrorMessage = Get-ExtendedErrorMessage -errorRecord $_
-                $ErrorMessage -split [Environment]::NewLine | % { Write-Host "::error::$_" }
                 throw "Error Publishing App $appName"
             }
             else {
