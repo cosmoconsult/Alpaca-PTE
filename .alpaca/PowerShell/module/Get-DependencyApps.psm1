@@ -8,7 +8,11 @@ function Get-DependencyApps {
     $repository = $Env:GITHUB_REPOSITORY
     $repository = $repository.replace($owner, "")
     $repository = $repository.replace("/", "")
-    $branch = $Env:GITHUB_REF_NAME
+    $branch = $Env:GITHUB_HEAD_REF
+    # $Env:GITHUB_HEAD_REF is specified only for pull requests, so if it is not specified, use GITHUB_REF_NAME
+    if (!$branch) {
+        $branch = $Env:GITHUB_REF_NAME
+    }
 
     Write-Host "Starting container for $owner/$repository and ref $branch"
 
