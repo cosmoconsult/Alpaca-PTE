@@ -73,8 +73,8 @@ on:
         description: Flag determining whether to use the Artifacts Cache
         type: boolean
         default: false
-      needsContext:
-        description: JSON formatted needs context
+      container:
+        description: JSON formatted Alpaca container information
         type: string
         default: '{}'
 
@@ -172,7 +172,7 @@ jobs:
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           BuildMode: ${{ inputs.buildMode }}
-          NeedsContext: ${{ inputs.needsContext }}
+          ContainerJson: ${{ inputs.container }}
         with:
           shell: ${{ inputs.shell }}
           artifact: ${{ env.artifact }}
