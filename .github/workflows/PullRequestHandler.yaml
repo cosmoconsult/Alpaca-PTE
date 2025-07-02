@@ -159,9 +159,8 @@ jobs:
     env:
       needsContext:  ${{ toJson(needs) }}
     steps:
+      # checkout default as pull-request branch may not exist anymore
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.sha || format('refs/pull/{0}/merge', github.event.pull_request.number) }}
       - name: Remove COSMO Alpaca Container
         shell: pwsh
         run: |
