@@ -18,7 +18,7 @@ $QueryParams = @{
     "api-version" = "0.12"
 }
 
-foreach ($container in $containers.Values) {
+foreach ($container in $containers.PSObject.Properties.Value) {
     $containerId = $container.Id
 
     Write-Host "Delete Container $containerId"
