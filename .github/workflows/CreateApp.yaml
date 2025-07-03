@@ -106,3 +106,5 @@ jobs:
     needs: [ CreateApp ]
     if: (!failure()) && (!cancelled())
     uses: ./.github/workflows/UpdateGitHubGoSystemFiles.yaml
+    with:
+      directCommit: ${{ github.event.inputs.directCommit}}
