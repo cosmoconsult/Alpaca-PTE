@@ -91,10 +91,6 @@ jobs:
           idrange: ${{ github.event.inputs.idrange }}
           sampleCode: ${{ github.event.inputs.sampleCode }}
           directCommit: ${{ github.event.inputs.directCommit }}
-      
-      - name: Update AL-Go System Files
-        if: (!failure()) && (!cancelled())
-        uses: ./.github/workflows/UpdateGitHubGoSystemFiles.yaml
 
       - name: Finalize the workflow
         if: always()
@@ -105,3 +101,8 @@ jobs:
           shell: pwsh
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
+
+  UpdateALGoSystemFiles:
+    needs: [ CreateApp ]
+    if: (!failure()) && (!cancelled())
+    uses: ./.github/workflows/UpdateGitHubGoSystemFiles.yaml
