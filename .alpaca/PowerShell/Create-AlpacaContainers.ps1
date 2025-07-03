@@ -34,7 +34,7 @@ $containers = @{}
 foreach ($project in $projects) {
     Write-Host "Starting container for project $project"
 
-    $body = @{
+    $request = @{
         source = @{
             owner = "$owner"
             repo = "$repository"
@@ -50,7 +50,8 @@ foreach ($project in $projects) {
             Repository = "$($Env:GITHUB_REPOSITORY)"
         }
     }
-
+    
+    $body = $request | ConvertTo-Json -Depth 10
     $response = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body $body -AllowInsecureRedirect
 
     $container = @{
