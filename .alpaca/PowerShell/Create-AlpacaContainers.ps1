@@ -17,7 +17,7 @@ if (!$branch) {
     $branch = $Env:GITHUB_REF_NAME
 }
 
-Write-Host "Starting container for $owner/$repository and ref $branch"
+Write-Host "Starting container for $owner/$repository and ref $branch (projects: $($projects -join ', '))"
 
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
 $headers.add("Content-Type", "application/json")
@@ -29,38 +29,35 @@ $QueryParams = @{
 }
 $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -endpoint "GitHub/Build" -QueryParams $QueryParams
 
-$containerRequest = @{
-    source = @{
-        owner = "$owner"
-        repo = "$repository"
-        branch = "$branch"
-        project = $null
-    }
-    containerConfiguration = "$config"
-    workflow = @{
-        actor = "$($Env:GITHUB_ACTOR)"
-        workflowName = "$($Env:GITHUB_WORKFLOW)"
-        WorkflowRef = "$($Env:GITHUB_WORKFLOW_REF)"
-        RunID = "$($Env:GITHUB_RUN_ID)"
-        Repository = "$($Env:GITHUB_REPOSITORY)"
-    }
-}
-
 $containers = @{}
 
 foreach ($project in $projects) {
-    $containerRequest.source.project = $project
-    if ($project -eq ".") {
-        $containerRequest.source.project = $null
+    Write-Host "Starting container for project $project"
+
+    $body = @{
+        source = @{
+            owner = "$owner"
+            repo = "$repository"
+            branch = "$branch"
+            project = "$($project -replace '^\.$', '_')"
+        }
+        containerConfiguration = "$config"
+        workflow = @{
+            actor = "$($Env:GITHUB_ACTOR)"
+            workflowName = "$($Env:GITHUB_WORKFLOW)"
+            WorkflowRef = "$($Env:GITHUB_WORKFLOW_REF)"
+            RunID = "$($Env:GITHUB_RUN_ID)"
+            Repository = "$($Env:GITHUB_REPOSITORY)"
+        }
     }
 
-    $containerResponse = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body $containerRequest -AllowInsecureRedirect
+    $response = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body $body -AllowInsecureRedirect
 
     $container = @{
-        Id = $containerResponse.id
-        User = $containerResponse.username
-        Password = $containerResponse.Password
-        Url = $containerResponse.webUrl
+        Id = $response.id
+        User = $response.username
+        Password = $response.Password
+        Url = $response.webUrl
     }
     $containers.Add($project, $container)
     Write-Host Created container $container.Id
