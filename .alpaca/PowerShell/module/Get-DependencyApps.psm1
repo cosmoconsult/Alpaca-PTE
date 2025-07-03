@@ -22,7 +22,7 @@ function Get-DependencyApps {
 
     $config = Get-ConfigNameForWorkflowName 
 
-    $body = @{
+    $request = @{
         source = @{
             owner = "$owner"
             repo = "$repository"
@@ -38,6 +38,7 @@ function Get-DependencyApps {
             Repository = "$($Env:GITHUB_REPOSITORY)"
         }
     }
+    $body = $request | ConvertTo-Json -Depth 10
 
     $QueryParams = @{
         "api-version" = "0.12"
