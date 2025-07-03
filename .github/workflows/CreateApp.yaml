@@ -108,3 +108,4 @@ jobs:
     uses: ./.github/workflows/UpdateGitHubGoSystemFiles.yaml
     with:
       directCommit: ${{ github.event.inputs.directCommit == 'true' }}
+    secrets: inherit
