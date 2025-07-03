@@ -19,6 +19,26 @@ on:
         description: Specify a comma-separated list of branches to update. Wildcards are supported. The AL-Go settings will be read for every branch. Leave empty to update the current branch only.
         required: false
         default: ''
+  workflow_call:
+    inputs:
+      templateUrl:
+        description: Template Repository URL (current is https://github.com/cosmoconsult/Alpaca-PTE@main)
+        required: false
+        type: string
+        default: ''
+      downloadLatest:
+        description: Download latest from template repository
+        type: boolean
+        default: true
+      directCommit:
+        description: Direct Commit?
+        type: boolean
+        default: false
+      includeBranches:
+        description: Specify a comma-separated list of branches to update. Wildcards are supported. The AL-Go settings will be read for every branch. Leave empty to update the current branch only.
+        required: false
+        type: string
+        default: ''
 
 permissions:
   actions: read
