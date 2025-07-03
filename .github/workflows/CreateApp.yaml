@@ -102,7 +102,7 @@ jobs:
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
 
-  UpdateALGoSystemFiles:
+  CustomJob-UpdateALGoSystemFiles:
     needs: [ CreateApp ]
     if: (!failure()) && (!cancelled())
     uses: ./.github/workflows/UpdateGitHubGoSystemFiles.yaml
