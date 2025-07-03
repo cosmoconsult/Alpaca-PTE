@@ -91,6 +91,10 @@ jobs:
           idrange: ${{ github.event.inputs.idrange }}
           sampleCode: ${{ github.event.inputs.sampleCode }}
           directCommit: ${{ github.event.inputs.directCommit }}
+      
+      - name: Update AL-Go System Files
+        if: (!failure()) && (!cancelled())
+        uses: ./.github/workflows/UpdateGitHubGoSystemFiles.yaml
 
       - name: Finalize the workflow
         if: always()
