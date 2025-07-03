@@ -196,7 +196,7 @@ jobs:
       secrets: 'licenseFileUrl,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       signArtifacts: true
       useArtifactCache: true
-      container: ${{ toJson(fromJson(needs.CustomJob-CreateAlpaca-Containers.outputs.containers)[matrix.project]) }}
+      container: ${{ toJson(fromJson(needs.CustomJob-CreateAlpaca-Container.outputs.containers)[matrix.project]) }}
 
   DeployALDoc:
     needs: [ Initialization, Build ]
@@ -353,7 +353,7 @@ jobs:
           artifacts: '.artifacts'
 
   PostProcess:
-    needs: [ Initialization, Build, Deploy, Deliver, DeployALDoc, CustomJob-RemoveAlpaca-Containers ]
+    needs: [ Initialization, Build, Deploy, Deliver, DeployALDoc, CustomJob-RemoveAlpaca-Container ]
     if: (!cancelled())
     runs-on: [ ubuntu-latest ]
     steps:
@@ -392,7 +392,7 @@ jobs:
     if: ${{ always() }}
     runs-on: [ ubuntu-latest ]
     env:
-      ContainersJson: ${{ needs.CustomJob-CreateAlpaca-Containers.outputs.containers }}
+      ContainersJson: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containers }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Remove COSMO Alpaca Containers
