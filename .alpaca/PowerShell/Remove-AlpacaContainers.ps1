@@ -21,8 +21,10 @@ $QueryParams = @{
 foreach ($container in $containers.PSObject.Properties.Value) {
     $containerId = $container.Id
 
-    Write-Host "Delete Container $containerId"
+    Write-Host "Deleting Container $containerId"
     
     $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -ressource $containerId -QueryParams $QueryParams
-    Invoke-RestMethod $apiUrl -Method 'DELETE' -Headers $headers -AllowInsecureRedirect
+    Invoke-RestMethod $apiUrl -Method 'DELETE' -Headers $headers -AllowInsecureRedirect | Out-Null
+    
+    Write-Host "Container deleted"
 }
