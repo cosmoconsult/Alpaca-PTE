@@ -5,8 +5,8 @@ Param(
 $container = $containerJson | ConvertFrom-Json
 
 $password = ConvertTo-SecureString -String $container.Password -AsPlainText
-$myAuthContext = @{"username" = $container.User; "Password" = $password }
-$myEnvironment = $container.Url
+$myAuthContext = @{"username" = $container.Username; "Password" = $password }
+$myEnvironment = $container.WebUrl
 
 Set-Variable -Name 'bcAuthContext' -value $myAuthcontext -scope 1
 Set-Variable -Name 'environment' -value $myEnvironment -scope 1

@@ -73,10 +73,6 @@ on:
         description: Flag determining whether to use the Artifacts Cache
         type: boolean
         default: false
-      container:
-        description: JSON formatted Alpaca container information
-        type: string
-        default: '{}'
 
 permissions:
   actions: read
@@ -129,6 +125,13 @@ jobs:
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ inputs.secrets }},appDependencySecrets,AZURE_CREDENTIALS,-gitSubmodulesToken'
 
+      - name: Create COSMO Alpaca Container
+        id: COSMOAlpaca-CreateContainer
+        if: steps.DetermineBuildProject.outputs.BuildIt == 'True'
+        shell: pwsh
+        run: |
+          ./.alpaca/PowerShell/Create-AlpacaContainer.ps1 -project ${{ inputs.project }} -token "${{ secrets.GITHUB_TOKEN }}"
+
       - name: Checkout Submodules
         if: env.useGitSubmodules != 'false' && env.useGitSubmodules != ''
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -172,7 +175,7 @@ jobs:
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           BuildMode: ${{ inputs.buildMode }}
-          ContainerJson: ${{ inputs.container }}
+          ContainerJson: ${{ steps.COSMOAlpaca-CreateContainer.outputs.containerJson }}
         with:
           shell: ${{ inputs.shell }}
           artifact: ${{ env.artifact }}
@@ -303,6 +306,13 @@ jobs:
           shell: ${{ inputs.shell }}
           project: ${{ inputs.project }}
           testType: "pageScripting"
+
+      - name: Remove COSMO Alpaca Container
+        if: always() && steps.COSMOAlpaca-CreateContainer.outcome == 'success'
+        id: COSMOAlpaca-RemoveContainer
+        shell: pwsh
+        run: |
+          ./.alpaca/PowerShell/Remove-AlpacaContainer.ps1 -containerId ${{ fromJson(steps.COSMOAlpaca-CreateContainer.outputs.containerJson).Id }} -token "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Cleanup
         if: always() && steps.DetermineBuildProject.outputs.BuildIt == 'True'
