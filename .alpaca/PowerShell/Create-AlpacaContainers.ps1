@@ -67,4 +67,4 @@ foreach ($project in $projects) {
 $containersJson = $containers | ConvertTo-Json -Depth 99 -Compress
 
 Write-Output ContainersJson=$containersJson >> $ENV:GITHUB_OUTPUT
-Write-Host Created $containers.Keys.Length containers
+Write-Host Created $containers.Keys.Count containers
