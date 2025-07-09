@@ -1,7 +1,15 @@
-Param([Hashtable]$parameters) 
+Param(
+    [Hashtable]$parameters
+) 
 
-$Needs=$ENV:NeedsContext | ConvertFrom-Json
-$containerConfig = $Needs."CustomJob-CreateAlpaca-Container".outputs
+$project = $Env:_project
+$needsContext = "$($Env:NeedsContext)" | ConvertFrom-Json
+$containers = @("$($needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containersJson)" | ConvertFrom-Json)
+$container = $containers | Where-Object { $_.Project -eq $project }
+
+if (! $container) {
+    throw "No container information for project '$project' found in needs context."
+}
 
 if ($parameters.appFile.GetType().BaseType.Name -eq 'Array') {
     # Check if current run is installing dependenciy apps
@@ -33,10 +41,10 @@ if ($parameters.appFile.GetType().BaseType.Name -eq 'Array') {
 
 if (!$Env:ContainerStarted){
     Write-Host "::group::Wait for image to be ready"
-    Wait-ForImage -token $Env:_token -containerName $containerConfig.containerID
+    Wait-ForImage -token $Env:_token -containerName $container.Id
     Write-Host "::endgroup::"
     Write-Host "::group::Wait for container start"
-    Wait-ForAlpacaContainer -token $Env:_token -containerName $containerConfig.containerID
+    Wait-ForAlpacaContainer -token $Env:_token -containerName $container.Id
     Write-Host "::endgroup::"
 }
 

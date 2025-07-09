@@ -13,31 +13,32 @@ function Get-DependencyApps {
     if (!$branch) {
         $branch = $Env:GITHUB_REF_NAME
     }
+    $project = $Env:_project
 
-    Write-Host "Starting container for $owner/$repository and ref $branch"
+    Write-Host "Get container artifacts for $owner/$repository and ref $branch (project: $project)"
 
     $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
     $headers.add("Content-Type", "application/json")
 
     $config = Get-ConfigNameForWorkflowName 
 
-    $body = @"
-    {
-        "source": {
-            "owner": "$owner",
-            "repo": "$repository",
-            "branch": "$branch"
-        },
-        "containerConfiguration": "$config",
-        "workflow": {
-            "actor": "$($Env:GITHUB_ACTOR)",
-            "workflowName": "$($Env:GITHUB_WORKFLOW)",
-            "WorkflowRef": "$($Env:GITHUB_WORKFLOW_REF)",
-            "RunID": "$($Env:GITHUB_RUN_ID)",
-            "Repository": "$($Env:GITHUB_REPOSITORY)"
+    $request = @{
+        source = @{
+            owner = "$owner"
+            repo = "$repository"
+            branch = "$branch"
+            project = "$($project -replace '^\.$', '_')"
+        }
+        containerConfiguration = "$config"
+        workflow = @{
+            actor = "$($Env:GITHUB_ACTOR)"
+            workflowName = "$($Env:GITHUB_WORKFLOW)"
+            WorkflowRef = "$($Env:GITHUB_WORKFLOW_REF)"
+            RunID = "$($Env:GITHUB_RUN_ID)"
+            Repository = "$($Env:GITHUB_REPOSITORY)"
         }
     }
-"@
+    $body = $request | ConvertTo-Json -Depth 10
 
     $QueryParams = @{
         "api-version" = "0.12"

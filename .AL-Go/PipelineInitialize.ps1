@@ -1,9 +1,15 @@
-$Needs = $ENV:NeedsContext | ConvertFrom-Json
-$containerConfig = $Needs."CustomJob-CreateAlpaca-Container".outputs
+$project = $Env:_project
+$needsContext = "$($Env:NeedsContext)" | ConvertFrom-Json
+$containers = @("$($needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containersJson)" | ConvertFrom-Json)
+$container = $containers | Where-Object { $_.Project -eq $project }
 
-$password = ConvertTo-SecureString -String $containerConfig.containerPassword -AsPlainText
-$myAuthContext = @{"username" = $containerConfig.containerUser; "Password" = $password }
-$myEnvironment = $containerConfig.containerURL
+if (! $container) {
+    throw "No container information for project '$project' found in needs context."
+}
+
+$password = ConvertTo-SecureString -String $container.Password -AsPlainText
+$myAuthContext = @{"username" = $container.User; "Password" = $password }
+$myEnvironment = $container.Url
 
 Set-Variable -Name 'bcAuthContext' -value $myAuthcontext -scope 1
 Set-Variable -Name 'environment' -value $myEnvironment -scope 1
