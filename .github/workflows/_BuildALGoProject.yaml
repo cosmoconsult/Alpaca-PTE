@@ -86,7 +86,6 @@ permissions:
 env:
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
 
 jobs:
   BuildALGoProject:
