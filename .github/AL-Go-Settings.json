@@ -1,6 +1,6 @@
 {
   "type": "PTE",
-  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@main",
+  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@owun-test",
   "templateSha": "",
   "useCompilerFolder": true,
   "doNotRemovePackagesFolderIfExists": true,
