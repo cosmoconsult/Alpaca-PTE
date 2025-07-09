@@ -375,23 +375,27 @@ jobs:
     if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
     runs-on: [ ubuntu-latest ]
     permissions: read-all
+    env:
+      ProjectsJson: ${{ needs.Initialization.outputs.projects }}
     outputs:
-      containersJson: ${{ steps.CreateContainer.outputs.ContainersJson }}
+      containersJson: ${{ steps.CreateContainer.outputs.containersJson }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - id: CreateContainer
         name: Create COSMO Alpaca Containers
         shell: pwsh
         run: |
-          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}" -projectsJson "${{ needs.Initialization.outputs.projects }}"
+          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
 
   CustomJob-RemoveAlpaca-Container:
     needs: [ CustomJob-CreateAlpaca-Container, Build ]
     if: always() && needs.CustomJob-CreateAlpaca-Container.result == 'success'
     runs-on: [ ubuntu-latest ]
+    env:
+      ContainersJson: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Remove COSMO Alpaca Containers
         shell: pwsh
         run: |
-          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}" -containersJson "${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}"
+          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
