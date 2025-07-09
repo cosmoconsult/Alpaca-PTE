@@ -27,7 +27,7 @@ function Get-DependencyApps {
             owner = "$owner"
             repo = "$repository"
             branch = "$branch"
-            project = "$project"
+            project = "$($project -replace '^\.$', '_')"
         }
         containerConfiguration = "$config"
         workflow = @{
