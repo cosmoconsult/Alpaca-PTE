@@ -175,7 +175,7 @@ jobs:
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           BuildMode: ${{ inputs.buildMode }}
-          ContainerJson: ${{ steps.COSMOAlpaca-CreateContainer.outputs.containerJson }}
+          ALPACA_CONTAINER_JSON: ${{ steps.COSMOAlpaca-CreateContainer.outputs.containerJson }}
         with:
           shell: ${{ inputs.shell }}
           artifact: ${{ env.artifact }}
