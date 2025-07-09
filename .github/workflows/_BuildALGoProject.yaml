@@ -86,12 +86,14 @@ env:
 
 jobs:
   BuildALGoProject:
-    needs: [ ]
+    needs: [ CustomJob-COSMOAlpaca-CreateContainer ]
     runs-on: ${{ fromJson(inputs.runsOn) }}
     defaults:
       run:
         shell: ${{ inputs.shell }}
     name: ${{ inputs.projectName }} (${{ inputs.buildMode }})
+    env:
+      ContainerJson: ${{ needs.CustomJob-COSMOAlpaca-CreateContainer.outputs.ContainerJson }}
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -124,13 +126,6 @@ jobs:
           shell: ${{ inputs.shell }}
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: '${{ inputs.secrets }},appDependencySecrets,AZURE_CREDENTIALS,-gitSubmodulesToken'
-
-      - name: Create COSMO Alpaca Container
-        id: COSMOAlpaca-CreateContainer
-        if: steps.DetermineBuildProject.outputs.BuildIt == 'True'
-        shell: pwsh
-        run: |
-          ./.alpaca/PowerShell/Create-AlpacaContainer.ps1 -project ${{ inputs.project }} -token "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Checkout Submodules
         if: env.useGitSubmodules != 'false' && env.useGitSubmodules != ''
@@ -175,7 +170,6 @@ jobs:
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           BuildMode: ${{ inputs.buildMode }}
-          ContainerJson: ${{ steps.COSMOAlpaca-CreateContainer.outputs.containerJson }}
         with:
           shell: ${{ inputs.shell }}
           artifact: ${{ env.artifact }}
@@ -307,16 +301,36 @@ jobs:
           project: ${{ inputs.project }}
           testType: "pageScripting"
 
-      - name: Remove COSMO Alpaca Container
-        if: always() && steps.COSMOAlpaca-CreateContainer.outcome == 'success'
-        id: COSMOAlpaca-RemoveContainer
-        shell: pwsh
-        run: |
-          ./.alpaca/PowerShell/Remove-AlpacaContainer.ps1 -containerId ${{ fromJson(steps.COSMOAlpaca-CreateContainer.outputs.containerJson).Id }} -token "${{ secrets.GITHUB_TOKEN }}"
-
       - name: Cleanup
         if: always() && steps.DetermineBuildProject.outputs.BuildIt == 'True'
         uses: microsoft/AL-Go/Actions/PipelineCleanup@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
           shell: ${{ inputs.shell }}
           project: ${{ inputs.project }}
+
+
+  CustomJob-COSMOAlpaca-CreateContainer:
+    needs: [ ]
+    if: (!failure()) && (!cancelled())
+    runs-on: [ ubuntu-latest ]
+    permissions: read-all
+    outputs:
+      ContainerJson: ${{ steps.CreateContainer.outputs.ContainerJson }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - id: CreateContainer
+        name: Create COSMO Alpaca Container
+        shell: pwsh
+        run: |
+          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -project ${{ inputs.project }} -token "${{ secrets.GITHUB_TOKEN }}"
+
+  CustomJob-COSMOAlpaca-RemoveContainer:
+    needs: [ BuildALGoProject, CustomJob-COSMOAlpaca-CreateContainer ]
+    if: always() && needs.CustomJob-COSMOAlpaca-CreateContainer.result == 'success'
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Remove COSMO Alpaca Container
+        shell: pwsh
+        run: |
+          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -containerId ${{ fromJson(needs.CustomJob-COSMOAlpaca-CreateContainer.outputs.ContainerJson).Id }} -token "${{ secrets.GITHUB_TOKEN }}"
