@@ -1,9 +1,12 @@
 Param(
-    [Hashtable]$parameters,
-    [string]$containerJson = "$($ENV:ContainerJson)"
+    [Hashtable]$parameters
 ) 
 
-$container = $containerJson | ConvertFrom-Json
+$container = "$($ENV:ALPACA_CONTAINER_JSON)" | ConvertFrom-Json
+
+if (! $container) {
+    throw "No container information found in environment variable ALPACA_CONTAINER_JSON"
+}
 
 if ($parameters.appFile.GetType().BaseType.Name -eq 'Array') {
     # Check if current run is installing dependenciy apps

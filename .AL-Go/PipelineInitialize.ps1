@@ -1,8 +1,8 @@
-Param(
-    [string]$containerJson = "$($ENV:ContainerJson)"
-) 
+$container = "$($ENV:ALPACA_CONTAINER_JSON)" | ConvertFrom-Json
 
-$container = $containerJson | ConvertFrom-Json
+if (! $container) {
+    throw "No container information found in environment variable ALPACA_CONTAINER_JSON"
+}
 
 $password = ConvertTo-SecureString -String $container.Password -AsPlainText
 $myAuthContext = @{"username" = $container.Username; "Password" = $password }
