@@ -108,7 +108,7 @@ jobs:
       useArtifactCache: true
 
   StatusCheck:
-    needs: [ Initialization, Build, CustomJob-RemoveAlpaca-Container ]
+    needs: [ Initialization, Build ]
     if: (!cancelled())
     runs-on: [ ubuntu-latest ]
     name: Pull Request Status Check
