@@ -150,7 +150,7 @@ jobs:
 
   CustomJob-RemoveAlpaca-Container:
     needs: [ CustomJob-CreateAlpaca-Container, Build ]
-    if: ${{ always() && needs.CustomJob-CreateAlpaca-Container.result == 'success' }}
+    if: always() && needs.CustomJob-CreateAlpaca-Container.result == 'success'
     runs-on: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
