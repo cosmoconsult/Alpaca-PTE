@@ -1,5 +1,11 @@
 function Get-AlpacaBackendUrl {
     $backendUrl = $ENV:ALPACA_BACKEND_URL
+
+    if ([string]::IsNullOrWhiteSpace($backendUrl)) {
+        $needsContext = "$($Env:NeedsContext)" | ConvertFrom-Json
+        $backendUrl = $needsContext.'CustomJob-Alpaca-Initialization'.outputs.backendUrl
+    }
+    
     if ([string]::IsNullOrWhiteSpace($backendUrl)) {
         $backendUrl = "https://cosmo-alpaca-enterprise.westeurope.cloudapp.azure.com/"
     }
@@ -8,6 +14,7 @@ function Get-AlpacaBackendUrl {
     }
     return $backendUrl
 }
+Export-ModuleMember -Function Get-AlpacaBackendUrl
 
 function Get-AlpacaEndpointUrlWithParam {
     Param(
