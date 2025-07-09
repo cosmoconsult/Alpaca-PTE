@@ -1,6 +1,6 @@
 param (
     [string]$token,
-    [string]$projectsJson = "$($ENV:ProjectsJson)"
+    [string]$projectsJson
 )
 
 Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force -DisableNameChecking
