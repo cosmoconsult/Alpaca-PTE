@@ -1,6 +1,6 @@
 param (
-    [string]$token,
-    [string]$containersJson
+    [string]$containersJson = "$($Env:ContainersJson)",
+    [string]$token
 )
 
 Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force -DisableNameChecking

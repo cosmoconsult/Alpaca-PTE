@@ -1,6 +1,6 @@
 param (
-    [string]$token,
-    [string]$projectsJson
+    [string]$projectsJson = "$($Env:ProjectsJson)",
+    [string]$token
 )
 
 Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force -DisableNameChecking
@@ -67,5 +67,5 @@ foreach ($project in $projects) {
 
 $containersJson = $containers | ConvertTo-Json -Depth 99 -Compress
 
-Write-Output ContainersJson=$containersJson >> $ENV:GITHUB_OUTPUT
-Write-Host Created $containers.Keys.Count containers
+Write-Output "containersJson=$($containersJson)" >> $ENV:GITHUB_OUTPUT
+Write-Host "Created $($containers.Keys.Count) containers"
