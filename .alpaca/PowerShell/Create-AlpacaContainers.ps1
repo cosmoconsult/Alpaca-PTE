@@ -17,7 +17,7 @@ if (!$branch) {
     $branch = $Env:GITHUB_REF_NAME
 }
 
-Write-Host "Creating container(s) for $branch of $owner/$repository and projects '$($projects -join ', ')'"
+Write-Host "Creating container(s) for ref $branch of $owner/$repository and projects '$($projects -join ', ')'"
 
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
 $headers.add("Content-Type", "application/json")
