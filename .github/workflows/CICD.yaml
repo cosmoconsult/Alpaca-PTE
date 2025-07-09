@@ -196,7 +196,7 @@ jobs:
       secrets: 'licenseFileUrl,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       signArtifacts: true
       useArtifactCache: true
-      container: ${{ toJson(fromJson(needs.CustomJob-CreateAlpaca-Container.outputs.containers)[matrix.project]) }}
+      alpacaContainerJson: ${{ toJson(fromJson(needs.CustomJob-CreateAlpaca-Container.outputs.containersJson)[matrix.project]) }}
 
   DeployALDoc:
     needs: [ Initialization, Build ]
@@ -375,27 +375,23 @@ jobs:
     if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
     runs-on: [ ubuntu-latest ]
     permissions: read-all
-    env:
-      ProjectsJson: ${{ needs.Initialization.outputs.projects }}
     outputs:
-      containers: ${{ steps.CreateContainer.outputs.ContainersJson }}
+      containersJson: ${{ steps.CreateContainer.outputs.ContainersJson }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - id: CreateContainer
         name: Create COSMO Alpaca Containers
         shell: pwsh
         run: |
-          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}" -projectsJson "${{ needs.Initialization.outputs.projects }}"
 
   CustomJob-RemoveAlpaca-Container:
     needs: [ CustomJob-CreateAlpaca-Container, Build ]
-    if: ${{ always() }}
+    if: ${{ always() && needs.CustomJob-CreateAlpaca-Container.result == 'success' }}
     runs-on: [ ubuntu-latest ]
-    env:
-      ContainersJson: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containers }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Remove COSMO Alpaca Containers
         shell: pwsh
         run: |
-          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}" -containersJson "${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}"

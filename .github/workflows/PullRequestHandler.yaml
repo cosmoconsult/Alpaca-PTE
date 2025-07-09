@@ -105,8 +105,8 @@ jobs:
       secrets: 'licenseFileUrl,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       artifactsRetentionDays: ${{ fromJson(needs.Initialization.outputs.artifactsRetentionDays) }}
       artifactsNameSuffix: 'PR${{ github.event.number }}'
-      needsContext:  ${{ toJson(needs) }}
       useArtifactCache: true
+      alpacaContainerJson: ${{ toJson(fromJson(needs.CustomJob-CreateAlpaca-Container.outputs.containersJson)[matrix.project]) }}
 
   StatusCheck:
     needs: [ Initialization, Build, CustomJob-RemoveAlpaca-Container ]
@@ -134,34 +134,27 @@ jobs:
           currentJobContext: ${{ toJson(job) }}
 
   CustomJob-CreateAlpaca-Container:
-    if: ${{ always() }}
+    needs: [ Initialization ]
+    if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
     runs-on: [ ubuntu-latest ]
     permissions: read-all
     outputs:
-      containerID: ${{ steps.CreateContainer.outputs.containerID }}
-      containerUser: ${{ steps.CreateContainer.outputs.containerUser }}
-      containerPassword: ${{ steps.CreateContainer.outputs.containerPassword }}
-      containerURL: ${{ steps.CreateContainer.outputs.containerURL }}
+      containersJson: ${{ steps.CreateContainer.outputs.ContainersJson }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.sha || format('refs/pull/{0}/merge', github.event.pull_request.number) }}
       - id: CreateContainer
-        name: Create COSMO Alpaca Container
+        name: Create COSMO Alpaca Containers
         shell: pwsh
         run: |
-          ./.alpaca/PowerShell/Create-AlpacaContainer.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}" -projectsJson "${{ needs.Initialization.outputs.projects }}"
 
   CustomJob-RemoveAlpaca-Container:
     needs: [ CustomJob-CreateAlpaca-Container, Build ]
-    if: ${{ always() }}
+    if: ${{ always() && needs.CustomJob-CreateAlpaca-Container.result == 'success' }}
     runs-on: [ ubuntu-latest ]
-    env:
-      needsContext:  ${{ toJson(needs) }}
     steps:
-      # checkout default as pull-request branch may not exist anymore
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Remove COSMO Alpaca Container
+      - name: Remove COSMO Alpaca Containers
         shell: pwsh
         run: |
-          ./.alpaca/PowerShell/Remove-AlpacaContainer.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}" -containersJson "${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}"

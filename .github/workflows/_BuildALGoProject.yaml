@@ -73,7 +73,7 @@ on:
         description: Flag determining whether to use the Artifacts Cache
         type: boolean
         default: false
-      container:
+      alpacaContainerJson:
         description: JSON formatted Alpaca container information
         type: string
         default: '{}'
@@ -87,6 +87,7 @@ env:
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
   ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
+  ALPACA_CONTAINER_JSON: ${{ inputs.alpacaContainerJson }}
 
 jobs:
   BuildALGoProject:
@@ -172,7 +173,6 @@ jobs:
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           BuildMode: ${{ inputs.buildMode }}
-          ContainerJson: ${{ inputs.container }}
         with:
           shell: ${{ inputs.shell }}
           artifact: ${{ env.artifact }}
