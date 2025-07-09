@@ -103,7 +103,7 @@ jobs:
       secrets: 'licenseFileUrl,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       artifactsRetentionDays: ${{ fromJson(needs.Initialization.outputs.artifactsRetentionDays) }}
       artifactsNameSuffix: 'NextMajor'
-      alpacaContainerJson: ${{ toJson(fromJson(needs.CustomJob-CreateAlpaca-Container.outputs.containersJson)[matrix.project]) }}
+      needsContext:  ${{ toJson(needs) }}
 
   PostProcess:
     needs: [ Initialization, Build, CustomJob-RemoveAlpaca-Container ]

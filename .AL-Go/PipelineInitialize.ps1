@@ -1,7 +1,10 @@
-$container = "$($ENV:ALPACA_CONTAINER_JSON)" | ConvertFrom-Json
+$project = $Env:_project
+$needsContext = "$($Env:NeedsContext)" | ConvertFrom-Json
+$containers = @("$($needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containersJson)" | ConvertFrom-Json)
+$container = $containers | Where-Object { $_.Project -eq $project }
 
 if (! $container) {
-    throw "No container information found in environment variable ALPACA_CONTAINER_JSON"
+    throw "No container information for project '$project' found in needs context."
 }
 
 $password = ConvertTo-SecureString -String $container.Password -AsPlainText

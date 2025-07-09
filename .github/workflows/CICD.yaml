@@ -196,7 +196,7 @@ jobs:
       secrets: 'licenseFileUrl,codeSignCertificateUrl,*codeSignCertificatePassword,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       signArtifacts: true
       useArtifactCache: true
-      alpacaContainerJson: ${{ toJson(fromJson(needs.CustomJob-CreateAlpaca-Container.outputs.containersJson)[matrix.project]) }}
+      needsContext:  ${{ toJson(needs) }}
 
   DeployALDoc:
     needs: [ Initialization, Build ]

@@ -17,7 +17,7 @@ if (!$branch) {
     $branch = $Env:GITHUB_REF_NAME
 }
 
-Write-Host "Starting container for $owner/$repository and ref $branch (projects: $($projects -join ', '))"
+Write-Host "Creating container for $owner/$repository and ref $branch (projects: $($projects -join ', '))"
 
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
 $headers.add("Content-Type", "application/json")
@@ -29,10 +29,10 @@ $QueryParams = @{
 }
 $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -endpoint "GitHub/Build" -QueryParams $QueryParams
 
-$containers = @{}
+$containers = @()
 
 foreach ($project in $projects) {
-    Write-Host "Starting container for project $project"
+    Write-Host "Creating container for project $project"
 
     $request = @{
         source = @{
@@ -55,13 +55,14 @@ foreach ($project in $projects) {
     $response = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body $body -AllowInsecureRedirect
 
     $container = @{
+        Project = $project
         Id = $response.id
         User = $response.username
         Password = $response.Password
         Url = $response.webUrl
     }
-    $containers.Add($project, $container)
-    Write-Host Created container $container.Id
+    $containers += $container
+    Write-Host "Created container $($container.Id)"
 }
 
 $containersJson = $containers | ConvertTo-Json -Depth 99 -Compress

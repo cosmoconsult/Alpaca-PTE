@@ -105,8 +105,8 @@ jobs:
       secrets: 'licenseFileUrl,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
       artifactsRetentionDays: ${{ fromJson(needs.Initialization.outputs.artifactsRetentionDays) }}
       artifactsNameSuffix: 'PR${{ github.event.number }}'
+      needsContext:  ${{ toJson(needs) }}
       useArtifactCache: true
-      alpacaContainerJson: ${{ toJson(fromJson(needs.CustomJob-CreateAlpaca-Container.outputs.containersJson)[matrix.project]) }}
 
   StatusCheck:
     needs: [ Initialization, Build, CustomJob-RemoveAlpaca-Container ]
