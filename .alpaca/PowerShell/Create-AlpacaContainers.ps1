@@ -17,7 +17,7 @@ if (!$branch) {
     $branch = $Env:GITHUB_REF_NAME
 }
 
-Write-Host "Creating container for $owner/$repository and ref $branch (projects: $($projects -join ', '))"
+Write-Host "Creating container(s) for $owner/$repository@$branch and projects $($projects -join ', ')"
 
 $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
 $headers.add("Content-Type", "application/json")
@@ -68,4 +68,4 @@ foreach ($project in $projects) {
 $containersJson = $containers | ConvertTo-Json -Depth 99 -Compress
 
 Write-Output "containersJson=$($containersJson)" >> $ENV:GITHUB_OUTPUT
-Write-Host "Created $($containers.Count) containers"
+Write-Host "Created $($containers.Count) container(s)"

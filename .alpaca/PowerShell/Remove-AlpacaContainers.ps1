@@ -18,12 +18,12 @@ $QueryParams = @{
     "api-version" = "0.12"
 }
 
-foreach ($container in $containers) {
-    $containerId = $container.Id
+Write-Host "Deleting $($containers.Count) container(s)"
 
-    Write-Host "Deleting Container $containerId"
+foreach ($container in $containers) {
+    Write-Host "Deleting Container $($container.Id) of project $($container.Project)"
     
-    $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -ressource $containerId -QueryParams $QueryParams
+    $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -ressource $container.Id -QueryParams $QueryParams
     Invoke-RestMethod $apiUrl -Method 'DELETE' -Headers $headers -AllowInsecureRedirect | Out-Null
     
     Write-Host "Container deleted"
