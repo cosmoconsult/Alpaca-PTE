@@ -15,9 +15,9 @@ if (! $container) {
     throw "No Alpaca container information for project '$project' found in needs context."
 }
 # Set ALPACA_CONTAINER_ID (current script and whole github workflow job)
-Write-Host "Setting ALPACA_CONTAINER_ID to '$containerId'"
+Write-Host "Setting ALPACA_CONTAINER_ID to '$($container.Id)'"
 $env:ALPACA_CONTAINER_ID = $container.Id
-Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_CONTAINER_ID=$containerId"
+Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_CONTAINER_ID=$($container.Id)"
 
 $password = ConvertTo-SecureString -String $container.Password -AsPlainText
 $myAuthContext = @{"username" = $container.User; "Password" = $password }
