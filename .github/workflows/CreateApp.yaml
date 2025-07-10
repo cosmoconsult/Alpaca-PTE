@@ -102,7 +102,7 @@ jobs:
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
 
-  CustomJob-CheckOrUpdateALGoSystemFiles:
+  CustomJob-Alpaca-UpdateALGoSystemFiles:
     needs: [ CreateApp ]
     if: (!failure()) && (!cancelled())
     runs-on: [ ubuntu-latest ]
