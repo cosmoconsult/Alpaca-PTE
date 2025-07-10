@@ -1,5 +1,5 @@
 param (
-    [string]$projectsJson = "$($Env:ProjectsJson)",
+    [string]$projectsJson = "$($env:ALGO_PROJECTS_JSON)",
     [string]$token
 )
 
@@ -66,6 +66,6 @@ foreach ($project in $projects) {
 }
 
 $containersJson = $containers | ConvertTo-Json -Depth 99 -Compress
+Add-Content -encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "containersJson=$($containersJson)"
 
-Write-Output "containersJson=$($containersJson)" >> $ENV:GITHUB_OUTPUT
 Write-Host "Created $($containers.Count) container(s)"

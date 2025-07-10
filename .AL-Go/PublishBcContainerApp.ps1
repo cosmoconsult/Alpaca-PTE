@@ -1,15 +1,6 @@
 Param(
     [Hashtable]$parameters
-) 
-
-$project = $Env:_project
-$needsContext = "$($Env:NeedsContext)" | ConvertFrom-Json
-$containers = @("$($needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containersJson)" | ConvertFrom-Json)
-$container = $containers | Where-Object { $_.Project -eq $project }
-
-if (! $container) {
-    throw "No container information for project '$project' found in needs context."
-}
+)
 
 if ($parameters.appFile.GetType().BaseType.Name -eq 'Array') {
     # Check if current run is installing dependenciy apps
@@ -39,13 +30,17 @@ if ($parameters.appFile.GetType().BaseType.Name -eq 'Array') {
     }
 }
 
-if (!$Env:ContainerStarted){
+if (! $env:ALPACA_CONTAINER_READY){
     Write-Host "::group::Wait for image to be ready"
-    Wait-ForImage -token $Env:_token -containerName $container.Id
+    Wait-ForImage -token $env:_token -containerName $env:ALPACA_CONTAINER_ID
     Write-Host "::endgroup::"
     Write-Host "::group::Wait for container start"
-    Wait-ForAlpacaContainer -token $Env:_token -containerName $container.Id
+    Wait-ForAlpacaContainer -token $env:_token -containerName $env:ALPACA_CONTAINER_ID
     Write-Host "::endgroup::"
+
+    # Set ALPACA_CONTAINER_READY (current script and whole github workflow job)
+    $env:ALPACA_CONTAINER_READY = $true
+    Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_CONTAINER_READY=$true"
 }
 
 Write-Host Get password from SecureString

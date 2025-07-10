@@ -1,5 +1,5 @@
 param (
-    [string]$containersJson = "$($Env:ContainersJson)",
+    [string]$containersJson = "$($env:ALPACA_CONTAINERS_JSON)",
     [string]$token
 )
 

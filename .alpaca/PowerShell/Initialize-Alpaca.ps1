@@ -1,6 +1,5 @@
 Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force -DisableNameChecking
 
 $backendUrl = Get-AlpacaBackendUrl
-
-Write-Output "backendUrl=$($backendUrl)" >> $ENV:GITHUB_OUTPUT
-Write-Host "Backend URL: $backendUrl"
+Write-Host "Using Backend Url '$backendUrl'"
+Add-Content -encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "backendUrl=$($backendUrl)"
