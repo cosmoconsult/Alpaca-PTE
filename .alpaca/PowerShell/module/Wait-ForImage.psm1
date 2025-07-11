@@ -19,7 +19,7 @@ function Wait-ForImage {
         $repository = $repository.replace($owner, "")
         $repository = $repository.replace("/", "")
 
-        $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
+        $headers = Get-AuthenticationHeaders -token $token -owner $owner -repository $repository
         $headers.add("Content-Type","application/json")
 
         $apiUrl = Get-AlpacaEndpointUrlWithParam -controller "service" -ressource $containerName -routeSuffix "status"  -QueryParams $QueryParams

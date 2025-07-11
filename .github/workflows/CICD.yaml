@@ -397,11 +397,18 @@ jobs:
       containersJson: ${{ steps.CreateContainer.outputs.containersJson }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - id: CreateContainer
         name: Create COSMO Alpaca Containers
         shell: pwsh
         run: |
           ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Remove COSMO Alpaca Containers on failure
+        if: failure()
+        shell: pwsh
+        run: |
+          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
 
   CustomJob-RemoveAlpaca-Container:
     needs: [ CustomJob-Alpaca-Initialization, CustomJob-CreateAlpaca-Container, Build ]
@@ -412,6 +419,7 @@ jobs:
       ALPACA_CONTAINERS_JSON: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Remove COSMO Alpaca Containers
         shell: pwsh
         run: |

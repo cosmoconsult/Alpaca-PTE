@@ -1,71 +1,30 @@
 param (
-    [string]$projectsJson = "$($env:ALGO_PROJECTS_JSON)",
     [string]$token
 )
 
+try {
+    $projects = [string[]]("$($env:ALGO_PROJECTS_JSON)" | ConvertFrom-Json)
+    if (! $projects) {
+        throw "No AL-Go projects defined."
+    }
+    Write-Host "Creating containers for projects: '$($projects -join "', '")' [$($projects.Count)]"
+} 
+catch {
+    throw "Failed to determine AL-Go projects: $($_.Exception.Message)"
+}
+
 Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force -DisableNameChecking
-
-$projects = $projectsJson | ConvertFrom-Json
-
-$owner = $Env:GITHUB_REPOSITORY_OWNER
-$repository = $Env:GITHUB_REPOSITORY
-$repository = $repository.replace($owner, "")
-$repository = $repository.replace("/", "")
-$branch = $Env:GITHUB_HEAD_REF
-# $Env:GITHUB_HEAD_REF is specified only for pull requests, so if it is not specified, use GITHUB_REF_NAME
-if (!$branch) {
-    $branch = $Env:GITHUB_REF_NAME
-}
-
-Write-Host "Creating container(s) for ref $branch of $owner/$repository and projects '$($projects -join ', ')'"
-
-$headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
-$headers.add("Content-Type", "application/json")
-
-$config = Get-ConfigNameForWorkflowName 
-
-$QueryParams = @{
-    "api-version" = "0.12"
-}
-$apiUrl = Get-AlpacaEndpointUrlWithParam -controller "Container" -endpoint "GitHub/Build" -QueryParams $QueryParams
 
 $containers = @()
 
-foreach ($project in $projects) {
-    Write-Host "Creating container for project '$project'"
-
-    $request = @{
-        source = @{
-            owner = "$owner"
-            repo = "$repository"
-            branch = "$branch"
-            project = "$($project -replace '^\.$', '_')"
-        }
-        containerConfiguration = "$config"
-        workflow = @{
-            actor = "$($Env:GITHUB_ACTOR)"
-            workflowName = "$($Env:GITHUB_WORKFLOW)"
-            WorkflowRef = "$($Env:GITHUB_WORKFLOW_REF)"
-            RunID = "$($Env:GITHUB_RUN_ID)"
-            Repository = "$($Env:GITHUB_REPOSITORY)"
-        }
+try {
+    foreach ($project in $projects) {
+        $containers += New-AlpacaContainer -project $project -token $token
     }
-    
-    $body = $request | ConvertTo-Json -Depth 10
-    $response = Invoke-RestMethod $apiUrl -Method 'POST' -Headers $headers -Body $body -AllowInsecureRedirect
+} finally {
+    Write-Host "Created $($containers.Count) of $($projects.Count) containers"
 
-    $container = @{
-        Project = $project
-        Id = $response.id
-        User = $response.username
-        Password = $response.Password
-        Url = $response.webUrl
-    }
-    $containers += $container
-    Write-Host "Created container '$($container.Id)'"
+    $containersJson = $containers | ConvertTo-Json -Depth 99 -Compress
+    Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_CONTAINERS_JSON=$($containersJson)"
+    Add-Content -encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "containersJson=$($containersJson)"
 }
-
-$containersJson = $containers | ConvertTo-Json -Depth 99 -Compress
-Add-Content -encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "containersJson=$($containersJson)"
-
-Write-Host "Created $($containers.Count) container(s)"

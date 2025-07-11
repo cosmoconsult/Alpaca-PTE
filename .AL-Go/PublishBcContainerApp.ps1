@@ -39,6 +39,7 @@ if (! $env:ALPACA_CONTAINER_READY){
     Write-Host "::endgroup::"
 
     # Set ALPACA_CONTAINER_READY (current script and whole github workflow job)
+    Write-Host "Setting ALPACA_CONTAINER_READY to '$true'"
     $env:ALPACA_CONTAINER_READY = $true
     Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_CONTAINER_READY=$true"
 }

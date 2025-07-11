@@ -35,7 +35,7 @@ function Wait-ForAlpacaContainer {
             $repository = $repository.replace("/", "")
 
             
-            $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
+            $headers = Get-AuthenticationHeaders -token $token -owner $owner -repository $repository
             $headers.add("accept","application/text")
 
             $QueryParams = @{

@@ -17,7 +17,7 @@ function Get-DependencyApps {
 
     Write-Host "Get container artifacts for $owner/$repository and ref $branch (project: $project)"
 
-    $headers = Get-AuthenticationHeader -token $token -owner $owner -repository $repository
+    $headers = Get-AuthenticationHeaders -token $token -owner $owner -repository $repository
     $headers.add("Content-Type", "application/json")
 
     $config = Get-ConfigNameForWorkflowName 

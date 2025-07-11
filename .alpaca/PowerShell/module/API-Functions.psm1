@@ -55,7 +55,7 @@ function Get-AlpacaEndpointUrlWithParam {
 
 Export-ModuleMember -Function Get-AlpacaEndpointUrlWithParam
 
-function Get-AuthenticationHeader {
+function Get-AuthenticationHeaders {
     Param(
         [Parameter(Mandatory = $true)]
         [string]$token,
@@ -72,7 +72,7 @@ function Get-AuthenticationHeader {
     return $headers
 }
 
-Export-ModuleMember -Function Get-AuthenticationHeader
+Export-ModuleMember -Function Get-AuthenticationHeaders -Alias Get-AuthenticationHeader
 
 function Get-ConfigNameForWorkflowName {
     switch ($ENV:GITHUB_WORKFLOW) {
