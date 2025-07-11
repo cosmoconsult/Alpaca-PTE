@@ -42,6 +42,8 @@ if (! $env:ALPACA_CONTAINER_READY){
     Write-Host "Setting ALPACA_CONTAINER_READY to '$true'"
     $env:ALPACA_CONTAINER_READY = $true
     Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_CONTAINER_READY=$true"
+} else {
+    Write-Host "ALPACA_CONTAINER_READY is already set to '$env:ALPACA_CONTAINER_READY'. Skipping wait."
 }
 
 Write-Host Get password from SecureString
