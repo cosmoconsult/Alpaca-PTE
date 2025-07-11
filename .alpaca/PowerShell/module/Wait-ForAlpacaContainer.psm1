@@ -5,6 +5,8 @@ function Wait-ForAlpacaContainer {
         [Parameter(Mandatory = $false)][System.Collections.ArrayList]    $readyString = @("Ready for connections!"),
         [Parameter(Mandatory = $false)][System.Collections.ArrayList]    $errorString = @("[ERROR]"),
         [Parameter(Mandatory = $false)][System.Collections.ArrayList]    $warningString = @("[WARN]"),
+        [Parameter(Mandatory = $false)][System.Collections.ArrayList]    $groupStartString = @("::group::", "##[group]"),
+        [Parameter(Mandatory = $false)][System.Collections.ArrayList]    $groupEndString = @("::endgroup::", "##[endgroup]"),
         [Parameter(Mandatory = $false)][bool]         $printLog = $true,
         [Parameter(Mandatory = $false)][int]          $maxTries = 30,
         [Parameter(Mandatory = $false)][int]          $sleepSeconds = 5,
@@ -20,6 +22,8 @@ function Wait-ForAlpacaContainer {
             $warnRegex = [string]::Join("|", (@() + $warningString | ForEach-Object { [System.Text.RegularExpressions.Regex]::Escape($_) }) )
             $errorRegex = [string]::Join("|", (@() + $errorString | ForEach-Object { [System.Text.RegularExpressions.Regex]::Escape($_) }) )
             $readyRegex = [string]::Join("|", (@() + $readyString | ForEach-Object { [System.Text.RegularExpressions.Regex]::Escape($_) }) )
+            $groupStartRegex = [string]::Join("|", (@() + $groupStartString | ForEach-Object { [System.Text.RegularExpressions.Regex]::Escape($_) }) )
+            $groupEndRegex = [string]::Join("|", (@() + $groupEndString | ForEach-Object { [System.Text.RegularExpressions.Regex]::Escape($_) }) )
             $tries = 0
             $waitForContainer = $true
             $takenLines = 0
@@ -65,7 +69,9 @@ function Wait-ForAlpacaContainer {
                 }
                     
                 # Check for Errors, Warnings, Ready-String
+                $indentation = 0
                 foreach ($line in ($content | Select-Object -Skip $takenLines -First ($content.Length - 1))) {
+                    Write-Host (" " * $indentation * 2) -NoNewline
                     if ($errorRegex -and ($line -match $errorRegex)) {
                         Write-Host "::error::$line"
                         $success = $false                                
@@ -78,6 +84,14 @@ function Wait-ForAlpacaContainer {
                     elseif ($readyRegex -and ($line -match $readyRegex)) {
                         Write-Host "$($line)"
                         $waitForContainer = $false
+                    }
+                    elseif ($groupStartRegex -and ($line -match $groupStartRegex)) {
+                        Write-Host "$($line -replace $groupStartRegex, '')"
+                        $indentation += 1
+                    }
+                    elseif ($groupEndRegex -and ($line -match $groupEndRegex)) {
+                        Write-Host "$($line -replace $groupEndRegex, '')"
+                        $indentation = [Math]::Max($indentation - 1, 0)
                     }
                     elseif (! [string]::IsNullOrWhiteSpace($line)) {
                         #Avoid Empty lines in logfile
