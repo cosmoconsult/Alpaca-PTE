@@ -391,8 +391,8 @@ jobs:
     runs-on: [ ubuntu-latest ]
     permissions: read-all
     env:
-      ALPACA_BACKEND_URL: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
       ALGO_PROJECTS_JSON: ${{ needs.Initialization.outputs.projects }}
+      ALPACA_BACKEND_URL: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
     outputs:
       containersJson: ${{ steps.CreateContainer.outputs.containersJson }}
     steps:
