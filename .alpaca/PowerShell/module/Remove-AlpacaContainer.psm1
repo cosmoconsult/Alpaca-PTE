@@ -22,6 +22,6 @@ function Remove-AlpacaContainer {
     
     Invoke-RestMethod $apiUrl -Method 'DELETE' -Headers $headers -AllowInsecureRedirect | Out-Null
         
-    Write-Host "Deleted Container '$(container.Id)'"
+    Write-Host "Deleted Container '$($container.Id)'"
 }
 Export-ModuleMember -Function Remove-AlpacaContainer
