@@ -21,6 +21,9 @@ try {
     foreach ($project in $projects) {
         $containers += New-AlpacaContainer -project $project -token $token
     }
+} catch {
+    Write-Host "::error::Failed to create container: $($_.Exception.Message)"
+    exit 1;
 } finally {
     Write-Host "Created $($containers.Count) of $($projects.Count) containers"
 

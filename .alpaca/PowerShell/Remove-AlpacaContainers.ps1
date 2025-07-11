@@ -12,17 +12,18 @@ catch {
 
 Import-Module ".\.alpaca\PowerShell\module\alpaca-functions.psd1" -Scope Global -Force -DisableNameChecking
 
-$errors = @()
+$failures = 0
 
 foreach ($container in $containers) {
     try {
         Remove-AlpacaContainer -container $container -token $token
     } catch {
-        $errors += "Failed to delete container '$($container.Id)': $($_.Exception.Message)"
+        Write-Host "::error::Failed to delete container '$($container.Id)': $($_.Exception.Message)"
+        $failures += 1
     }
 }
 
-Write-Host "Deleted $($containers.Count - $errors.Count) of $($containers.Count) containers"
-if ($errors.Count -gt 0) {
-    throw ($errors -join "`n")
+Write-Host "Deleted $($containers.Count - $failures) of $($containers.Count) containers"
+if ($failures) {
+    exit 1
 }
