@@ -71,7 +71,10 @@ function Wait-ForAlpacaContainer {
                 # Check for Errors, Warnings, Ready-String
                 $indentation = 0
                 foreach ($line in ($content | Select-Object -Skip $takenLines -First ($content.Length - 1))) {
-                    Write-Host (" " * $indentation * 2) -NoNewline
+                    if (! [string]::IsNullOrWhiteSpace($line)) {
+                        Write-Host (" " * $indentation * 2) -NoNewline
+                    }
+                    
                     if ($errorRegex -and ($line -match $errorRegex)) {
                         Write-Host "::error::$line"
                         $success = $false                                
