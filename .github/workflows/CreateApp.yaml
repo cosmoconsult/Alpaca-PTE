@@ -114,4 +114,4 @@ jobs:
       branch: ${{ github.ref_name }}
       directCommit: true
       downloadLatest: false
-      useInputCommitOptions: false
+      useInputCommitOptions: true
