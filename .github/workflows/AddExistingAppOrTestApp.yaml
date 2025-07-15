@@ -88,6 +88,7 @@ jobs:
           currentJobContext: ${{ toJson(job) }}
 
   CustomJob-Alpaca-UpdateSystemFiles:
+    name: 'Update AL-Go and COSMO Alpaca System Files'
     needs: [ AddExistingAppOrTestApp ]
     if: (!failure()) && (!cancelled()) && ${{ github.event.inputs.directCommit == 'true' }}
     uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml

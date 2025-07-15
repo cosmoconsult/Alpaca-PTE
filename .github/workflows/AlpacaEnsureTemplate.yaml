@@ -46,6 +46,7 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "alpacaTemplateUrl=$($env:ALPACA_TEMPLATE_URL)"
 
   UpdateSystemFiles:
+    name: Update AL-Go and COSMO Alpaca System Files
     needs: [ Initialization ]
     if: (!failure()) && (!cancelled()) && (needs.Initialization.outputs.currentTemplateUrl != needs.Initialization.outputs.alpacaTemplateUrl)
     uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
