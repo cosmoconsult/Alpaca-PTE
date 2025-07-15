@@ -105,20 +105,4 @@ jobs:
   CustomJob-Alpaca-UpdateALGoSystemFiles:
     needs: [ CreateApp ]
     if: (!failure()) && (!cancelled()) && (github.event.inputs.directCommit == 'true')
-    runs-on: [ ubuntu-latest ]
-    steps:
-      - name: Dispatch Update AL-Go System Files workflow
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'UpdateGitHubGoSystemFiles.yaml',
-              ref: '${{ github.ref_name }}',
-              inputs: {
-                downloadLatest: 'false',
-                directCommit: 'true'
-              }
-            });
+    uses: ./.github/workflows/_AlpacaDispatchUpdateGitHubGoSystemFiles.yaml

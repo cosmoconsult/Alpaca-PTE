@@ -165,7 +165,7 @@ jobs:
   
     steps:
       - name: Dump Workflow Information
-        uses: freddydk/AL-Go/Actions/DumpWorkflowInfo@customize
+        uses: microsoft/AL-Go-Actions/DumpWorkflowInfo@v7.2
         with:
           shell: pwsh
   
@@ -176,19 +176,19 @@ jobs:
   
       - name: Initialize the workflow
         id: init
-        uses: freddydk/AL-Go/Actions/WorkflowInitialize@customize
+        uses: microsoft/AL-Go-Actions/WorkflowInitialize@v7.2
         with:
           shell: pwsh
   
       - name: Read settings
-        uses: freddydk/AL-Go/Actions/ReadSettings@customize
+        uses: microsoft/AL-Go-Actions/ReadSettings@v7.2
         with:
           shell: pwsh
           get: commitOptions
   
       - name: Read secrets
         id: ReadSecrets
-        uses: freddydk/AL-Go/Actions/ReadSecrets@customize
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v7.2
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
