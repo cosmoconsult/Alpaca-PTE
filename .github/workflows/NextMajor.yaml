@@ -125,7 +125,6 @@ jobs:
   CustomJob-Alpaca-Initialization:
     name: Initialize COSMO Alpaca
     uses: ./.github/workflows/_AlpacaInitialization.yaml
-    permissions: read-all
     secrets: inherit
 
   CustomJob-CreateAlpaca-Container:
@@ -133,7 +132,6 @@ jobs:
     needs: [ Initialization, CustomJob-Alpaca-Initialization ]
     if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
     uses: ./.github/workflows/_AlpacaCreateContainers.yaml
-    permissions: read-all
     secrets: inherit
     with:
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
@@ -144,7 +142,6 @@ jobs:
     needs: [ Build, CustomJob-Alpaca-Initialization, CustomJob-CreateAlpaca-Container ]
     if: always() && needs.CustomJob-CreateAlpaca-Container.result == 'success'
     uses: ./.github/workflows/_AlpacaRemoveContainers.yaml
-    permissions: read-all
     secrets: inherit
     with:
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}

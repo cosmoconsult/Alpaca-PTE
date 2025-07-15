@@ -106,14 +106,12 @@ jobs:
   CustomJob-Alpaca-Initialization:
     name: Initialize COSMO Alpaca
     uses: ./.github/workflows/_AlpacaInitialization.yaml
-    permissions: read-all
     secrets: inherit
 
   CustomJob-Alpaca-UpdateSystemFiles:
     needs: [ CreateTestApp ]
     if: (!failure()) && (!cancelled()) && ${{ github.event.inputs.directCommit == 'true' }}
     uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
-    permissions: read-all
     secrets: inherit
     with:
       branch: ${{ github.ref_name }}

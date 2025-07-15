@@ -162,7 +162,6 @@ jobs:
         branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
       fail-fast: false
     uses: ./.github/workflows/_AlpacaUpdateAlpacaSystemFiles.yaml
-    permissions: read-all
     secrets: inherit
     with:
       branch: ${{ matrix.branch }}
