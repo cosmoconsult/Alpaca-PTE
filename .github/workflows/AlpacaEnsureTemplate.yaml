@@ -8,7 +8,7 @@ on:
 
 defaults:
   run:
-    shell: pwsh
+    shell: powershell
 
 permissions:
   actions: read
@@ -34,7 +34,7 @@ jobs:
       - name: Read settings
         uses: microsoft/AL-Go/Actions/ReadSettings@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
-          shell: pwsh
+          shell: powershell
           get: templateUrl
 
       - name: Determine Template URLs

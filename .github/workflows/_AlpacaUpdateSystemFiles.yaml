@@ -37,7 +37,7 @@ on:
 
 defaults:
   run:
-    shell: pwsh
+    shell: powershell
 
 permissions:
   actions: read
@@ -61,7 +61,7 @@ jobs:
       - name: Read settings
         uses: microsoft/AL-Go/Actions/ReadSettings@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
-          shell: pwsh
+          shell: powershell
           get: templateUrl,commitOptions
 
       - name: Determine Template URL
@@ -102,7 +102,7 @@ jobs:
         id: ReadSecrets
         uses: microsoft/AL-Go/Actions/ReadSecrets@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
-          shell: pwsh
+          shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
   
@@ -112,7 +112,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          shell: pwsh
+          shell: powershell
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ steps.CalculateCommitOptions.outputs.downloadLatest }}
           update: 'Y'
@@ -126,7 +126,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          shell: pwsh
+          shell: powershell
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ steps.CalculateCommitOptions.outputs.downloadLatest }}
           templateUrl: ${{ steps.DetermineTemplateUrl.outputs.TemplateUrl }}

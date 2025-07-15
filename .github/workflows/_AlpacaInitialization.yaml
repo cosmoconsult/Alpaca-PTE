@@ -9,7 +9,7 @@ on:
 
 defaults:
   run:
-    shell: pwsh
+    shell: powershell
 
 permissions:
   actions: read
@@ -34,7 +34,7 @@ jobs:
 
       - id: Initialization
         name: Initialize COSMO Alpaca
-        shell: pwsh
+        shell: powershell
         run: |
           ./.alpaca/PowerShell/Initialize-Alpaca.ps1
 
