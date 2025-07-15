@@ -18,7 +18,7 @@ on:
 
 defaults:
   run:
-    shell: pwsh
+    shell: powershell
 
 permissions:
   actions: read
@@ -43,12 +43,12 @@ jobs:
 
       - id: CreateContainer
         name: Create COSMO Alpaca Containers
-        shell: pwsh
+        shell: powershell
         run: |
           ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Remove COSMO Alpaca Containers on failure
         if: failure()
-        shell: pwsh
+        shell: powershell
         run: |
           ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
