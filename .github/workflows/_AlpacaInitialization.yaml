@@ -62,6 +62,8 @@ jobs:
     uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
     secrets: inherit
     with:
+      updateALGoSystemFiles: true
+      updateAlpacaSystemFiles: true
       branch: ${{ github.ref_name }}
       downloadLatest: true
       templateUrl: ${{ needs.Initialization.outputs.alpacaTemplateUrl }}

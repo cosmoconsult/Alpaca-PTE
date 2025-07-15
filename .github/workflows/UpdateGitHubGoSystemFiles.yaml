@@ -161,9 +161,11 @@ jobs:
       matrix:
         branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
       fail-fast: false
-    uses: ./.github/workflows/_AlpacaUpdateAlpacaSystemFiles.yaml
+    uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
     secrets: inherit
     with:
+      updateALGoSystemFiles: false # Already handle in job UpdateALGoSystemFiles
+      updateAlpacaSystemFiles: true
       branch: ${{ matrix.branch }}
       templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
       downloadLatest: ${{ inputs.downloadLatest }}
