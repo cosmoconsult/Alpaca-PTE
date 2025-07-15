@@ -49,7 +49,7 @@ env:
 
 jobs:
   CreateTestApp:
-    needs: [ CustomJob-Alpaca-Initialization ]
+    needs: [ ]
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Dump Workflow Information
@@ -102,11 +102,6 @@ jobs:
           shell: pwsh
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
-          
-  CustomJob-Alpaca-Initialization:
-    name: Initialize COSMO Alpaca
-    uses: ./.github/workflows/_AlpacaInitialization.yaml
-    secrets: inherit
 
   CustomJob-Alpaca-UpdateSystemFiles:
     needs: [ CreateTestApp ]
@@ -114,7 +109,7 @@ jobs:
     uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
     secrets: inherit
     with:
-      updateALGoSystemFiles: false
+      updateALGoSystemFiles: true
       updateAlpacaSystemFiles: true
       branch: ${{ github.ref_name }}
       directCommit: true

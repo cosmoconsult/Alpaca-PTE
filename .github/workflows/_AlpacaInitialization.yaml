@@ -23,12 +23,11 @@ env:
 
 jobs:
   Initialization:
-    name: Initialization
+    name: COSMO Alpaca Initialization
     runs-on: [ ubuntu-latest ]
     outputs:
+      templateUrl: ${{ steps.DetermineTemplateUrl.outputs.url }}
       backendUrl: ${{ steps.Initialization.outputs.backendUrl }}
-      currentTemplateUrl: ${{ steps.DetermineCurrentTemplateUrl.outputs.url }}
-      alpacaTemplateUrl: ${{ steps.DetermineAlpacaTemplateUrl.outputs.url }}
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -38,50 +37,5 @@ jobs:
         shell: pwsh
         run: |
           ./.alpaca/PowerShell/Initialize-Alpaca.ps1
-
-      - name: Read settings
-        uses: microsoft/AL-Go/Actions/ReadSettings@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
-        with:
-          shell: pwsh
-          get: templateUrl,alpacaTemplateUrl
-
-      - name: Determine current Template Url
-        id: DetermineCurrentTemplateUrl
-        run: |
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "url=$($env:templateUrl)"
-
-      - name: Determine COSMO Alpaca Template Url
-        id: DetermineAlpacaTemplateUrl
-        run: |
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "url=$($env:alpacaTemplateUrl)"
-  
-  UpdateSystemFiles:
-    name: Update AL-Go and COSMO Alpaca System files
-    needs: [ Initialization ]
-    if: ${{ needs.Initialization.outputs.currentTemplateUrl != needs.Initialization.outputs.alpacaTemplateUrl }}
-    uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
-    secrets: inherit
-    with:
-      updateALGoSystemFiles: true
-      updateAlpacaSystemFiles: true
-      branch: ${{ github.ref_name }}
-      downloadLatest: true
-      templateUrl: ${{ needs.Initialization.outputs.alpacaTemplateUrl }}
-      directCommit: true
-      useInputCommitOptions: false
-
-  Finalize:
-    needs: [ Initialization, UpdateSystemFiles ]
-    if: (!failure()) && (!cancelled())
-    runs-on: [ ubuntu-latest ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Abort Workflow after Update of System Files
-        if: needs.UpdateSystemFiles.result == 'success'
-        run: |
-          Write-Host "::warning::The branch ${{ github.ref_name }} has been updated with the latest AL-Go and COSMO Alpaca system files. Please re-run the workflow."
-          exit 1
 
   
