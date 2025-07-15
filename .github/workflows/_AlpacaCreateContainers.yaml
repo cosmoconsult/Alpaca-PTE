@@ -35,7 +35,7 @@ jobs:
   CreateAlpacaContainers:
     name: Create COSMO Alpaca Containers
     runs-on: [ ubuntu-latest ]
-    permissions: read-all
+    
     outputs:
       containersJson: ${{ steps.CreateContainer.outputs.containersJson }}
     steps:

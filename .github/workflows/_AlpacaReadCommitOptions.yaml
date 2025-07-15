@@ -44,7 +44,7 @@ jobs:
   ReadCommitOptions:
     name: Read Commit Options
     runs-on: [ ubuntu-latest ]
-    permissions: read-all
+    
     outputs:
       directCommit: ${{ steps.CalculateCommitOptions.outputs.directCommit }}
       downloadLatest: ${{ steps.CalculateCommitOptions.outputs.downloadLatest }}

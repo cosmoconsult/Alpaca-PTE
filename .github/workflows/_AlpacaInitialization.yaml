@@ -25,7 +25,7 @@ jobs:
   Initialization:
     name: Initialization
     runs-on: [ ubuntu-latest ]
-    permissions: read-all
+    
     outputs:
       backendUrl: ${{ steps.Initialization.outputs.backendUrl }}
       currentTemplateUrl: ${{ steps.DetermineCurrentTemplateUrl.outputs.url }}
