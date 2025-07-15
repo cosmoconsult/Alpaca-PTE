@@ -53,6 +53,7 @@ jobs:
     name: Initialization
     runs-on: [ ubuntu-latest ]
     outputs:
+      templateUrl: ${{ steps.DetermineTemplateUrl.outputs.TemplateUrl }}
       directCommit: ${{ steps.CalculateCommitOptions.outputs.directCommit }}
       downloadLatest: ${{ steps.CalculateCommitOptions.outputs.downloadLatest }}
     steps:  
@@ -65,7 +66,20 @@ jobs:
         uses: microsoft/AL-Go/Actions/ReadSettings@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
         with:
           shell: pwsh
-          get: commitOptions
+          get: templateUrl,commitOptions
+
+      - name: Determine Template URL
+        id: DetermineTemplateUrl
+        env:
+          TemplateUrlAsInput: '${{ inputs.templateUrl }}'
+        run: |
+            $templateUrl = $env:templateUrl # Available from ReadSettings step
+            if ($ENV:TemplateUrlAsInput) {
+              # Use the input value if it is provided
+              $templateUrl = $ENV:TemplateUrlAsInput
+            }
+            Write-Host "Using template URL: $templateUrl"
+            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "TemplateUrl=$templateUrl"
 
       - name: Calculate Commit Options
         id: CalculateCommitOptions
@@ -121,7 +135,7 @@ jobs:
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ needs.Initialization.outputs.downloadLatest }}
           update: 'Y'
-          templateUrl: ${{ inputs.templateUrl }}
+          templateUrl: ${{ needs.Initialization.outputs.templateUrl }}
           directCommit: ${{ needs.Initialization.outputs.directCommit }}
 
   UpdateAlpacaSystemFiles:
@@ -156,7 +170,7 @@ jobs:
           shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ needs.Initialization.outputs.downloadLatest }}
-          templateUrl: ${{ inputs.templateUrl }}
+          templateUrl: ${{ needs.Initialization.outputs.templateUrl }}
           directCommit: ${{ needs.Initialization.outputs.directCommit }}
           updateBranch: ${{ inputs.branch }}
 
