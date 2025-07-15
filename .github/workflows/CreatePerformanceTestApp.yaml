@@ -53,7 +53,7 @@ env:
 
 jobs:
   CreatePerformanceTestApp:
-    needs: [ ]
+    needs: [ CustomJob-Alpaca-Initialization ]
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Dump Workflow Information
@@ -107,40 +107,21 @@ jobs:
           shell: pwsh
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
+          
+  CustomJob-Alpaca-Initialization:
+    name: Initialize COSMO Alpaca
+    uses: ./.github/workflows/_AlpacaInitialization.yaml
+    permissions: read-all
+    secrets: inherit
 
-  CustomJob-Alpaca-UpdateALGoSystemFiles:
+  CustomJob-Alpaca-UpdateSystemFiles:
     needs: [ CreatePerformanceTestApp ]
-    if: (!failure()) && (!cancelled())
-    runs-on: [ ubuntu-latest ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ref: ${{ github.ref_name }}
-  
-      - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v7.2
-        with:
-          shell: pwsh
-          get: templateUrl
-  
-      - name: Read secrets
-        id: ReadSecrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v7.2
-        with:
-          shell: pwsh
-          gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'ghTokenWorkflow'
-  
-      - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v7.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          shell: pwsh
-          templateUrl: ${{ env.templateUrl }}
-          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
-          downloadLatest: false
-          update: ${{ github.event.inputs.directCommit == 'true' && 'Y' || 'N' }}
-          directCommit: true
-          updateBranch: ${{ github.ref_name }}
+    if: (!failure()) && (!cancelled()) && ${{ github.event.inputs.directCommit == 'true' }}
+    uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
+    permissions: read-all
+    secrets: inherit
+    with:
+      branch: ${{ github.ref_name }}
+      directCommit: true
+      downloadLatest: false
+      useInputCommitOptions: false

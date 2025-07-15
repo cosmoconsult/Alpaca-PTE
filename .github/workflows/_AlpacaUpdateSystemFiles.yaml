@@ -1,0 +1,95 @@
+name: ' Update AL-Go and COSMO Alpaca System Files'
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: Branch to update
+        required: true
+        type: string
+      templateUrl:
+        description: Template Repository URL
+        required: false
+        default: ''
+        type: string
+      downloadLatest:
+        description: Download latest from template repository
+        type: boolean
+        default: true
+      directCommit:
+        description: Direct Commit?
+        type: boolean
+        default: false
+      useInputCommitOptions:
+        description: Use commit options from inputs
+        type: boolean
+        default: false 
+
+defaults:
+  run:
+    shell: pwsh
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
+jobs:
+  ReadCommitOptions:
+    name: Read Commit Options
+    uses: ./.github/workflows/_AlpacaReadCommitOptions.yaml
+    secrets: inherit
+    with:
+      branch: ${{ inputs.branch }}
+      downloadLatest: ${{ inputs.downloadLatest }}
+      directCommit: ${{ inputs.directCommit }}
+      useInputCommitOptions: ${{ inputs.useInputCommitOptions }}
+
+  UpdateALGoSystemFiles:
+    name: Update AL-Go system files
+    needs: [ ReadCommitOptions ]
+    runs-on: [ ubuntu-latest ]
+    permissions: read-all
+    steps:  
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.branch }}
+  
+      - name: Read secrets
+        id: ReadSecrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v7.2
+        with:
+          shell: pwsh
+          gitHubSecrets: ${{ toJson(secrets) }}
+          getSecrets: 'ghTokenWorkflow'
+  
+      - name: Update AL-Go system files
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@v7.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          shell: pwsh
+          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
+          downloadLatest: ${{ needs.ReadCommitOptions.outputs.downloadLatest }}
+          update: 'Y'
+          templateUrl: ${{ inputs.templateUrl }}
+          directCommit: ${{ needs.ReadCommitOptions.outputs.directCommit }}
+
+  UpdateAlpacaSystemFiles:
+    name: Update COSMO Alpaca system files
+    needs: [ UpdateALGoSystemFiles ]
+    uses: ./.github/workflows/_AlpacaUpdateAlpacaSystemFiles.yaml
+    secrets: inherit
+    with:
+      branch: ${{ inputs.branch }}
+      downloadLatest: ${{ inputs.downloadLatest }}
+      templateUrl: ${{ inputs.templateUrl }}
+      directCommit: ${{ inputs.directCommit }}
+      useInputCommitOptions: ${{ inputs.useInputCommitOptions }}
+
+  

@@ -370,86 +370,29 @@ jobs:
           currentJobContext: ${{ toJson(job) }}
 
   CustomJob-Alpaca-Initialization:
-    needs: [ ]
-    runs-on: [ ubuntu-latest ]
+    name: Initialize COSMO Alpaca
+    uses: ./.github/workflows/_AlpacaInitialization.yaml
     permissions: read-all
-    env:
-      ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
-    outputs:
-      backendUrl: ${{ steps.Initialization.outputs.backendUrl }}
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v7.2
-        with:
-          shell: pwsh
-          get: templateUrl,alpacaTemplateUrl
-  
-      - name: Read secrets
-        id: ReadSecrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v7.2
-        with:
-          shell: pwsh
-          gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: 'ghTokenWorkflow'
-  
-      - name: Check for updates to AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v7.2
-        if: ${{ env.templateUrl != env.alpacaTemplateUrl }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          shell: pwsh
-          templateUrl: ${{ env.alpacaTemplateUrl}}
-          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
-          downloadLatest: true
-          update: 'Y'
-          directCommit: true
-          updateBranch: ${{ github.ref_name }}
-
-      - id: Initialization
-        name: Initialize COSMO Alpaca
-        shell: pwsh
-        run: |
-          ./.alpaca/PowerShell/Initialize-Alpaca.ps1
+    secrets: inherit
 
   CustomJob-CreateAlpaca-Container:
+    name: Create COSMO Alpaca Containers
     needs: [ Initialization, CustomJob-Alpaca-Initialization ]
     if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
-    runs-on: [ ubuntu-latest ]
+    uses: ./.github/workflows/_AlpacaCreateContainers.yaml
     permissions: read-all
-    env:
-      ALGO_PROJECTS_JSON: ${{ needs.Initialization.outputs.projects }}
-      ALPACA_BACKEND_URL: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
-    outputs:
-      containersJson: ${{ steps.CreateContainer.outputs.containersJson }}
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - id: CreateContainer
-        name: Create COSMO Alpaca Containers
-        shell: pwsh
-        run: |
-          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Remove COSMO Alpaca Containers on failure
-        if: failure()
-        shell: pwsh
-        run: |
-          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+    secrets: inherit
+    with:
+      backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
+      projectsJson: ${{ needs.Initialization.outputs.projects }}
 
   CustomJob-RemoveAlpaca-Container:
-    needs: [ CustomJob-Alpaca-Initialization, CustomJob-CreateAlpaca-Container, Build ]
+    name: Remove COSMO Alpaca Containers
+    needs: [ Build, CustomJob-Alpaca-Initialization, CustomJob-CreateAlpaca-Container ]
     if: always() && needs.CustomJob-CreateAlpaca-Container.result == 'success'
-    runs-on: [ ubuntu-latest ]
-    env:
-      ALPACA_BACKEND_URL: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
-      ALPACA_CONTAINERS_JSON: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Remove COSMO Alpaca Containers
-        shell: pwsh
-        run: |
-          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+    uses: ./.github/workflows/_AlpacaRemoveContainers.yaml
+    permissions: read-all
+    secrets: inherit
+    with:
+      backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
+      containersJson: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}

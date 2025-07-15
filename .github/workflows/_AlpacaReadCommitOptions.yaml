@@ -1,0 +1,84 @@
+name: ' Read Commit Options'
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: Branch from which to read commit options
+        required: true
+        type: string
+      downloadLatest:
+        description: Download latest (input)
+        type: boolean
+        default: true
+      directCommit:
+        description: Direct Commit (input)
+        type: boolean
+        default: false
+      useInputCommitOptions:
+        description: Use commit options from inputs
+        type: boolean
+        default: false
+    outputs:
+      downloadLatest: 
+        description: Download latest (output)
+        value: ${{ jobs.ReadCommitOptions.outputs.downloadLatest }}
+      directCommit: 
+        description: Direct commit (output)
+        value: ${{ jobs.ReadCommitOptions.outputs.directCommit }}
+
+defaults:
+  run:
+    shell: pwsh
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
+jobs:  
+  ReadCommitOptions:
+    name: Read Commit Options
+    runs-on: [ ubuntu-latest ]
+    permissions: read-all
+    outputs:
+      directCommit: ${{ steps.CalculateCommitOptions.outputs.directCommit }}
+      downloadLatest: ${{ steps.CalculateCommitOptions.outputs.downloadLatest }}
+    steps:  
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Read settings
+        uses: microsoft/AL-Go-Actions/ReadSettings@v7.2
+        with:
+          shell: pwsh
+          get: commitOptions
+
+      - name: Calculate Commit Options
+        id: CalculateCommitOptions
+        env:
+          directCommit: '${{ inputs.directCommit }}'
+          downloadLatest: '${{ inputs.downloadLatest }}'
+        run: |
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+          if('${{ inputs.useInputCommitOptions }}' -eq 'true') {
+            Write-Host "Using inputs from workflow event"
+            $directCommit = $env:directCommit
+            $downloadLatest = $env:downloadLatest
+          }
+          else {
+            Write-Host "Using inputs from commitOptions setting"
+            $commitOptions = $env:commitOptions | ConvertFrom-Json # Available from ReadSettings step
+            $directCommit=$(-not $commitOptions.createPullRequest)
+            $downloadLatest=$true
+          }
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "directCommit=$directCommit"
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "downloadLatest=$downloadLatest"
+
+  

@@ -47,7 +47,7 @@ env:
 
 jobs:
   CreateApp:
-    needs: [ ]
+    needs: [ CustomJob-Alpaca-Initialization ]
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Dump Workflow Information
@@ -102,7 +102,20 @@ jobs:
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
 
-  CustomJob-Alpaca-UpdateALGoSystemFiles:
+  CustomJob-Alpaca-Initialization:
+    name: Initialize COSMO Alpaca
+    uses: ./.github/workflows/_AlpacaInitialization.yaml
+    permissions: read-all
+    secrets: inherit
+
+  CustomJob-Alpaca-UpdateSystemFiles:
     needs: [ CreateApp ]
-    if: (!failure()) && (!cancelled()) && (github.event.inputs.directCommit == 'true')
-    uses: ./.github/workflows/_AlpacaDispatchUpdateGitHubGoSystemFiles.yaml
+    if: (!failure()) && (!cancelled()) && ${{ github.event.inputs.directCommit == 'true' }}
+    uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
+    permissions: read-all
+    secrets: inherit
+    with:
+      branch: ${{ github.ref_name }}
+      directCommit: true
+      downloadLatest: false
+      useInputCommitOptions: false

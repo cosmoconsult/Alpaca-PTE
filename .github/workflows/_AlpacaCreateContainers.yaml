@@ -1,0 +1,55 @@
+name: ' Create COSMO Alpaca Containers'
+
+on:
+  workflow_call:
+    inputs:
+      backendUrl:
+        description: COSMO Alpaca Backend URL
+        required: true
+        type: string
+      projectsJson:
+        description: JSON with AL-Go projects
+        required: true
+        type: string
+    outputs:
+      containersJson:
+        description: JSON with created COSMO Alpaca containers
+        value: ${{ jobs.CreateAlpacaContainers.outputs.containersJson }}
+
+defaults:
+  run:
+    shell: pwsh
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+  ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
+  ALGO_PROJECTS_JSON: ${{ inputs.projectsJson }}
+
+jobs:
+  CreateAlpacaContainers:
+    name: Create COSMO Alpaca Containers
+    runs-on: [ ubuntu-latest ]
+    permissions: read-all
+    outputs:
+      containersJson: ${{ steps.CreateContainer.outputs.containersJson }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - id: CreateContainer
+        name: Create COSMO Alpaca Containers
+        shell: pwsh
+        run: |
+          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Remove COSMO Alpaca Containers on failure
+        if: failure()
+        shell: pwsh
+        run: |
+          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
