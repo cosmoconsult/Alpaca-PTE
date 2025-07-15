@@ -25,7 +25,6 @@ jobs:
   Initialization:
     name: Initialization
     runs-on: [ ubuntu-latest ]
-    
     outputs:
       backendUrl: ${{ steps.Initialization.outputs.backendUrl }}
       currentTemplateUrl: ${{ steps.DetermineCurrentTemplateUrl.outputs.url }}
