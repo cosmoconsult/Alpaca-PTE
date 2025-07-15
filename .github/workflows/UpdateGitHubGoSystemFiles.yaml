@@ -166,6 +166,6 @@ jobs:
     with:
       branch: ${{ matrix.branch }}
       templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
-      downloadLatest: ${{ github.event.inputs.downloadLatest }}
-      directCommit: ${{ github.event.inputs.directCommit }}
+      downloadLatest: ${{ inputs.downloadLatest }}
+      directCommit: ${{ inputs.directCommit }}
       useInputCommitOptions: ${{ github.event_name == 'workflow_dispatch' }}
