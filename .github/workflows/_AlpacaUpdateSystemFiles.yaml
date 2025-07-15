@@ -50,7 +50,7 @@ env:
 
 jobs:
   UpdateSystemFiles:
-    name: 'Update AL-Go and COSMO Alpaca System Files'
+    name: 'Update System Files'
     runs-on: [ ubuntu-latest ]
     steps:  
       - name: Checkout
