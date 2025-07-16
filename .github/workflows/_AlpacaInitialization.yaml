@@ -1,4 +1,4 @@
-name: ' COSMO Alpaca Initialization'
+name: '_COSMO Alpaca - Initialization'
 
 on:
   workflow_call:

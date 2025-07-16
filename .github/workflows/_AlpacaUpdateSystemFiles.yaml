@@ -1,4 +1,4 @@
-name: ' Update AL-Go and COSMO Alpaca System Files'
+name: '_COSMO Alpaca - Update System Files'
 
 on:
   workflow_call:

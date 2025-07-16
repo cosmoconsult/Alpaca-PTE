@@ -1,4 +1,4 @@
-name: ' Remove COSMO Alpaca Containers'
+name: '_COSMO Alpaca - Remove Containers'
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: ' Ensure COSMO Alpaca Template'
+name: ' COSMO Alpaca - Ensure Template'
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: ' Create COSMO Alpaca Containers'
+name: '_COSMO Alpaca - Create Containers'
 
 on:
   workflow_call:
