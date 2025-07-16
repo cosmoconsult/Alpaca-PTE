@@ -1,9 +1,10 @@
 $project = $env:_project
 $needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
 
-# Get backend Url from needs context
-$backendUrl = $needsContext.'CustomJob-Alpaca-Initialization'.outputs.backendUrl
-if (! $backendUrl) {
+try {
+    # Get backend Url from needs context
+    $backendUrl = $needsContext.'CustomJob-Alpaca-Initialization'.outputs.backendUrl
+} catch {
     # Backward compatibility for old needs context
     $backendUrl = $env:ALPACA_BACKEND_URL
 }
@@ -12,19 +13,18 @@ Write-Host "Setting ALPACA_BACKEND_URL to '$backendUrl'"
 $env:ALPACA_BACKEND_URL = $backendUrl
 Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_BACKEND_URL=$backendUrl"
 
-# Get Container information from needs context
-$containers = @("$($needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containersJson)" | ConvertFrom-Json)
-$container = $containers | Where-Object { $_.Project -eq $project }
-if (! $container) {
+try {
+    # Get Container information from needs context
+    $containers = @("$($needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containersJson)" | ConvertFrom-Json)
+    $container = $containers | Where-Object { $_.Project -eq $project }
+} catch {
     # Backward compatibility for old needs context
-    if ($needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerID) {
-        $container = @{
-            Project  = '.'
-            Id       = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerID
-            User     = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerUser
-            Password = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerPassword
-            Url      = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerURL
-        }
+    $container = @{
+        Project  = '.'
+        Id       = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerID
+        User     = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerUser
+        Password = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerPassword
+        Url      = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerURL
     }
 }
 if (! $container) {
