@@ -136,6 +136,8 @@ jobs:
     name: 'Initialize COSMO Alpaca'
     uses: ./.github/workflows/_AlpacaInitialization.yaml
     secrets: inherit
+    with:
+      checkoutRef: ${{ github.event_name == 'pull_request' && github.sha || format('refs/pull/{0}/merge', github.event.pull_request.number) }}
 
   CustomJob-CreateAlpaca-Container:
     name: 'Create COSMO Alpaca Containers'
@@ -144,6 +146,7 @@ jobs:
     uses: ./.github/workflows/_AlpacaCreateContainers.yaml
     secrets: inherit
     with:
+      checkoutRef: ${{ needs.CustomJob-Alpaca-Initialization.outputs.checkoutRef}}
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
       projectsJson: ${{ needs.Initialization.outputs.projects }}
 
@@ -154,5 +157,6 @@ jobs:
     uses: ./.github/workflows/_AlpacaRemoveContainers.yaml
     secrets: inherit
     with:
+      checkoutRef: ${{ needs.CustomJob-Alpaca-Initialization.outputs.checkoutRef}}
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
       containersJson: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}

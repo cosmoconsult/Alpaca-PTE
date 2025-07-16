@@ -2,7 +2,16 @@ name: ' COSMO Alpaca Initialization'
 
 on:
   workflow_call:
+    inputs:
+      checkoutRef:
+        description: Ref to checkout
+        required: false
+        default: ${{ github.sha }}
+        type: string
     outputs:
+      checkoutRef:
+        description: Ref to checkout
+        value: ${{ inputs.checkoutRef }}
       backendUrl:
         value: ${{ jobs.Initialization.outputs.backendUrl }}
     
@@ -31,6 +40,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.checkoutRef }}
+          lfs: true
 
       - id: Initialization
         name: Initialize COSMO Alpaca
