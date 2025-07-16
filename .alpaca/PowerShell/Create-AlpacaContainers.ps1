@@ -27,7 +27,7 @@ try {
 } finally {
     Write-Host "Created $($containers.Count) of $($projects.Count) containers"
 
-    $containersJson = $containers | ConvertTo-Json -Depth 99 -Compress
+    $containersJson = $containers | ConvertTo-Json -Depth 99 -Compress -AsArray
     Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_CONTAINERS_JSON=$($containersJson)"
     Add-Content -encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "containersJson=$($containersJson)"
 }
