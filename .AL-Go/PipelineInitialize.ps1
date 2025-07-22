@@ -1,57 +1,54 @@
-$project = $env:_project
 $needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
 
-try {
-    # Get backend Url from needs context
-    $backendUrl = $needsContext.'CustomJob-Alpaca-Initialization'.outputs.backendUrl
-} catch {
-    # Backward compatibility for old needs context
-    $backendUrl = $env:ALPACA_BACKEND_URL
-}
-# Set ALPACA_BACKEND_URL (current script and whole github workflow job)
-Write-Host "Setting ALPACA_BACKEND_URL to '$backendUrl'"
-$env:ALPACA_BACKEND_URL = $backendUrl
-Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_BACKEND_URL=$backendUrl"
+$initializationJob = $needsContext.'CustomJob-Alpaca-Initialization'
+$createContainersJob = $needsContext.'CustomJob-CreateAlpaca-Container'
 
-try {
-    # Get Container information from needs context
-    $containers = @("$($needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containersJson)" | ConvertFrom-Json)
-    $container = $containers | Where-Object { $_.Project -eq $project }
-} catch {
-    # Backward compatibility for old needs context
-    $container = @{
-        Project  = '.'
-        Id       = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerID
-        User     = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerUser
-        Password = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerPassword
-        Url      = $needsContext.'CustomJob-CreateAlpaca-Container'.outputs.containerURL
+$scriptsPath = "./.alpaca/Scripts/"
+$scriptsArchiveUrl = $initializationJob.outputs.scriptsArchiveUrl
+$scriptsArchiveDirectory = $initializationJob.outputs.scriptsArchiveDirectory
+
+Write-Host "Preparing Alpaca scripts directory at '$scriptsPath'"
+if (Test-Path -Path $scriptsPath) {
+    Remove-Item -Path $scriptsPath -Recurse -Force
+}
+New-Item -Path $scriptsPath -ItemType Directory -Force | Out-Null
+
+if ($scriptsArchiveUrl) {
+    try {
+        $tempPath = [System.IO.Path]::GetTempFileName()
+        $tempArchivePath = "$tempPath.zip"
+
+        Write-Host "Downloading Alpaca scripts archive from '$scriptsArchiveUrl'"
+        Invoke-WebRequest -Uri $scriptsArchiveUrl -OutFile $tempArchivePath
+
+        Write-Host "Extracting Alpaca scripts archive"
+        Expand-Archive -Path $tempArchivePath -DestinationPath $tempPath -Force
+
+        Write-Host "Copying Alpaca scripts to '$scriptsPath'"
+        Get-ChildItem -Path (Join-Path $tempPath $scriptsArchiveDirectory) | ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination $scriptsPath -Force
+        }
+    }
+    catch {
+        throw
+    }
+    finally {
+        if ($tempPath -and (Test-Path $tempPath)) {
+            Remove-Item -Path $tempPath -Force -ErrorAction SilentlyContinue
+        }
+        if ($tempArchivePath -and (Test-Path $tempArchivePath)) {
+            Remove-Item -Path $tempArchivePath -Force -ErrorAction SilentlyContinue
+        }
     }
 }
-if (! $container) {
-    throw "No Alpaca container information for project '$project' found in needs context."
+
+Write-Host "Alpaca scripts found:"
+Get-ChildItem -Path $scriptsPath -File -Recurse | ForEach-Object {
+    Write-Host "- '$($_.FullName)'"
 }
-# Set ALPACA_CONTAINER_ID (current script and whole github workflow job)
-Write-Host "Setting ALPACA_CONTAINER_ID to '$($container.Id)'"
-$env:ALPACA_CONTAINER_ID = $container.Id
-Add-Content -encoding UTF8 -Path $env:GITHUB_ENV -Value "ALPACA_CONTAINER_ID=$($container.Id)"
 
-$password = ConvertTo-SecureString -String $container.Password -AsPlainText
-$myAuthContext = @{"username" = $container.User; "Password" = $password }
-$myEnvironment = $container.Url
-
-Set-Variable -Name 'bcAuthContext' -value $myAuthcontext -scope 1
-Set-Variable -Name 'environment' -value $myEnvironment -scope 1
-
-Write-Host -ForegroundColor Green 'INITIALIZE Auth context successful'
-
-Import-Module (Join-Path $ENV:GITHUB_WORKSPACE "\.alpaca\PowerShell\module\alpaca-functions.psd1") -Scope Global -Force -DisableNameChecking
-
-Write-Host Get PackagesFolder
-$packagesFolder = CheckRelativePath -baseFolder $baseFolder -sharedFolder $sharedFolder -path $packagesFolder -name "packagesFolder"
-if (Test-Path $packagesFolder) {
-    Remove-Item $packagesFolder -Recurse -Force
+$overridePath = Join-Path $scriptsPath "/Override/RunAlPipeline/PipelineInitialize.ps1"
+if (Test-Path $overridePath) {
+    Write-Host "Invoking Alpaca override"
+    . $overridePath -ScriptsPath $scriptsPath -InitializationJob $initializationJob -CreateContainersJob $createContainersJob
 }
-New-Item $packagesFolder -ItemType Directory | Out-Null
-Write-Host Packagesfolder $packagesFolder
-
-Get-DependencyApps -packagesFolder $packagesFolder -token $Env:_token

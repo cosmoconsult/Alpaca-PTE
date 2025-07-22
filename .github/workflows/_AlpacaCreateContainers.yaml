@@ -30,18 +30,12 @@ permissions:
   contents: read
   id-token: write
 
-env:
-  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
-  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
-  ALGO_PROJECTS_JSON: ${{ inputs.projectsJson }}
-
 jobs:
   CreateAlpacaContainers:
     name: Create COSMO Alpaca Containers
     runs-on: [ ubuntu-latest ]
     outputs:
-      containersJson: ${{ steps.CreateContainer.outputs.containersJson }}
+      containersJson: ${{ steps.CreateContainers.outputs.containersJson }}
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -49,14 +43,12 @@ jobs:
           ref: ${{ inputs.checkoutRef }}
           lfs: true
 
-      - id: CreateContainer
-        name: Create COSMO Alpaca Containers
-        shell: powershell
-        run: |
-          ./.alpaca/PowerShell/Create-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Remove COSMO Alpaca Containers on failure
-        if: failure()
-        shell: powershell
-        run: |
-          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+      - id: CreateContainers
+        name: CreateContainers
+        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@owun-refactor
+        env:
+          ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
+        with:
+          shell: powershell
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectsJson: ${{ inputs.projectsJson }}

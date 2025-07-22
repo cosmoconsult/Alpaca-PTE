@@ -26,12 +26,6 @@ permissions:
   contents: read
   id-token: write
 
-env:
-  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
-  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
-  ALPACA_CONTAINERS_JSON: ${{ inputs.containersJson }}
-
 jobs:
   RemoveAlpacaContainers:
     name: Remove COSMO Alpaca Containers
@@ -43,7 +37,12 @@ jobs:
           ref: ${{ inputs.checkoutRef }}
           lfs: true
 
-      - name: Remove COSMO Alpaca Containers
-        shell: powershell
-        run: |
-          ./.alpaca/PowerShell/Remove-AlpacaContainers.ps1 -token "${{ secrets.GITHUB_TOKEN }}"
+      - id: RemoveContainers
+        name: RemoveContainers
+        uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@owun-refactor
+        env:
+          ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
+        with:
+          shell: powershell
+          token: ${{ secrets.GITHUB_TOKEN }}
+          containersJson: ${{ inputs.containersJson }}
