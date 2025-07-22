@@ -74,17 +74,18 @@ function Publish-BCAppToDevEndpoint {
         }
         catch {
             $errorMessage = Get-ExtendedErrorMessage -errorRecord $_
+            $errorMessageLines = $errorMessage -replace "`r" -split "`n"
 
             $tries = $tries + 1
             if ($tries -ge $maxTries) {
                 Write-Host "::error::`e[31mError Publishing App $appName on attempt $tries`e[0m"
-                $errorMessage -split [Environment]::NewLine | ForEach-Object { Write-Host "`e[31m$_`e[0m" }
+                $errorMessageLines | ForEach-Object { Write-Host "`e[31m$_`e[0m" }
                 throw "Error Publishing App $appName"
             }
             else {
-                Write-Host "::warning::`e[31mError Publishing App $appName on attempt $tries`e[0m"
-                $errorMessage -split [Environment]::NewLine | ForEach-Object { Write-Host "`e[31m$_`e[0m" }
-                Write-Host "`e[31mFailed to publish app, retry after 15 sec`e[0m"
+                Write-Host "::notice::`e[31mError Publishing App $appName on attempt $tries`e[0m"
+                $errorMessageLines | ForEach-Object { Write-Host "`e[31m$_`e[0m" }
+                Write-Host "Failed to publish app, retry after 15 sec"
                 Start-Sleep 15
             }
         }
