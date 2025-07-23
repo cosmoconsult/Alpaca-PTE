@@ -96,8 +96,8 @@ function Wait-ForAlpacaContainer {
 
         }
         catch {
-            $ErrorMessage = Get-ExtendedErrorMessage -errorRecord $_
-            $ErrorMessage -split [Environment]::NewLine | % { Write-Host "::error::$_" }
+            $errorMessage = Get-ExtendedErrorMessage -errorRecord $_
+            Write-GitHubWorkflowError -Message $errorMessage -AsAnnotation
             $success = $false
             return
         }

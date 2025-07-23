@@ -55,7 +55,6 @@ function Publish-BCAppToDevEndpoint {
             $status = $result.StatusCode
             Write-Host "Returned $status from $devServerUrl"
             if (!$result.IsSuccessStatusCode) {
-                Write-Host "Error Publishing App $appName"
                 $message = "Status Code $($result.StatusCode) : $($result.ReasonPhrase)"
                 try {
                     $resultMsg = $result.Content.ReadAsStringAsync().Result
@@ -74,16 +73,15 @@ function Publish-BCAppToDevEndpoint {
         }
         catch {
             $errorMessage = Get-ExtendedErrorMessage -errorRecord $_
-            # Add ANSI color code (red) to each line and change from CRLF to LF
-            $errorMessage = ($errorMessage -split '\r?\n' | ForEach-Object { "`e[31m$_`e[0m" }) -join "`n"
+            $errorMessage = "Error Publishing App '$appName'`n$errorMessage"
 
             $tries = $tries + 1
             if ($tries -ge $maxTries) {
-                Write-Host "::error::$($errorMessage -replace '\n', '%0A')"
-                throw "Error Publishing App $appName"
+                Write-GitHubWorkflowError -Message $errorMessage -AsAnnotation
+                exit 1
             }
             else {
-                Write-Host $errorMessage
+                Write-GitHubWorkflowError -Message $errorMessage
                 Write-Host "Failed to publish app, retry after 15 sec"
                 Start-Sleep 15
             }

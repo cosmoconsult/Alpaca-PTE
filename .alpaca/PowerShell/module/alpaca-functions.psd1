@@ -27,6 +27,7 @@
         'Get-AlpacaSettings.psm1',
         'Get-DependencyApps.psm1',
         'Get-ExtendedErrorMessage.psm1',
+        'GitHub-Helper.psm1',
         'Publish-BCAppToDevEndpoint.psm1',
         'Wait-ForAlpacaContainer.psm1',
         'Wait-ForImage.psm1')
