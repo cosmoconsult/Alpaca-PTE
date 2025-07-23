@@ -25,9 +25,11 @@ if ($scriptsArchiveUrl) {
         Expand-Archive -Path $tempArchivePath -DestinationPath $tempPath -Force
 
         Write-Host "Copying Alpaca scripts to '$scriptsPath'"
-        Get-ChildItem -Path (Join-Path $tempPath $scriptsArchiveDirectory) | ForEach-Object {
-            Copy-Item -Path $_.FullName -Destination $scriptsPath -Recurse -Force
-        }
+        Get-Item -Path (Join-Path $tempPath $scriptsArchiveDirectory) | 
+            Get-ChildItem | 
+            ForEach-Object {
+                Copy-Item -Path $_.FullName -Destination $scriptsPath -Recurse -Force
+            }
     }
     catch {
         throw
@@ -44,10 +46,11 @@ if ($scriptsArchiveUrl) {
 
 Write-Host "Alpaca scripts found:"
 Get-ChildItem -Path $scriptsPath -File -Recurse | ForEach-Object {
-    Write-Host "- '$($_.FullName)'"
+    Write-Host "- '$(Resolve-Path -Path $_.FullName -Relative)'"
 }
 
 $overridePath = Join-Path $scriptsPath "/Overrides/RunAlPipeline/PipelineInitialize.ps1"
+Write-Host "Override path: $overridePath"
 if (Test-Path $overridePath) {
     Write-Host "Invoking Alpaca override"
     . $overridePath -ScriptsPath $scriptsPath -InitializationJob $initializationJob -CreateContainersJob $createContainersJob
