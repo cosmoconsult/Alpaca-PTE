@@ -78,7 +78,7 @@ function Publish-BCAppToDevEndpoint {
             $tries = $tries + 1
             if ($tries -ge $maxTries) {
                 Write-GitHubWorkflowError -Message $errorMessage -AsAnnotation
-                exit 1
+                throw "Error Publishing App '$appName'"
             }
             else {
                 Write-GitHubWorkflowError -Message $errorMessage

@@ -31,10 +31,8 @@ function Write-GitHubWorkflowError {
     }
 
     if ($AsAnnotation) {
-        $parameters += @{
-            Command    = "::error::"
-            LineDelimiter = '%0A'
-        }
+        $parameters.Command = "::error::"
+        $parameters.LineDelimiter = '%0A'
     }
     
     Write-GitHubWorkflowLog @parameters
