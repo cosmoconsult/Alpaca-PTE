@@ -47,7 +47,7 @@ Get-ChildItem -Path $scriptsPath -File -Recurse | ForEach-Object {
     Write-Host "- '$($_.FullName)'"
 }
 
-$overridePath = Join-Path $scriptsPath "/Override/RunAlPipeline/PipelineInitialize.ps1"
+$overridePath = Join-Path $scriptsPath "/Overrides/RunAlPipeline/PipelineInitialize.ps1"
 if (Test-Path $overridePath) {
     Write-Host "Invoking Alpaca override"
     . $overridePath -ScriptsPath $scriptsPath -InitializationJob $initializationJob -CreateContainersJob $createContainersJob
