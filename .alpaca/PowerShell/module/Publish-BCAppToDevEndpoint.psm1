@@ -73,16 +73,17 @@ function Publish-BCAppToDevEndpoint {
             $success = $true
         }
         catch {
-            Write-Host "::notice::Error Publishing App $appName on attempt $($tries + 1)"
             $errorMessage = Get-ExtendedErrorMessage -errorRecord $_
-            $errorMessage -replace "`r" -split "`n" | 
-                ForEach-Object { Write-Host "`e[31m$_`e[0m" }
+            # Add ANSI color code (red) to each line and change from CRLF to LF
+            $errorMessage = ($errorMessage -split '\r?\n' | ForEach-Object { "`e[31m$_`e[0m" }) -join "`n"
 
             $tries = $tries + 1
             if ($tries -ge $maxTries) {
+                Write-Host "::error::$($errorMessage -replace '\n', '%0A')"
                 throw "Error Publishing App $appName"
             }
             else {
+                Write-Host $errorMessage
                 Write-Host "Failed to publish app, retry after 15 sec"
                 Start-Sleep 15
             }
