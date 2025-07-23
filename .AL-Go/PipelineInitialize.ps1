@@ -26,7 +26,7 @@ if ($scriptsArchiveUrl) {
 
         Write-Host "Copying Alpaca scripts to '$scriptsPath'"
         Get-ChildItem -Path (Join-Path $tempPath $scriptsArchiveDirectory) | ForEach-Object {
-            Copy-Item -Path $_.FullName -Destination $scriptsPath -Force
+            Copy-Item -Path $_.FullName -Destination $scriptsPath -Recurse -Force
         }
     }
     catch {
@@ -34,10 +34,10 @@ if ($scriptsArchiveUrl) {
     }
     finally {
         if ($tempPath -and (Test-Path $tempPath)) {
-            Remove-Item -Path $tempPath -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
         }
         if ($tempArchivePath -and (Test-Path $tempArchivePath)) {
-            Remove-Item -Path $tempArchivePath -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path $tempArchivePath -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
 }
