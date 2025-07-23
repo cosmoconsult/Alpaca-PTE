@@ -1,3 +1,5 @@
+Write-Host "::group::PipelineInitialize"
+
 $needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
 
 $initializationJob = $needsContext.'CustomJob-Alpaca-Initialization'
@@ -55,3 +57,5 @@ if (Test-Path $overridePath) {
     Write-Host "Invoking Alpaca override"
     . $overridePath -ScriptsPath $scriptsPath -InitializationJob $initializationJob -CreateContainersJob $createContainersJob
 }
+
+Write-Host "::endgroup::"
