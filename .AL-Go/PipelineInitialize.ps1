@@ -15,7 +15,7 @@ New-Item -Path $scriptsPath -ItemType Directory -Force | Out-Null
 
 if ($scriptsArchiveUrl) {
     try {
-        $tempPath = [System.IO.Path]::GetTempFileName()
+        $tempPath = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
         $tempArchivePath = "$tempPath.zip"
 
         Write-Host "Downloading Alpaca scripts archive from '$scriptsArchiveUrl'"
