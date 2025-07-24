@@ -47,8 +47,13 @@ if ($scriptsArchiveUrl) {
 }
 
 Write-Host "Alpaca scripts found:"
-Get-ChildItem -Path $scriptsPath -File -Recurse | ForEach-Object {
-    Write-Host "- $(Resolve-Path -Path $_.FullName -Relative)"
+$scriptFiles = Get-ChildItem -Path $scriptsPath -File -Recurse
+if ($scriptFiles) {
+    $scriptFiles | ForEach-Object {
+        Write-Host "- $(Resolve-Path -Path $_.FullName -Relative)"
+    }
+} else {
+    Write-Host "- None"
 }
 
 $overridesPath = Join-Path $scriptsPath "/Overrides/RunAlPipeline" 
