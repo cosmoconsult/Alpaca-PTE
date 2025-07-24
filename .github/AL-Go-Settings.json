@@ -3,7 +3,6 @@
   "type": "PTE",
   "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
   "templateSha": "e74753260f6cc4bc3009c414b8e84b328cb282c9",
-  "alpacaTemplateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@owun-test",
   "useCompilerFolder": true,
   "doNotRemovePackagesFolderIfExists": true,
   "runs-on": "ubuntu-latest",
@@ -11,5 +10,9 @@
   "githubRunner": "ubuntu-latest",
   "githubRunnerShell": "pwsh",
   "artifact": "////latest",
-  "cacheImageName": ""
+  "cacheImageName": "",
+  "unusedALGoSystemFiles": [
+    "ImportTestToolkitToBcContainer.ps1",
+    "PublishBcContainerApp.ps1"
+  ]
 }
