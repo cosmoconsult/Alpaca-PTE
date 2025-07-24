@@ -9,7 +9,7 @@ $scriptsPath = "./.alpaca/Scripts/"
 $scriptsArchiveUrl = $initializationJob.outputs.scriptsArchiveUrl
 $scriptsArchiveDirectory = $initializationJob.outputs.scriptsArchiveDirectory
 
-Write-Host "Preparing Alpaca scripts directory at '$scriptsPath'"
+Write-Host "Prepare Alpaca scripts directory at '$scriptsPath'"
 if (Test-Path -Path $scriptsPath) {
     Remove-Item -Path $scriptsPath -Recurse -Force
 }
@@ -20,13 +20,13 @@ if ($scriptsArchiveUrl) {
         $tempPath = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
         $tempArchivePath = "$tempPath.zip"
 
-        Write-Host "Downloading Alpaca scripts archive from '$scriptsArchiveUrl'"
+        Write-Host "Download Alpaca scripts archive from '$scriptsArchiveUrl'"
         Invoke-WebRequest -Uri $scriptsArchiveUrl -OutFile $tempArchivePath
 
-        Write-Host "Extracting Alpaca scripts archive"
+        Write-Host "Extract Alpaca scripts archive"
         Expand-Archive -Path $tempArchivePath -DestinationPath $tempPath -Force
 
-        Write-Host "Copying Alpaca scripts to '$scriptsPath'"
+        Write-Host "Copy Alpaca scripts to '$scriptsPath'"
         Get-Item -Path (Join-Path $tempPath $scriptsArchiveDirectory) | 
             Get-ChildItem | 
             ForEach-Object {
@@ -48,11 +48,12 @@ if ($scriptsArchiveUrl) {
 
 Write-Host "Alpaca scripts found:"
 Get-ChildItem -Path $scriptsPath -File -Recurse | ForEach-Object {
-    Write-Host "- '$(Resolve-Path -Path $_.FullName -Relative)'"
+    Write-Host "- $(Resolve-Path -Path $_.FullName -Relative)"
 }
 
-$overridePath = Join-Path $scriptsPath "/Overrides/RunAlPipeline/PipelineInitialize.ps1"
-Write-Host "Override path: $overridePath"
+$overridesPath = Join-Path $scriptsPath "/Overrides/RunAlPipeline" 
+Write-Host "Alpaca overrides path: $overridesPath"
+$overridePath = Join-Path $overridesPath "PipelineInitialize.ps1"
 if (Test-Path $overridePath) {
     Write-Host "Invoking Alpaca override"
     . $overridePath -ScriptsPath $scriptsPath -InitializationJob $initializationJob -CreateContainersJob $createContainersJob
