@@ -3,17 +3,12 @@ name: '_COSMO Alpaca - Remove Containers'
 on:
   workflow_call:
     inputs:
-      checkoutRef:
-        description: Ref to checkout
-        required: false
-        default: ${{ github.sha }}
-        type: string
       backendUrl:
-        description: COSMO Alpaca Backend URL
+        description: COSMO Alpaca backend Url
         required: true
         type: string
       containersJson:
-        description: JSON with COSMO Alpaca containers
+        description: An array of Alpaca container informations in compressed JSON format
         required: true
         type: string
 
@@ -21,27 +16,17 @@ defaults:
   run:
     shell: powershell
 
-permissions:
-  actions: read
-  contents: read
-  id-token: write
+env:
+  ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
 
 jobs:
   RemoveAlpacaContainers:
     name: Remove COSMO Alpaca Containers
     runs-on: [ ubuntu-latest ]
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ref: ${{ inputs.checkoutRef }}
-          lfs: true
-
       - id: RemoveContainers
-        name: RemoveContainers
+        name: Remove Containers
         uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@owun-refactor
-        env:
-          ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
         with:
           shell: powershell
           token: ${{ secrets.GITHUB_TOKEN }}

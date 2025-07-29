@@ -381,7 +381,6 @@ jobs:
     uses: ./.github/workflows/_AlpacaCreateContainers.yaml
     secrets: inherit
     with:
-      checkoutRef: ${{ needs.CustomJob-Alpaca-Initialization.outputs.checkoutRef}}
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
       projectsJson: ${{ needs.Initialization.outputs.projects }}
 
@@ -392,6 +391,5 @@ jobs:
     uses: ./.github/workflows/_AlpacaRemoveContainers.yaml
     secrets: inherit
     with:
-      checkoutRef: ${{ needs.CustomJob-Alpaca-Initialization.outputs.checkoutRef}}
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
       containersJson: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}
