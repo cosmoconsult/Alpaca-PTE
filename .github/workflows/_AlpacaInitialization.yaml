@@ -32,7 +32,7 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@owun-refactor
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.0.0-test
         with:
           shell: powershell
 

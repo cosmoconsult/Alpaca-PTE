@@ -32,7 +32,7 @@ jobs:
     steps:
       - id: CreateContainers
         name: Create Containers
-        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@owun-refactor
+        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@v2.0.0-test
         with:
           shell: powershell
           token: ${{ secrets.GITHUB_TOKEN }}
