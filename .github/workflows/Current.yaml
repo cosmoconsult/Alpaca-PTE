@@ -16,7 +16,6 @@ env:
   workflowDepth: 1
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
 
 jobs:
   Initialization:
@@ -84,7 +83,7 @@ jobs:
           maxBuildDepth: ${{ env.workflowDepth }}
 
   Build:
-    needs: [ Initialization, CustomJob-CreateAlpaca-Container ]
+    needs: [ Initialization, CustomJob-CreateAlpaca-Container, CustomJob-CreateAlpaca-Container ]
     if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
     strategy:
       matrix:

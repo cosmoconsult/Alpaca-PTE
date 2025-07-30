@@ -1,7 +1,8 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/ab2f5319ed073c542e03914f8ae6c0fda029ee1e/Actions/settings.schema.json",
   "type": "PTE",
-  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@main",
-  "templateSha": "",
+  "templateUrl": "https://github.com/cosmoconsult/Alpaca-PTE@release",
+  "templateSha": "d5344c3b40bac809a12f620e0adc9a4991663d15",
   "useCompilerFolder": true,
   "doNotRemovePackagesFolderIfExists": true,
   "runs-on": "ubuntu-latest",
