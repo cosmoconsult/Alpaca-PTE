@@ -12,6 +12,7 @@
   "artifact": "////latest",
   "cacheImageName": "",
   "unusedALGoSystemFiles": [
+    "_AlpacaValidateLinkedWorkItem.yaml",
     "ImportTestToolkitToBcContainer.ps1",
     "PublishBcContainerApp.ps1"
   ]
