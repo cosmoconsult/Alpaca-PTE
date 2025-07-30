@@ -33,7 +33,7 @@ on:
       useInputCommitOptions:
         description: Use commit options from inputs
         type: boolean
-        default: false 
+        default: false
 
 defaults:
   run:
