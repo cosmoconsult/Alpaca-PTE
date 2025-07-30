@@ -1,0 +1,21 @@
+name: '_COSMO Alpaca - Validate linked Work Item'
+
+on: 
+  pull_request_target:
+    types: 
+      - opened
+      - reopened
+      - edited
+      - synchronize
+
+permissions:
+    pull-requests: write
+    issues: write
+
+    
+jobs:
+  create-edit-comment:
+    name: check   
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cosmoconsult/github-actions-pr-is-linked-to-work-item@main

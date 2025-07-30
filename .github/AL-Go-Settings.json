@@ -9,5 +9,9 @@
   "githubRunner": "ubuntu-latest",
   "githubRunnerShell": "pwsh",
   "artifact": "////latest",
-  "cacheImageName": ""
+  "cacheImageName": "",
+  "unusedALGoSystemFiles": [
+    "ImportTestToolkitToBcContainer.ps1",
+    "PublishBcContainerApp.ps1"
+  ]
 }
