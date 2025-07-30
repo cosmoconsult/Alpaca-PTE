@@ -1,4 +1,4 @@
-name: '_COSMO Alpaca - Validate linked Work Item'
+name: 'COSMO - Validate PR linked to Work Item'
 
 on: 
   pull_request_target:

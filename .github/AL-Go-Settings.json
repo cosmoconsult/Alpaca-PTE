@@ -11,6 +11,6 @@
   "artifact": "////latest",
   "cacheImageName": "",
   "unusedALGoSystemFiles": [
-    "_AlpacaValidateLinkedWorkItem.yaml"
+    "_CosmoValidatePRLinkedToWorkItem.yaml"
   ]
 }
