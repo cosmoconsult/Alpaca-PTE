@@ -107,7 +107,7 @@ jobs:
           getSecrets: 'ghTokenWorkflow'
   
       - name: Update COSMO Alpaca system files
-        uses: cosmoconsult/Alpaca-Actions/UpdateAlpacaSystemFiles@v2.0.0-test
+        uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSystemFiles@v2.0.0-test
         if: (!failure()) && (!cancelled()) && inputs.updateAlpacaSystemFiles
         env:
           GITHUB_TOKEN: ${{ github.token }}
