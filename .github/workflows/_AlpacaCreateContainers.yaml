@@ -1,0 +1,39 @@
+name: '_COSMO Alpaca - Create Containers'
+
+on:
+  workflow_call:
+    inputs:
+      backendUrl:
+        description: COSMO Alpaca backend Url
+        required: true
+        type: string
+      projectsJson:
+        description:  An array of AL-Go projects in compressed JSON format
+        required: true
+        type: string
+    outputs:
+      containersJson:
+        description: An array of Alpaca container informations in compressed JSON format
+        value: ${{ jobs.CreateAlpacaContainers.outputs.containersJson }}
+
+defaults:
+  run:
+    shell: pwsh
+
+env:
+  ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
+
+jobs:
+  CreateAlpacaContainers:
+    name: Create COSMO Alpaca Containers
+    runs-on: [ ubuntu-latest ]
+    outputs:
+      containersJson: ${{ steps.CreateContainers.outputs.containersJson }}
+    steps:
+      - id: CreateContainers
+        name: Create Containers
+        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@v2.0.0
+        with:
+          shell: pwsh
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectsJson: ${{ inputs.projectsJson }}

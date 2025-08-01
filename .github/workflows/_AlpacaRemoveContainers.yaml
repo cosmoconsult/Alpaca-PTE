@@ -1,0 +1,33 @@
+name: '_COSMO Alpaca - Remove Containers'
+
+on:
+  workflow_call:
+    inputs:
+      backendUrl:
+        description: COSMO Alpaca backend Url
+        required: true
+        type: string
+      containersJson:
+        description: An array of Alpaca container informations in compressed JSON format
+        required: true
+        type: string
+
+defaults:
+  run:
+    shell: pwsh
+
+env:
+  ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
+
+jobs:
+  RemoveAlpacaContainers:
+    name: Remove COSMO Alpaca Containers
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - id: RemoveContainers
+        name: Remove Containers
+        uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@v2.0.0
+        with:
+          shell: pwsh
+          token: ${{ secrets.GITHUB_TOKEN }}
+          containersJson: ${{ inputs.containersJson }}

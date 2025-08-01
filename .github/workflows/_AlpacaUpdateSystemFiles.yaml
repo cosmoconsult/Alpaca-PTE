@@ -1,0 +1,136 @@
+name: '_COSMO Alpaca - Update System Files'
+
+on:
+  workflow_call:
+    inputs:
+      updateALGoSystemFiles:
+        description: Update AL-Go system files
+        required: true
+        type: boolean
+        default: true
+      updateAlpacaSystemFiles:
+        description: Update COSMO Alpaca system files
+        required: true
+        type: boolean
+        default: true
+      branch:
+        description: Branch to update
+        required: true
+        type: string
+      templateUrl:
+        description: Template Repository URL
+        required: false
+        default: ''
+        type: string
+      downloadLatest:
+        description: Download latest from template repository
+        type: boolean
+        default: true
+      directCommit:
+        description: Direct Commit?
+        type: boolean
+        default: false
+      useInputCommitOptions:
+        description: Use commit options from inputs
+        type: boolean
+        default: false
+
+defaults:
+  run:
+    shell: pwsh
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
+jobs:
+  UpdateSystemFiles:
+    name: 'Update System Files'
+    runs-on: [ ubuntu-latest ]
+    steps:  
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Read settings
+        uses: microsoft/AL-Go/Actions/ReadSettings@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
+        with:
+          shell: pwsh
+          get: templateUrl,commitOptions
+
+      - name: Determine Template URL
+        id: DetermineTemplateUrl
+        env:
+          TemplateUrlAsInput: '${{ inputs.templateUrl }}'
+        run: |
+            $templateUrl = $env:templateUrl # Available from ReadSettings step
+            if ($ENV:TemplateUrlAsInput) {
+              # Use the input value if it is provided
+              $templateUrl = $ENV:TemplateUrlAsInput
+            }
+            Write-Host "Using template URL: $templateUrl"
+            Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "TemplateUrl=$templateUrl"
+
+      - name: Calculate Commit Options
+        id: CalculateCommitOptions
+        env:
+          directCommit: '${{ inputs.directCommit }}'
+          downloadLatest: '${{ inputs.downloadLatest }}'
+        run: |
+          $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+          if('${{ inputs.useInputCommitOptions }}' -eq 'true') {
+            Write-Host "Using inputs from workflow event"
+            $directCommit = $env:directCommit
+            $downloadLatest = $env:downloadLatest
+          }
+          else {
+            Write-Host "Using inputs from commitOptions setting"
+            $commitOptions = $env:commitOptions | ConvertFrom-Json # Available from ReadSettings step
+            $directCommit=$(-not $commitOptions.createPullRequest)
+            $downloadLatest=$true
+          }
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "directCommit=$directCommit"
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "downloadLatest=$downloadLatest"
+  
+      - name: Read secrets
+        id: ReadSecrets
+        uses: microsoft/AL-Go/Actions/ReadSecrets@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
+        with:
+          shell: pwsh
+          gitHubSecrets: ${{ toJson(secrets) }}
+          getSecrets: 'ghTokenWorkflow'
+  
+      - name: Update COSMO Alpaca system files
+        uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSystemFiles@v2.0.0
+        if: (!failure()) && (!cancelled()) && inputs.updateAlpacaSystemFiles
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          shell: pwsh
+          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
+          downloadLatest: ${{ steps.CalculateCommitOptions.outputs.downloadLatest }}
+          templateUrl: ${{ steps.DetermineTemplateUrl.outputs.TemplateUrl }}
+          directCommit: ${{ steps.CalculateCommitOptions.outputs.directCommit }}
+          updateBranch: ${{ inputs.branch }}
+  
+      - name: Update AL-Go system files
+        uses: microsoft/AL-Go/Actions/CheckForUpdates@ab2f5319ed073c542e03914f8ae6c0fda029ee1e
+        if: (!failure()) && (!cancelled()) && inputs.updateALGoSystemFiles
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          shell: pwsh
+          token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
+          downloadLatest: ${{ steps.CalculateCommitOptions.outputs.downloadLatest }}
+          update: 'Y'
+          templateUrl: ${{ steps.DetermineTemplateUrl.outputs.TemplateUrl }}
+          directCommit: ${{ steps.CalculateCommitOptions.outputs.directCommit }}
+          updateBranch: ${{ inputs.branch }}
+
+  
