@@ -8,20 +8,16 @@ $scriptsPath = "./.alpaca/Scripts/"
 $scriptsArchiveUrl = $initializationJob.outputs.scriptsArchiveUrl
 $scriptsArchiveDirectory = $initializationJob.outputs.scriptsArchiveDirectory
 
-Write-Host "Collect workflow jobs from context"
+Write-Host "Collect workflow jobs from context:"
 $jobs = @{}
 $jobIds = $initializationJob.outputs.jobIdsJson | ConvertFrom-Json
 foreach ($jobId in $jobIds.PSObject.Properties.GetEnumerator()) {
     if ($needsContext.PSObject.Properties.Name -contains $jobId.Value) {
+        Write-Host " - $($jobId.Name): $($jobId.Value)"
         $jobs[$jobId.Name] = $needsContext.$($jobId.Value)
     }
 }
-Write-Host "Workflow jobs found:"
-if ($jobs.Keys.Count) {
-    $jobs.GetEnumerator() | ForEach-Object {
-        Write-Host " - $($_.Name): $($_.Value)"
-    }
-} else {
+if ($jobs.Count -eq 0) {
     Write-Host " - None"
 }
 
