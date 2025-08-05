@@ -1,23 +1,79 @@
-$Needs = $ENV:NeedsContext | ConvertFrom-Json
-$containerConfig = $Needs."CustomJob-CreateAlpaca-Container".outputs
+Write-Host "::group::PipelineInitialize"
 
-$password = ConvertTo-SecureString -String $containerConfig.containerPassword -AsPlainText
-$myAuthContext = @{"username" = $containerConfig.containerUser; "Password" = $password }
-$myEnvironment = $containerConfig.containerURL
+$needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
 
-Set-Variable -Name 'bcAuthContext' -value $myAuthcontext -scope 1
-Set-Variable -Name 'environment' -value $myEnvironment -scope 1
+$initializationJob = $needsContext.'CustomJob-Alpaca-Initialization'
 
-Write-Host -ForegroundColor Green 'INITIALIZE Auth context successful'
+$scriptsPath = "./.alpaca/Scripts/"
+$scriptsArchiveUrl = $initializationJob.outputs.scriptsArchiveUrl
+$scriptsArchiveDirectory = $initializationJob.outputs.scriptsArchiveDirectory
 
-Import-Module (Join-Path $ENV:GITHUB_WORKSPACE "\.alpaca\PowerShell\module\alpaca-functions.psd1") -Scope Global -Force -DisableNameChecking
-
-Write-Host Get PackagesFolder
-$packagesFolder = CheckRelativePath -baseFolder $baseFolder -sharedFolder $sharedFolder -path $packagesFolder -name "packagesFolder"
-if (Test-Path $packagesFolder) {
-    Remove-Item $packagesFolder -Recurse -Force
+Write-Host "Collect workflow jobs from context:"
+$jobs = @{}
+$jobIds = $initializationJob.outputs.jobIdsJson | ConvertFrom-Json
+foreach ($jobId in $jobIds.PSObject.Properties.GetEnumerator()) {
+    if ($needsContext.PSObject.Properties.Name -contains $jobId.Value) {
+        Write-Host " - $($jobId.Name): $($jobId.Value)"
+        $jobs[$jobId.Name] = $needsContext.$($jobId.Value)
+    }
 }
-New-Item $packagesFolder -ItemType Directory | Out-Null
-Write-Host Packagesfolder $packagesFolder
+if ($jobs.Count -eq 0) {
+    Write-Host " - None"
+}
 
-Get-DependencyApps -packagesFolder $packagesFolder -token $Env:_token
+Write-Host "Prepare Alpaca scripts directory at '$scriptsPath'"
+if (Test-Path -Path $scriptsPath) {
+    Remove-Item -Path $scriptsPath -Recurse -Force
+}
+New-Item -Path $scriptsPath -ItemType Directory -Force | Out-Null
+
+if ($scriptsArchiveUrl) {
+    try {
+        $tempPath = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+        $tempArchivePath = "$tempPath.zip"
+
+        Write-Host "Download Alpaca scripts archive from '$scriptsArchiveUrl'"
+        Invoke-WebRequest -Uri $scriptsArchiveUrl -OutFile $tempArchivePath
+
+        Write-Host "Extract Alpaca scripts archive"
+        Expand-Archive -Path $tempArchivePath -DestinationPath $tempPath -Force
+
+        Write-Host "Copy Alpaca scripts to '$scriptsPath'"
+        Get-Item -Path (Join-Path $tempPath $scriptsArchiveDirectory) | 
+            Get-ChildItem | 
+            ForEach-Object {
+                Copy-Item -Path $_.FullName -Destination $scriptsPath -Recurse -Force
+            }
+    }
+    catch {
+        throw
+    }
+    finally {
+        if ($tempPath -and (Test-Path $tempPath)) {
+            Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        if ($tempArchivePath -and (Test-Path $tempArchivePath)) {
+            Remove-Item -Path $tempArchivePath -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
+Write-Host "Alpaca scripts found:"
+$scriptFiles = Get-ChildItem -Path $scriptsPath -File -Recurse
+if ($scriptFiles) {
+    $scriptFiles | ForEach-Object {
+        Write-Host "- $(Resolve-Path -Path $_.FullName -Relative)"
+    }
+} else {
+    Write-Host "- None"
+}
+
+$overridesPath = Join-Path $scriptsPath "/Overrides/RunAlPipeline" 
+Write-Host "Alpaca overrides path: $overridesPath"
+$overridePath = Join-Path $overridesPath "PipelineInitialize.ps1"
+if (Test-Path $overridePath) {
+    Write-Host "Invoking Alpaca override"
+    . $overridePath -Jobs $jobs -ScriptsPath $scriptsPath
+}
+
+Write-Host "::endgroup::"

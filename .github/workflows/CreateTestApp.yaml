@@ -102,3 +102,17 @@ jobs:
           shell: pwsh
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
+
+  CustomJob-Alpaca-UpdateSystemFiles:
+    name: 'Update AL-Go and COSMO Alpaca System Files'
+    needs: [ CreateTestApp ]
+    if: (!failure()) && (!cancelled()) && ${{ github.event.inputs.directCommit == 'true' }}
+    uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
+    secrets: inherit
+    with:
+      updateALGoSystemFiles: true
+      updateAlpacaSystemFiles: true
+      branch: ${{ github.ref_name }}
+      directCommit: true
+      downloadLatest: false
+      useInputCommitOptions: true

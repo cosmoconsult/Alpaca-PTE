@@ -1,0 +1,48 @@
+name: '_COSMO Alpaca - Initialization'
+
+on:
+  workflow_call:          
+    outputs:
+      backendUrl:
+        description: COSMO Alpaca Backend URL
+        value: ${{ jobs.Initialization.outputs.backendUrl }}
+      scriptsArchiveUrl:
+        description: COSMO Alpaca Scripts Archive URL
+        value: ${{ jobs.Initialization.outputs.scriptsArchiveUrl }}
+      scriptsArchiveDirectory:
+        description: COSMO Alpaca Scripts Archive Directory
+        value: ${{ jobs.Initialization.outputs.scriptsArchiveDirectory }}
+      jobIdsJson:
+        description: COSMO Alpaca Job IDs
+        value: >-
+          {
+            "initialization":   "CustomJob-Alpaca-Initialization",
+            "createContainers": "CustomJob-CreateAlpaca-Container",
+            "removeContainers": "CustomJob-RemoveAlpaca-Container"
+          }
+    
+
+defaults:
+  run:
+    shell: powershell
+
+env:
+  ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
+
+jobs:
+  Initialization:
+    name: COSMO Alpaca Initialization
+    runs-on: [ ubuntu-latest ]
+    outputs:
+      backendUrl: ${{ steps.Initialization.outputs.backendUrl }}
+      scriptsArchiveUrl: ${{ steps.Initialization.outputs.scriptsArchiveUrl }}
+      scriptsArchiveDirectory: ${{ steps.Initialization.outputs.scriptsArchiveDirectory }}
+    steps:
+      - id: Initialization
+        name: Initialization
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.0.0
+        with:
+          shell: powershell
+
+
+  
