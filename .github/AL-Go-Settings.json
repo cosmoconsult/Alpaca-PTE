@@ -12,7 +12,6 @@
   "artifact": "////latest",
   "cacheImageName": "",
   "unusedALGoSystemFiles": [
-    "_CosmoValidatePRLinkedToWorkItem.yaml",
     "ImportTestToolkitToBcContainer.ps1",
     "PublishBcContainerApp.ps1"
   ]
