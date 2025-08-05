@@ -1,7 +1,7 @@
 name: '_COSMO Alpaca - Initialization'
 
 on:
-  workflow_call:
+  workflow_call:          
     outputs:
       backendUrl:
         description: COSMO Alpaca Backend URL
@@ -12,6 +12,14 @@ on:
       scriptsArchiveDirectory:
         description: COSMO Alpaca Scripts Archive Directory
         value: ${{ jobs.Initialization.outputs.scriptsArchiveDirectory }}
+      jobIdsJson:
+        description: COSMO Alpaca Job IDs
+        value: >-
+          {
+            "initialization":   "CustomJob-Alpaca-Initialization",
+            "createContainers": "CustomJob-CreateAlpaca-Container",
+            "removeContainers": "CustomJob-RemoveAlpaca-Container"
+          }
     
 
 defaults:
@@ -32,7 +40,7 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.0.0
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@owun-fix
         with:
           shell: powershell
 

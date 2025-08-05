@@ -3,11 +3,27 @@ Write-Host "::group::PipelineInitialize"
 $needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
 
 $initializationJob = $needsContext.'CustomJob-Alpaca-Initialization'
-$createContainersJob = $needsContext.'CustomJob-CreateAlpaca-Container'
 
 $scriptsPath = "./.alpaca/Scripts/"
 $scriptsArchiveUrl = $initializationJob.outputs.scriptsArchiveUrl
 $scriptsArchiveDirectory = $initializationJob.outputs.scriptsArchiveDirectory
+
+Write-Host "Collect workflow jobs from context"
+$jobs = @{}
+$jobIds = $initializationJob.outputs.jobIdsJson | ConvertFrom-Json
+foreach ($jobId in $jobIds.PSObject.Properties.GetEnumerator()) {
+    if ($needsContext.PSObject.Properties.Name -contains $jobId.Value) {
+        $jobs[$jobId.Name] = $needsContext.$($jobId.Value)
+    }
+}
+Write-Host "Workflow jobs found:"
+if ($jobs.Keys.Count) {
+    $jobs.GetEnumerator() | ForEach-Object {
+        Write-Host " - $($_.Name): $($_.Value)"
+    }
+} else {
+    Write-Host " - None"
+}
 
 Write-Host "Prepare Alpaca scripts directory at '$scriptsPath'"
 if (Test-Path -Path $scriptsPath) {
@@ -61,7 +77,7 @@ Write-Host "Alpaca overrides path: $overridesPath"
 $overridePath = Join-Path $overridesPath "PipelineInitialize.ps1"
 if (Test-Path $overridePath) {
     Write-Host "Invoking Alpaca override"
-    . $overridePath -ScriptsPath $scriptsPath -InitializationJob $initializationJob -CreateContainersJob $createContainersJob
+    . $overridePath -Jobs $jobs -ScriptsPath $scriptsPath
 }
 
 Write-Host "::endgroup::"
