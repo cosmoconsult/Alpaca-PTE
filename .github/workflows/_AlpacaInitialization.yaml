@@ -40,7 +40,7 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@owun-fix
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.0.0
         with:
           shell: powershell
 
