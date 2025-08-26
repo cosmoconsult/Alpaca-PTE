@@ -26,7 +26,7 @@ env:
 jobs:
   CreateAlpacaContainers:
     name: Create COSMO Alpaca Containers
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ windows-latest ]
     outputs:
       containersJson: ${{ steps.CreateContainers.outputs.containersJson }}
     steps:

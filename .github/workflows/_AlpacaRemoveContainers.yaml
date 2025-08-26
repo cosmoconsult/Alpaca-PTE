@@ -22,7 +22,7 @@ env:
 jobs:
   RemoveAlpacaContainers:
     name: Remove COSMO Alpaca Containers
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ windows-latest ]
     steps:
       - id: RemoveContainers
         name: Remove Containers
