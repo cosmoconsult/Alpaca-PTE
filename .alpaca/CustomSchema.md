@@ -1,0 +1,10 @@
+- New File ".github/AL-Go-Settings.schema.json" in Custom template repo or final repo
+    - Handle on "CheckForUpdate"
+        - Add relative paths as "$schema" to all settings files instead of the default schema if file exists
+        - if not contains "allOf" create "allOf" with original content as a element
+        - add or update element of "allOf" for default schema
+            - Get element based on "$comment"
+                - Add as first element if missing
+            - Set "$ref" with url or set content with default schema content
+    - Handle on "Validate"
+        - Validate as before but add extra validation againts custom schema if file exists

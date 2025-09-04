@@ -1,33 +1,48 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "description": "Schema for COSMO Alpaca AL-Go settings",
     "allOf": [
-        { "$ref": "https://raw.githubusercontent.com/microsoft/AL-Go/ab2f5319ed073c542e03914f8ae6c0fda029ee1e/Actions/settings.schema.json" },
-        { 
+        {
+            "$ref": "https://raw.githubusercontent.com/microsoft/AL-Go/ab2f5319ed073c542e03914f8ae6c0fda029ee1e/Actions/settings.schema.json",
+            "$comment": "DO NOT EDIT! Updated by AL-GO"
+        },
+        {
+            "description": "Schema for COSMO Alpaca AL-Go settings",
             "type": "object",
             "properties": {
-                "alpaca": { "$ref": "#/$defs/alpaca" }
-            }
-        }
-    ],
-    "$defs": {
-        "alpaca": {
-            "type": "object",
-            "properties": {
-                "artifacts": {
+                "alpaca": {
                     "type": "object",
-                    "additionalProperties": {
-                        "type": "object",
-                        "properties": {
-							"package": { "type": "string" },
-                            "version": { "type": "string" },
-                            "url": { "type": "string" },
-                            "ignoreIn": { "type": "array", "items": { "enum": [ "always", "development", "build" ] } }
-                        },
-                        "additionalProperties": false
+                    "properties": {
+                        "artifacts": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object",
+                                "properties": {
+                                    "package": {
+                                        "type": "string"
+                                    },
+                                    "version": {
+                                        "type": "string"
+                                    },
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "ignoreIn": {
+                                        "type": "array",
+                                        "items": {
+                                            "enum": [
+                                                "always",
+                                                "development",
+                                                "build"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "additionalProperties": false
+                            }
+                        }
                     }
                 }
             }
         }
-    }
+    ]
 }

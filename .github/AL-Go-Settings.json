@@ -1,5 +1,6 @@
 {
-  "$schema": "https://raw.githubusercontent.com/cosmoconsult/Alpaca-PTE/owun-schema/.alpaca/settings.schema.json",
+  "_$schema": "https://raw.githubusercontent.com/cosmoconsult/Alpaca-PTE/owun-schema/.alpaca/settings.schema.json",
+  "$schema": "workspace://.alpaca/settings.schema.json",
   "type": "PTE",
   "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
   "templateSha": "e74753260f6cc4bc3009c414b8e84b328cb282c9",
@@ -14,12 +15,5 @@
   "unusedALGoSystemFiles": [
     "ImportTestToolkitToBcContainer.ps1",
     "PublishBcContainerApp.ps1"
-  ],
-  "alpaca": {
-    "artifacts": {
-      "COSMOLicensing": {
-        "package": "CosmoConsult.COSMOLicensing.551d85cb-2152-4144-9464-a16791aff492"
-      }
-    }
-  }
+  ]
 }
