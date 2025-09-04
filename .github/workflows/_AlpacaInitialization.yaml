@@ -24,7 +24,7 @@ on:
 
 defaults:
   run:
-    shell: powershell
+    shell: pwsh
 
 env:
   ALPACA_BACKEND_URL: ${{ vars.ALPACA_BACKEND_URL }}
@@ -32,7 +32,7 @@ env:
 jobs:
   Initialization:
     name: COSMO Alpaca Initialization
-    runs-on: [ windows-latest ]
+    runs-on: [ ubuntu-latest ]
     outputs:
       backendUrl: ${{ steps.Initialization.outputs.backendUrl }}
       scriptsArchiveUrl: ${{ steps.Initialization.outputs.scriptsArchiveUrl }}
@@ -42,7 +42,7 @@ jobs:
         name: Initialization
         uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.1.0
         with:
-          shell: powershell
+          shell: pwsh
 
 
   
