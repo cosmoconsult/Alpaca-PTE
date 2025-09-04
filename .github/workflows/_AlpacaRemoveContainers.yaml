@@ -14,7 +14,7 @@ on:
 
 defaults:
   run:
-    shell: powershell
+    shell: pwsh
 
 env:
   ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
@@ -22,12 +22,12 @@ env:
 jobs:
   RemoveAlpacaContainers:
     name: Remove COSMO Alpaca Containers
-    runs-on: [ windows-latest ]
+    runs-on: [ ubuntu-latest ]
     steps:
       - id: RemoveContainers
         name: Remove Containers
         uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@v2.1.0
         with:
-          shell: powershell
+          shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
           containersJson: ${{ inputs.containersJson }}
