@@ -120,7 +120,7 @@ jobs:
           updateBranch: ${{ inputs.branch }}
   
       - name: Update AL-Go system files
-        uses: microsoft/AL-Go/Actions/CheckForUpdates@v7.3
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@v7.3
         if: (!failure()) && (!cancelled()) && inputs.updateALGoSystemFiles
         env:
           GITHUB_TOKEN: ${{ github.token }}
