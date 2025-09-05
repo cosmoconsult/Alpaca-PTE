@@ -1,10 +1,24 @@
 - New File ".github/AL-Go-Settings.schema.json" in Custom template repo or final repo
-    - Handle on "CheckForUpdate"
-        - Add relative paths as "$schema" to all settings files instead of the default schema if file exists
+    - Handle on "CheckForUpdate" for custom template repo
+        - Add relative paths as "$schema" to all settings files instead of the default schema
         - if not contains "allOf" create "allOf" with original content as a element
         - add or update element of "allOf" for default schema
-            - Get element based on "$comment"
-                - Add as first element if missing
-            - Set "$ref" with url or set content with default schema content
+            - Remove element based on "$comment" (e.g. "DO NOT EDIT! Added from AL-Go")
+            - Add first element with "$comment" (e.g. "DO NOT EDIT! Added from AL-Go")
+                - Set "$ref" with default schema url or set content with default schema content
+    - Handle on "CheckForUpdate" for final repo
+        - Add relative paths as "$schema" to all settings files instead of the default schema
+        - if not contains "allOf" create "allOf" with original content as a element
+        - add or update element of "allOf" for default schema
+            - Remove element based on "$comment" (e.g. "DO NOT EDIT! Added from AL-Go")
+            - Add element with "$comment" (e.g. "DO NOT EDIT! Added from AL-Go")
+                - As first index
+                - Set "$ref" with default schema url or set content with default schema content
+        - add or update element of "allOf" for custom template schema
+            - Remove elements based on "$comment" (e.g. "DO NOT EDIT! Added from custom template")
+            - For each element in custom template schema without "$comment" for the default schema (e.g. "DO NOT EDIT! Added from AL-Go")
+                - Add element with "$comment" (e.g. "DO NOT EDIT! Added from custom template")
+                    - At second index
+                    - Set content with content of the custom template schema element
     - Handle on "Validate"
-        - Validate as before but add extra validation againts custom schema if file exists
+        - Validate as before but add extra validation againts custom schema
