@@ -59,7 +59,7 @@ jobs:
           ref: ${{ inputs.branch }}
 
       - name: Read settings
-        uses: microsoft/AL-Go/Actions/ReadSettings@v7.3
+        uses: microsoft/AL-Go-Actions/ReadSettings@v7.3
         with:
           shell: pwsh
           get: templateUrl,commitOptions
