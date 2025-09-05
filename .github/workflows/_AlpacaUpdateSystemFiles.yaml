@@ -100,7 +100,7 @@ jobs:
   
       - name: Read secrets
         id: ReadSecrets
-        uses: microsoft/AL-Go/Actions/ReadSecrets@v7.3
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v7.3
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
