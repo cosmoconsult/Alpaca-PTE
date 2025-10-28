@@ -32,7 +32,7 @@ jobs:
     steps:
       - id: CreateContainers
         name: Create Containers
-        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@v2.1.0
+        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@v2.2.0
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
