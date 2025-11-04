@@ -40,7 +40,7 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.2.0
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.3.1
         with:
           shell: pwsh
 
