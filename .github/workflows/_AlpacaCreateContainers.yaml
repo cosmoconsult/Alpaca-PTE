@@ -7,8 +7,8 @@ on:
         description: COSMO Alpaca backend Url
         required: true
         type: string
-      projectsJson:
-        description:  An array of AL-Go projects in compressed JSON format
+      buildOrderJson:
+        description:  An array of objects that determine that build order, including build dimensions
         required: true
         type: string
     outputs:
@@ -30,12 +30,10 @@ jobs:
     outputs:
       containersJson: ${{ steps.CreateContainers.outputs.containersJson }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - id: CreateContainers
         name: Create Containers
         uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@v2.3.2
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
-          projectsJson: ${{ inputs.projectsJson }}
+          buildOrderJson: ${{ inputs.buildOrderJson }}
