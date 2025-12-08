@@ -30,7 +30,7 @@ jobs:
           lfs: true
 
       - name: Troubleshooting
-        uses: microsoft/AL-Go-Actions/Troubleshooting@v8.1
+        uses: OleWunschmann/AL-Go/Actions/Troubleshooting@update-workflow-reusable-default-inputs
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
