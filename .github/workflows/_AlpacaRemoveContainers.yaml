@@ -11,6 +11,15 @@ on:
         description: An array of Alpaca container informations in compressed JSON format
         required: true
         type: string
+      filterJson:
+        description: Optional Alpaca container information to filter containers by in JSON format
+        required: false
+        type: string
+      continue-on-error:
+        description: Continue on error
+        required: false
+        type: boolean
+        default: false
 
 defaults:
   run:
@@ -23,11 +32,13 @@ jobs:
   RemoveAlpacaContainers:
     name: Remove COSMO Alpaca Containers
     runs-on: [ ubuntu-latest ]
+    continue-on-error: ${{ inputs.continue-on-error }}
     steps:
       - id: RemoveContainers
         name: Remove Containers
-        uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@v2.3.2
+        uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@feature/try-remove-containers
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
           containersJson: ${{ inputs.containersJson }}
+          filterJson: ${{ inputs.filterJson }}
