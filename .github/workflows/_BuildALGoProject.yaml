@@ -330,6 +330,6 @@ jobs:
       containersJson: ${{ fromJson(inputs.needsContext).CustomJob-CreateAlpaca-Container.outputs.containersJson }}
       filterJson: >-
         {
-          "Project": "${{ inputs.project }}"
+          "Project": "${{ inputs.project }}",
           "BuildMode": "${{ inputs.buildMode }}"
         }
