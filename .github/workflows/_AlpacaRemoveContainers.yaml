@@ -15,11 +15,6 @@ on:
         description: Optional Alpaca container information to filter containers by in JSON format
         required: false
         type: string
-      continueOnDeletionError:
-        description: Continue on deletion errors and only report them instead of failing the action
-        required: false
-        type: boolean
-        default: false
 
 defaults:
   run:
@@ -41,4 +36,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           containersJson: ${{ inputs.containersJson }}
           filterJson: ${{ inputs.filterJson }}
-          continueOnDeletionError: ${{ inputs.continueOnDeletionError }}
