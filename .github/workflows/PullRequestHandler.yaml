@@ -188,7 +188,7 @@ jobs:
     secrets: inherit
     with:
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
-      projectsJson: ${{ needs.Initialization.outputs.projects }}
+      buildOrderJson: ${{ needs.Initialization.outputs.buildOrderJson }}
 
   CustomJob-RemoveAlpaca-Container:
     name: 'Remove COSMO Alpaca Containers'
