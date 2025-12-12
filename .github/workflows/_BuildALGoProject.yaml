@@ -318,3 +318,18 @@ jobs:
         with:
           shell: ${{ inputs.shell }}
           project: ${{ inputs.project }}
+
+  CustomJob-Alpaca-RemoveContainers:
+    name: 'Remove COSMO Alpaca Containers'
+    needs: [ BuildALGoProject ]
+    if: always() && fromJson(inputs.needsContext).CustomJob-CreateAlpaca-Container.result == 'success'
+    uses: ./.github/workflows/_AlpacaRemoveContainers.yaml
+    secrets: inherit
+    with:
+      backendUrl: ${{ fromJson(inputs.needsContext).CustomJob-Alpaca-Initialization.outputs.backendUrl }}
+      containersJson: ${{ fromJson(inputs.needsContext).CustomJob-CreateAlpaca-Container.outputs.containersJson }}
+      filterJson: >-
+        {
+          "Project": "${{ inputs.project }}",
+          "BuildMode": "${{ inputs.buildMode }}"
+        }
