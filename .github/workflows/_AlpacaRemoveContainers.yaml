@@ -30,7 +30,7 @@ jobs:
     steps:
       - id: RemoveContainers
         name: Remove Containers
-        uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@feature/try-remove-containers
+        uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@main
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
