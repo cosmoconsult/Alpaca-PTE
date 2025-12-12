@@ -15,8 +15,8 @@ on:
         description: Optional Alpaca container information to filter containers by in JSON format
         required: false
         type: string
-      continue-on-error:
-        description: Continue on error
+      continueOnDeletionError:
+        description: Continue on deletion errors and only report them instead of failing the action
         required: false
         type: boolean
         default: false
@@ -32,7 +32,6 @@ jobs:
   RemoveAlpacaContainers:
     name: Remove COSMO Alpaca Containers
     runs-on: [ ubuntu-latest ]
-    continue-on-error: true
     steps:
       - id: RemoveContainers
         name: Remove Containers
@@ -42,3 +41,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           containersJson: ${{ inputs.containersJson }}
           filterJson: ${{ inputs.filterJson }}
+          continueOnDeletionError: ${{ inputs.continueOnDeletionError }}
