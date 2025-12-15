@@ -32,7 +32,7 @@ jobs:
     steps:
       - id: CreateContainers
         name: Create Containers
-        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@main
+        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@fix/missing-error-details
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}

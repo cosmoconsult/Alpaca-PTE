@@ -39,7 +39,7 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.3.2
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@fix/missing-error-details
         with:
           shell: pwsh
 
