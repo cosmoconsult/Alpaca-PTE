@@ -30,7 +30,7 @@ jobs:
     steps:
       - id: RemoveContainers
         name: Remove Containers
-        uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@fix/missing-error-details
+        uses: cosmoconsult/Alpaca-Actions/Actions/RemoveContainers@main
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
