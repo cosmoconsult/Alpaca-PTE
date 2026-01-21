@@ -30,10 +30,33 @@ jobs:
     outputs:
       containersJson: ${{ steps.CreateContainers.outputs.containersJson }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Read settings
+        uses: microsoft/AL-Go-Actions/ReadSettings@v8.1
+        with:
+          shell: pwsh
+
+      - name: Read secrets
+        id: ReadSecrets
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v8.1
+        with:
+          shell: pwsh
+          gitHubSecrets: ${{ toJson(secrets) }}
+          getSecrets: 'ghTokenWorkflow'
+
+      - name: Decode token
+        id: DecodeToken
+        run: |
+          $encodedToken = '${{ fromJson(steps.ReadSecrets.outputs.secrets).ghTokenWorkflow }}'
+          $decodedToken = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($encodedToken))
+          "token=$decodedToken" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
       - id: CreateContainers
         name: Create Containers
         uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@main
         with:
           shell: pwsh
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.DecodeToken.outputs.token }}
           buildOrderJson: ${{ inputs.buildOrderJson }}
