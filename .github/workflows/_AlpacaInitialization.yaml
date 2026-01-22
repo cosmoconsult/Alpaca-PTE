@@ -17,8 +17,7 @@ on:
         value: >-
           {
             "initialization":   "CustomJob-Alpaca-Initialization",
-            "createContainers": "CustomJob-CreateAlpaca-Container",
-            "removeContainers": "CustomJob-RemoveAlpaca-Container"
+            "createContainers": "CustomJob-CreateAlpaca-Container"
           }
     
 
@@ -40,7 +39,7 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.3.2
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.4.0
         with:
           shell: pwsh
 
