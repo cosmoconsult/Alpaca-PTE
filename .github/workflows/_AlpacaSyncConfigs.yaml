@@ -1,4 +1,4 @@
-name: '_COSMO Alpaca - Sync Secrets'
+name: '_COSMO Alpaca - Sync Configs'
 
 on:
   workflow_call:
@@ -12,6 +12,11 @@ on:
         required: false
         type: string
         default: 'GitHubPackagesContext,licenseFileUrl'
+      additionalVariables:
+        description: Comma-separated list of additional variable names to always include
+        required: false
+        type: string
+        default: 'ALGoOrgSettings,ALGoRepoSettings'
       mode:
         description: GetAndUpdate searches AL-Go settings files and backend, Update only queries backend
         required: false
@@ -30,22 +35,24 @@ env:
   Settings: '{"placeholder": "value"}'
 
 jobs:
-  SyncAlpacaSecrets:
-    name: Sync COSMO Alpaca Secrets
+  SyncAlpacaConfigs:
+    name: Sync COSMO Alpaca Configs
     runs-on: [ ubuntu-latest ]
     steps:
 
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Get secrets for sync
-        id: GetSecretsForSync
-        uses: cosmoconsult/Alpaca-Actions/Actions/GetSecretsForSync@main
+      - name: Get configs for sync
+        id: GetConfigsForSync
+        uses: cosmoconsult/Alpaca-Actions/Actions/GetConfigsForSync@main
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
           mode: ${{ inputs.mode }}
           additionalSecrets: ${{ inputs.additionalSecrets }}
+          allVariables: ${{ toJson(vars) }}
+          additionalVariables: ${{ inputs.additionalVariables }}
       
       - name: Read secrets
         id: ReadSecrets
@@ -53,12 +60,13 @@ jobs:
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: '${{ steps.GetSecretsForSync.outputs.secretsForSync }}'
+          getSecrets: '${{ steps.GetConfigsForSync.outputs.secretsForSync }}'
       
-      - id: SyncSecrets
-        name: Sync Secrets
-        uses: cosmoconsult/Alpaca-Actions/Actions/SyncSecrets@main
+      - id: SyncConfigs
+        name: Sync Configs
+        uses: cosmoconsult/Alpaca-Actions/Actions/SyncConfigs@main
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
           secretsJson: ${{ steps.ReadSecrets.outputs.Secrets }}
+          variablesJson: ${{ steps.GetConfigsForSync.outputs.Variables }}

@@ -1,4 +1,4 @@
-name: 'Sync COSMO Alpaca Secrets'
+name: 'Sync COSMO Alpaca Configs'
 
 on:
   workflow_dispatch:
@@ -35,9 +35,9 @@ env:
 
 jobs:
   Sync: 
-    name: "Sync Alpaca Secrets"
+    name: "Sync Alpaca Configs"
     secrets: inherit
-    uses: ./.github/workflows/_AlpacaSyncSecrets.yaml
+    uses: ./.github/workflows/_AlpacaSyncConfigs.yaml
     with:
       backendUrl: ${{ vars.ALPACA_BACKEND_URL }}
       mode: ${{ (github.event_name == 'schedule' && 'Update') || (github.event_name == 'push' && 'GetAndUpdate') || inputs.mode }}
