@@ -45,7 +45,7 @@ jobs:
       
       - name: Get configs for sync
         id: GetConfigsForSync
-        uses: cosmoconsult/Alpaca-Actions/Actions/GetConfigsForSync@feature/configsync
+        uses: cosmoconsult/Alpaca-Actions/Actions/GetConfigsForSync@main
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -64,7 +64,7 @@ jobs:
       
       - id: SyncConfigs
         name: Sync Configs
-        uses: cosmoconsult/Alpaca-Actions/Actions/SyncConfigs@feature/configsync
+        uses: cosmoconsult/Alpaca-Actions/Actions/SyncConfigs@main
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
