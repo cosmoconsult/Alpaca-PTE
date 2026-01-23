@@ -7,13 +7,13 @@ on:
         description: COSMO Alpaca backend URL
         required: true
         type: string
-      additionalSecrets:
-        description: Comma-separated list of additional secret names to always include
+      includeSecrets:
+        description: Comma-separated list of secret names to always include
         required: false
         type: string
         default: 'GitHubPackagesContext,licenseFileUrl'
-      additionalVariables:
-        description: Comma-separated list of additional variable names to always include
+      includeVariables:
+        description: Comma-separated list of variable names to always include
         required: false
         type: string
         default: 'ALGoOrgSettings,ALGoRepoSettings'
@@ -39,34 +39,33 @@ jobs:
     name: Sync COSMO Alpaca Configs
     runs-on: [ ubuntu-latest ]
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Get configs for sync
-        id: GetConfigsForSync
-        uses: cosmoconsult/Alpaca-Actions/Actions/GetConfigsForSync@main
+      - name: Determine Configs To Sync
+        id: DetermineConfigsToSync
+        uses: cosmoconsult/Alpaca-Actions/Actions/DetermineConfigsToSync@feature/configsync
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
           mode: ${{ inputs.mode }}
-          additionalSecrets: ${{ inputs.additionalSecrets }}
-          allVariables: ${{ toJson(vars) }}
-          additionalVariables: ${{ inputs.additionalVariables }}
+          gitHubVariablesJson: ${{ toJson(vars) }}
+          includeSecrets: ${{ inputs.includeSecrets }}
+          includeVariables: ${{ inputs.includeVariables }}
       
       - name: Read secrets
         id: ReadSecrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v8.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v8.1
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: '${{ steps.GetConfigsForSync.outputs.secretsForSync }}'
+          getSecrets: '${{ steps.DetermineConfigsToSync.outputs.secretNames }}'
       
       - id: SyncConfigs
         name: Sync Configs
-        uses: cosmoconsult/Alpaca-Actions/Actions/SyncConfigs@main
+        uses: cosmoconsult/Alpaca-Actions/Actions/SyncConfigs@feature/configsync
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}
           secretsJson: ${{ steps.ReadSecrets.outputs.Secrets }}
-          variablesJson: ${{ steps.GetConfigsForSync.outputs.Variables }}
+          variablesJson: ${{ steps.DetermineConfigsToSync.outputs.variablesJson }}

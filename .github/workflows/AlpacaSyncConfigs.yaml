@@ -13,6 +13,8 @@ on:
         default: 'GetAndUpdate'
   push:
     paths:
+      - '.github/workflows/_AlpacaSyncConfigs.yaml'
+      - '.github/workflows/AlpacaSyncConfigs.yaml'
       - '.github/AL-Go-Settings.json'
       - '.github/AL-Go-TemplateProjectSettings.doNotEdit.json'
       - '.github/AL-Go-TemplateRepoSettings.doNotEdit.json'

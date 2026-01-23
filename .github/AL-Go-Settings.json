@@ -13,6 +13,8 @@
   "cacheImageName": "",
   "unusedALGoSystemFiles": [
     "ImportTestToolkitToBcContainer.ps1",
-    "PublishBcContainerApp.ps1"
+    "PublishBcContainerApp.ps1",
+    "_AlpacaSyncSecrets.yaml",
+    "AlpacaSyncSecrets.yaml"
   ]
 }
