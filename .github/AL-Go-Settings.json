@@ -9,8 +9,6 @@
   "shell": "pwsh",
   "githubRunner": "ubuntu-latest",
   "githubRunnerShell": "pwsh",
-  "artifact": "////latest",
-  "cacheImageName": "",
   "customALGoFiles": {
     "filesToExclude": [
       { "sourceFolder": ".github/workflows", "filter": "AlpacaSyncSecrets.yaml" },
