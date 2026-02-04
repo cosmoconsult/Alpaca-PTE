@@ -59,7 +59,7 @@ jobs:
           ref: ${{ inputs.branch }}
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v8.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@v8.1
         with:
           shell: pwsh
           get: templateUrl,commitOptions
@@ -100,14 +100,14 @@ jobs:
   
       - name: Read secrets
         id: ReadSecrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v8.0
+        uses: microsoft/AL-Go-Actions/ReadSecrets@v8.1
         with:
           shell: pwsh
           gitHubSecrets: ${{ toJson(secrets) }}
           getSecrets: 'ghTokenWorkflow'
   
       - name: Update COSMO Alpaca system files
-        uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSystemFiles@v2.4.0
+        uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSystemFiles@v2.5.0
         if: (!failure()) && (!cancelled()) && inputs.updateAlpacaSystemFiles
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -120,7 +120,7 @@ jobs:
           updateBranch: ${{ inputs.branch }}
   
       - name: Update AL-Go system files
-        uses: microsoft/AL-Go-Actions/CheckForUpdates@v8.0
+        uses: microsoft/AL-Go-Actions/CheckForUpdates@v8.1
         if: (!failure()) && (!cancelled()) && inputs.updateALGoSystemFiles
         env:
           GITHUB_TOKEN: ${{ github.token }}

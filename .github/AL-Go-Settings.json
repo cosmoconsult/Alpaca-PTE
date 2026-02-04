@@ -9,10 +9,10 @@
   "shell": "pwsh",
   "githubRunner": "ubuntu-latest",
   "githubRunnerShell": "pwsh",
-  "artifact": "////latest",
-  "cacheImageName": "",
-  "unusedALGoSystemFiles": [
-    "ImportTestToolkitToBcContainer.ps1",
-    "PublishBcContainerApp.ps1"
-  ]
+  "customALGoFiles": {
+    "filesToExclude": [
+      { "sourceFolder": ".github/workflows", "filter": "AlpacaSyncSecrets.yaml" },
+      { "sourceFolder": ".github/workflows", "filter": "_AlpacaSyncSecrets.yaml" }
+    ]
+  }
 }
