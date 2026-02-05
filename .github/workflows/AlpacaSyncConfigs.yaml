@@ -42,4 +42,4 @@ jobs:
     uses: ./.github/workflows/_AlpacaSyncConfigs.yaml
     with:
       backendUrl: ${{ vars.ALPACA_BACKEND_URL }}
-      mode: ${{ (github.event_name == 'schedule' && 'Update') || (github.event_name == 'push' && 'GetAndUpdate') || inputs.mode }}
+      mode: ${{ inputs.mode || 'GetAndUpdate' }}
