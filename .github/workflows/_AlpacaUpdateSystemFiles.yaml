@@ -27,7 +27,7 @@ env:
 
 jobs:
   UpdateSystemFiles:
-    name: 'Update System Files'
+    name: "[${{ inputs.branch }}] Update COSMO Alpaca System Files"
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout
