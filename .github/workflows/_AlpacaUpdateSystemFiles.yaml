@@ -13,11 +13,15 @@ on:
         type: string
       downloadLatest:
         description: Download latest from template repository
-        default: true
+        required: true
         type: boolean
       directCommit:
         description: Direct Commit?
-        default: true
+        required: true
+        type: boolean
+      useEventInputsForCommitOptions:
+        description: Use commit options from workflow event inputs
+        required: true
         type: boolean
 
 defaults:
@@ -69,8 +73,8 @@ jobs:
           downloadLatest: '${{ github.event.inputs.downloadLatest }}'
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-          if('${{ github.event_name }}' -in 'workflow_dispatch', 'workflow_call') {
-            Write-Host "Using inputs from ${{ github.event_name }} event"
+          if('${{ github.event.inputs.useEventInputsForCommitOptions }}' -eq 'true') {
+            Write-Host "Using inputs from workflow event"
             $directCommit = $env:directCommit
             $downloadLatest = $env:downloadLatest
           }
@@ -85,14 +89,13 @@ jobs:
   
       - name: Update COSMO Alpaca system files
         uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSystemFiles@v2.5.0
-        if: (!failure()) && (!cancelled()) && inputs.updateAlpacaSystemFiles
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
           downloadLatest: ${{ env.downloadLatest }}
-          templateUrl: ${{ inputs.TemplateUrl }}
+          templateUrl: ${{ inputs.templateUrl }}
           directCommit: ${{ env.directCommit }}
           updateBranch: ${{ inputs.branch }}
 

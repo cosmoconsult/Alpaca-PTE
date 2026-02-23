@@ -188,3 +188,4 @@ jobs:
       templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
       downloadLatest: ${{ inputs.downloadLatest }}
       directCommit: ${{ inputs.directCommit }}
+      useEventInputsForCommitOptions: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' }}
