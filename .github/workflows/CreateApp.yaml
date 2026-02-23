@@ -106,12 +106,9 @@ jobs:
     name: 'Update AL-Go and COSMO Alpaca System Files'
     needs: [ CreateApp ]
     if: ${{ success() && github.event.inputs.directCommit == 'true' }}
-    uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
+    uses: ./.github/workflows/UpdateGitHubGoSystemFiles.yaml
     secrets: inherit
     with:
-      updateALGoSystemFiles: true
-      updateAlpacaSystemFiles: true
-      branch: ${{ github.ref_name }}
+      includeBranches: ${{ github.ref_name }}
       directCommit: true
       downloadLatest: false
-      useInputCommitOptions: true

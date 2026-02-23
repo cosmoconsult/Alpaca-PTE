@@ -184,10 +184,7 @@ jobs:
     uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
     secrets: inherit
     with:
-      updateALGoSystemFiles: false # Already handle in job UpdateALGoSystemFiles
-      updateAlpacaSystemFiles: true
       branch: ${{ matrix.branch }}
       templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
       downloadLatest: ${{ inputs.downloadLatest }}
       directCommit: ${{ inputs.directCommit }}
-      useInputCommitOptions: ${{ github.event_name == 'workflow_dispatch' }}
