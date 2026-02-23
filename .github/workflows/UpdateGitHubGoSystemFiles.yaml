@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/microsoft/AL-Go-PTE@main)
+        description: Template Repository URL (current is https://github.com/cosmoconsult/Alpaca-PTE@update/al-go-8.2)
         required: false
         default: ''
       downloadLatest:
@@ -22,7 +22,7 @@ on:
   workflow_call:
     inputs:
       templateUrl:
-        description: Template Repository URL (current is https://github.com/microsoft/AL-Go-PTE@main)
+        description: Template Repository URL (current is https://github.com/cosmoconsult/Alpaca-PTE@update/al-go-8.2)
         type: string
         required: false
         default: ''
@@ -174,6 +174,7 @@ jobs:
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
 
+  # DO NOT EDIT. The following job was added through a custom template.
   CustomJob-UpdateAlpacaFiles:
     name: "[${{ matrix.branch }}] Update COSMO Alpaca System Files"
     needs: [ Initialize ]
@@ -186,6 +187,3 @@ jobs:
     with:
       branch: ${{ matrix.branch }}
       templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
-      downloadLatest: ${{ inputs.downloadLatest }}
-      directCommit: ${{ inputs.directCommit }}
-      useEventInputsForCommitOptions: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' }}

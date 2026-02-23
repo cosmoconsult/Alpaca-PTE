@@ -11,18 +11,6 @@ on:
         description: Template Repository URL
         required: true
         type: string
-      downloadLatest:
-        description: Download latest from template repository
-        required: true
-        type: boolean
-      directCommit:
-        description: Direct Commit?
-        required: true
-        type: boolean
-      useEventInputsForCommitOptions:
-        description: Use commit options from workflow event inputs
-        required: true
-        type: boolean
 
 defaults:
   run:
@@ -73,7 +61,7 @@ jobs:
           downloadLatest: '${{ github.event.inputs.downloadLatest }}'
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
-          if('${{ github.event.inputs.useEventInputsForCommitOptions }}' -eq 'true') {
+          if('${{ github.event_name }}' -in 'workflow_dispatch', 'workflow_call') {
             Write-Host "Using inputs from workflow event"
             $directCommit = $env:directCommit
             $downloadLatest = $env:downloadLatest
@@ -94,9 +82,7 @@ jobs:
         with:
           shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
-          downloadLatest: ${{ env.downloadLatest }}
-          templateUrl: ${{ inputs.templateUrl }}
-          directCommit: ${{ env.directCommit }}
           updateBranch: ${{ inputs.branch }}
-
-  
+          templateUrl: ${{ inputs.templateUrl }}
+          downloadLatest: ${{ env.downloadLatest }}
+          directCommit: ${{ env.directCommit }}
