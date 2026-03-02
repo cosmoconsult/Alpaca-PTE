@@ -9,4 +9,4 @@ This template repository can be used for managing AppSource Apps for Business Ce
 
 It is a customized version of the [AL-Go-PTE](https://github.com/microsoft/AL-Go-PTE) template and is designed to be used with [COSMO Alpaca](https://cosmoconsult.com/cosmo-alpaca).
 
-Please go to https://aka.ms/AL-Go and [COSMO Docs](https://docs.cosmoconsult.com/de-de/cloud-service/devops-docker-selfservice/) to learn more.
+Please go to https://aka.ms/AL-Go and [COSMO Docs](https://docs.cosmoconsult.com/en-us/cloud-service/alpaca) to learn more.
