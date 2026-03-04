@@ -11,6 +11,14 @@ on:
         description: Template Repository URL
         required: true
         type: string
+      downloadLatest:
+        description: Download latest from template repository
+        type: boolean
+        default: true
+      directCommit:
+        description: Direct Commit?
+        type: boolean
+        default: false
 
 defaults:
   run:
@@ -57,8 +65,8 @@ jobs:
 
       - name: Calculate Commit Options
         env:
-          directCommit: '${{ github.event.inputs.directCommit }}'
-          downloadLatest: '${{ github.event.inputs.downloadLatest }}'
+          directCommit: '${{ inputs.directCommit }}'
+          downloadLatest: '${{ inputs.downloadLatest }}'
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           if('${{ github.event_name }}' -in 'workflow_dispatch', 'workflow_call') {

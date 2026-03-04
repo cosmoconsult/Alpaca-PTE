@@ -186,3 +186,5 @@ jobs:
     with:
       branch: ${{ matrix.branch }}
       templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
+      directCommit: ${{ inputs.directCommit }}
+      downloadLatest: ${{ inputs.downloadLatest }}
