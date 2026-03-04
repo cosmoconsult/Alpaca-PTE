@@ -173,3 +173,16 @@ jobs:
           shell: pwsh
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
           currentJobContext: ${{ toJson(job) }}
+
+  CustomJob-UpdateAlpacaFiles:
+    name: "[${{ matrix.branch }}] Update COSMO Alpaca System Files"
+    needs: [ Initialize ]
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
+      fail-fast: false
+    uses: ./.github/workflows/_AlpacaUpdateSystemFiles.yaml
+    secrets: inherit
+    with:
+      branch: ${{ matrix.branch }}
+      templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
