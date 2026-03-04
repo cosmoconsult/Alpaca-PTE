@@ -93,7 +93,7 @@ jobs:
 
   UpdateALGoSystemFiles:
     name: "[${{ matrix.branch }}] Update AL-Go System Files"
-    needs: [ Initialize ]
+    needs: [ Initialize, CustomJob-UpdateAlpacaFiles ]
     runs-on: windows-latest
     strategy:
       matrix:
