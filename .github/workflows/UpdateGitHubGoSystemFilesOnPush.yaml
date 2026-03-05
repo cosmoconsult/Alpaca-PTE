@@ -1,0 +1,27 @@
+name: ' Update AL-Go System Files on Push'
+
+run-name: "Update AL-Go System Files on Push in [${{ github.ref_name }}]"
+
+on:
+  push:
+    paths:
+      - '.github/workflows/UpdateGitHubGoSystemFiles.yaml'
+      - '.github/workflows/_AlpacaUpdateSystemFiles.yaml'
+
+permissions:
+  actions: write
+
+jobs:
+  UpdateSystemFiles:
+    name: 'Update AL-Go System Files'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Update AL-Go System Files workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run UpdateGitHubGoSystemFiles.yaml \
+            --repo ${{ github.repository }} \
+            --ref ${{ github.ref_name }} \
+            --field directCommit=true \
+            --field downloadLatest=false
