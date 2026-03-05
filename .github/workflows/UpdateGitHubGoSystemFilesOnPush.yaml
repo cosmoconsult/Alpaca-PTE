@@ -1,4 +1,4 @@
-name: ' Update AL-Go System Files on Push'
+name: 'Update AL-Go System Files on Push'
 
 run-name: "Update AL-Go System Files on Push in [${{ github.ref_name }}]"
 
