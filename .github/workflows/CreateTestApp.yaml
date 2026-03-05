@@ -110,6 +110,5 @@ jobs:
     uses: ./.github/workflows/UpdateGitHubGoSystemFiles.yaml
     secrets: inherit
     with:
-      includeBranches: ${{ github.ref_name }}
       directCommit: true
       downloadLatest: false

@@ -23,6 +23,5 @@ jobs:
           gh workflow run UpdateGitHubGoSystemFiles.yaml \
             --repo ${{ github.repository }} \
             --ref ${{ github.ref_name }} \
-            --field includeBranches=${{ github.ref_name }} \
             --field directCommit=true \
             --field downloadLatest=false
