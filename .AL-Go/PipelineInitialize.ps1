@@ -1,6 +1,13 @@
 Write-Host "::group::PipelineInitialize"
 
-$needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
+if (Test-Path "$($env:NeedsContext)") {
+    Write-Host "Load Context from file at '$($env:NeedsContext)'"
+    $needsContext = "$($env:NeedsContext)" | Get-Item | Get-Content -Raw | ConvertFrom-Json
+}
+else {
+    Write-Host "Load Context from Json"
+    $needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
+}
 
 $initializationJob = $needsContext.'CustomJob-Alpaca-Initialization'
 
