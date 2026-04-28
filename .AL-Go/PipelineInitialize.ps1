@@ -1,6 +1,13 @@
 Write-Host "::group::PipelineInitialize"
 
-$needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
+if (Test-Path -LiteralPath "$($env:NeedsContext)" -PathType Leaf) {
+    Write-Host "Load Context from file at '$($env:NeedsContext)'"
+    $needsContext = "$($env:NeedsContext)" | Get-Item | Get-Content -Raw | ConvertFrom-Json
+}
+else {
+    Write-Host "Load Context from Json"
+    $needsContext = "$($env:NeedsContext)" | ConvertFrom-Json
+}
 
 $initializationJob = $needsContext.'CustomJob-Alpaca-Initialization'
 
@@ -39,8 +46,8 @@ if ($scriptsArchiveUrl) {
         Expand-Archive -Path $tempArchivePath -DestinationPath $tempPath -Force
 
         Write-Host "Copy Alpaca scripts to '$scriptsPath'"
-        Get-Item -Path (Join-Path $tempPath $scriptsArchiveDirectory) | 
-            Get-ChildItem | 
+        Get-Item -Path (Join-Path $tempPath $scriptsArchiveDirectory) |
+            Get-ChildItem |
             ForEach-Object {
                 Copy-Item -Path $_.FullName -Destination $scriptsPath -Recurse -Force
             }
@@ -68,7 +75,7 @@ if ($scriptFiles) {
     Write-Host "- None"
 }
 
-$overridesPath = Join-Path $scriptsPath "/Overrides/RunAlPipeline" 
+$overridesPath = Join-Path $scriptsPath "/Overrides/RunAlPipeline"
 Write-Host "Alpaca overrides path: $overridesPath"
 $overridePath = Join-Path $overridesPath "PipelineInitialize.ps1"
 if (Test-Path $overridePath) {

@@ -61,18 +61,18 @@ jobs:
           Write-Host " |____/ \___| .__/|_|\___/ \__, |\___|_|          "
           Write-Host "            |_|            |___/                  "
           Write-Host
-        
+
           # Define paths and URLs
           $helperBasePath = "..\..\_actions\microsoft\AL-Go-Actions\"
           $deployerBaseUrl = "https://raw.githubusercontent.com/akoniecki/AL-Go-OnPremise-Deployer/main/"
           $filesToDownload = @(".github/workflows/OnPremiseDeployer.yaml", ".github/DeployToOnPremise.ps1")
-    
+
           # Import helpers
           $alGoActionsPath = Get-ChildItem -Path $helperBasePath -Directory | Sort-Object Name -Descending | Select-Object -First 1
           if ($null -eq $alGoActionsPath) { throw "AL-Go-Actions directory not found." }
           . (Join-Path -Path $alGoActionsPath.FullName -ChildPath "AL-Go-Helper.ps1" -Resolve)
           Invoke-Expression -Command (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/microsoft/AL-Go-Actions/main/CheckForUpdates/yamlclass.ps1").Content
-    
+
           # Validate token
           $ReadSecretsOutputJson = '${{ steps.ReadSecrets.outputs.Secrets }}'
           $ReadSecretsOutput = $ReadSecretsOutputJson | ConvertFrom-Json
@@ -84,7 +84,7 @@ jobs:
           }
 
           $update = Test-Path ".github\DeployToOnPremise.ps1"
-    
+
           # Get the latest AL-Go OnPremise Deployer
           Write-Output "Downloading the latest AL-Go OnPremise Deployer files..."
           $serverUrl, $branch = CloneIntoNewFolder -actor $ENV:GITHUB_ACTOR -token $token -DirectCommit $true -newBranchPrefix 'update-al-go-onpremise-deployer'
@@ -93,7 +93,7 @@ jobs:
             Invoke-WebRequest -Uri ($deployerBaseUrl + $file) -OutFile $outputPath
           }
           Write-Output "AL-Go OnPremise Deployer files downloaded successfully."
-    
+
           # Commit changes
           $commitMessage = if ($update) { "Update AL-Go OnPremise Deployer" } else { "Install AL-Go OnPremise Deployer" }
           CommitFromNewFolder -serverUrl $serverUrl -commitMessage $commitMessage -branch $branch

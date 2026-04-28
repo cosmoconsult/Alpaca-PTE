@@ -1,7 +1,7 @@
 name: '_COSMO Alpaca - Initialization'
 
 on:
-  workflow_call:          
+  workflow_call:
     outputs:
       backendUrl:
         description: COSMO Alpaca Backend URL
@@ -19,7 +19,7 @@ on:
             "initialization":   "CustomJob-Alpaca-Initialization",
             "createContainers": "CustomJob-CreateAlpaca-Container"
           }
-    
+
 
 defaults:
   run:
@@ -39,9 +39,8 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.6.0
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.7
         with:
           shell: pwsh
 
 
-  

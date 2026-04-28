@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Creates a cloud-based development environment for Business Central AL development using SaaS Sandbox.
 
@@ -204,3 +204,4 @@ finally {
         Read-Host "Press ENTER to close this window"
     }
 }
+

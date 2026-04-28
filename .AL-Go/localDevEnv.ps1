@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Creates a local development environment for Business Central AL development using Docker containers.
 
@@ -270,3 +270,4 @@ finally {
         Read-Host "Press ENTER to close this window"
     }
 }
+

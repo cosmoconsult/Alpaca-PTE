@@ -21,25 +21,25 @@ Write-Host " | |_| |  __/ |_) | | (_) | |_| |  __/ |          "
 Write-Host " |____/ \___| .__/|_|\___/ \__, |\___|_|          "
 Write-Host "            |_|            |___/                  "
 Write-Host
-Write-Host "**   It's open source!" 
+Write-Host "**   It's open source!"
 Write-Host "**   www.github.com/akoniecki/AL-Go-OnPremise-Deployer"
-Write-Host "**   Join us on GitHub and contribute!" 
-Write-Host "**************************************************************" 
+Write-Host "**   Join us on GitHub and contribute!"
+Write-Host "**************************************************************"
 Write-Host
 
 function Send-TelemetryData {
     param (
         [string]$status
     )
-    $webhookUrl = "https://algoonpremisedeployer.azurewebsites.net/api/Usage" 
+    $webhookUrl = "https://algoonpremisedeployer.azurewebsites.net/api/Usage"
     $hash = [System.Security.Cryptography.SHA256]::Create()
     $githubUserHash = [BitConverter]::ToString($hash.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($env:GITHUB_ACTOR))) -replace '-', ''
     $repositoryHash = [BitConverter]::ToString($hash.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($env:GITHUB_REPOSITORY))) -replace '-', ''
     $payload = @{ GithubUser = $githubUserHash; Repository = $repositoryHash; Status = $status } | ConvertTo-Json
-    try { 
+    try {
         Invoke-RestMethod -Uri $webhookUrl -Method Post -ContentType 'application/json' -Body $payload
-    } catch { 
-        Write-Host "Failed to send usage statistics: $($_.Exception.Message)" 
+    } catch {
+        Write-Host "Failed to send usage statistics: $($_.Exception.Message)"
     }
 }
 
@@ -47,15 +47,15 @@ function Send-TelemetryData {
 if (-not $DoNotSendTelemetry) {
     Send-TelemetryData -status "started"
 }
-    
+
 # AL:Go and BCContainerHelper helper libraries import
 Write-Host "Importing AL:Go and BCContainerHelper helper libraries..."
 $helperBasePath = "..\..\_actions\microsoft\AL-Go-Actions\"
 $bcContainerHelperBasePath = "C:\ProgramData\BcContainerHelper\"
 
 # Find the latest versions of required helpers
-$alGoActionsPath = Get-ChildItem -Path $helperBasePath -Directory | 
-    Sort-Object Name -Descending | 
+$alGoActionsPath = Get-ChildItem -Path $helperBasePath -Directory |
+    Sort-Object Name -Descending |
     Select-Object -First 1
 if ($null -eq $alGoActionsPath) {
     throw "AL-Go-Actions directory not found."
@@ -63,9 +63,9 @@ if ($null -eq $alGoActionsPath) {
 Write-Host "AL-Go Actions path: $($alGoActionsPath.Fullname)"
 
 $versionRegex = '^\d+\.\d+\.\d+$'
-$bcContainerHelperPath = Get-ChildItem -Path $bcContainerHelperBasePath -Directory | 
+$bcContainerHelperPath = Get-ChildItem -Path $bcContainerHelperBasePath -Directory |
     Where-Object { $_.Name -match $versionRegex } |
-    Sort-Object Name -Descending | 
+    Sort-Object Name -Descending |
     Select-Object -First 1
 if ($null -eq $bcContainerHelperPath) {
     throw "BcContainerHelper directory not found."
@@ -136,9 +136,9 @@ try {
     function GetAuthHeaders {
         if ($null -ne $authContext) {
             $authContext = Renew-BcAuthContext -bcAuthContext $authContext
-            return @{ "Authorization" = "Bearer $($authContext.AccessToken)" } 
+            return @{ "Authorization" = "Bearer $($authContext.AccessToken)" }
         } elseif ($null -ne $basicAuth) {
-            return @{ "Authorization" = "Basic $($basicAuth)" } 
+            return @{ "Authorization" = "Basic $($basicAuth)" }
         } else {
             throw "No valid authentication method available."
         }
@@ -160,7 +160,7 @@ try {
         $companyName = $company.name
     }
     Write-Host "Company '$companyName' has id $companyId"
-    
+
     $getExtensions = Invoke-WebRequest -Headers (GetAuthHeaders) -Method Get -Uri "$automationApiUrl/companies($companyId)/extensions$tenantUrl" -UseBasicParsing
     $extensions = (ConvertFrom-Json $getExtensions.Content).value | Sort-Object -Property DisplayName
 
@@ -188,7 +188,7 @@ try {
     Sort-AppFilesByDependencies -appFiles $appFiles -excludeRuntimePackages | ForEach-Object {
         Write-Host -NoNewline "$([System.IO.Path]::GetFileName($_)) - "
         $appJson = Get-AppJsonFromAppFile -appFile $_
-        
+
         $existingApp = $extensions | Where-Object { $_.id -eq $appJson.id -and $_.isInstalled }
         if ($existingApp) {
             if ($existingApp.isInstalled) {
@@ -243,12 +243,12 @@ try {
                 -Uri $customUri$tenantUrl `
                 -Headers ((GetAuthHeaders) + $ifMatchHeader + $streamHeader) `
                 -Body $fileBody | Out-Null
-            Write-Host "."    
+            Write-Host "."
             Invoke-RestMethod `
                 -Method Post `
                 -Uri "$automationApiUrl/companies($companyId)/extensionUpload($($extensionUpload.systemId))/Microsoft.NAV.upload$tenantUrl" `
                 -Headers ((GetAuthHeaders) + $ifMatchHeader) | Out-Null
-            Write-Host "."    
+            Write-Host "."
             $completed = $false
             $errCount = 0
             $sleepSeconds = 30
