@@ -146,4 +146,3 @@ jobs:
     secrets: inherit
     with:
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
-      containersJson: ${{ needs.CustomJob-CreateAlpaca-Container.outputs.containersJson }}
