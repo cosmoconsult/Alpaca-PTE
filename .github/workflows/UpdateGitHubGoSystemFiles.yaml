@@ -193,5 +193,5 @@ jobs:
       caller: ${{ inputs.caller }}
       branch: ${{ matrix.branch }}
       templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
-      directCommit: ${{ inputs.directCommit }}
-      downloadLatest: ${{ inputs.downloadLatest }}
+      directCommit: ${{ inputs.directCommit || false }}
+      downloadLatest: ${{ inputs.downloadLatest || false }}
