@@ -1,4 +1,4 @@
-name: '_COSMO Alpaca - Initialization'
+name: "_COSMO Alpaca - Initialization"
 
 on:
   workflow_call:
@@ -20,7 +20,6 @@ on:
             "createContainers": "CustomJob-CreateAlpaca-Container"
           }
 
-
 defaults:
   run:
     shell: pwsh
@@ -31,7 +30,7 @@ env:
 jobs:
   Initialization:
     name: COSMO Alpaca Initialization
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ubuntu-latest]
     outputs:
       backendUrl: ${{ steps.Initialization.outputs.backendUrl }}
       scriptsArchiveUrl: ${{ steps.Initialization.outputs.scriptsArchiveUrl }}
@@ -39,8 +38,6 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.8
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@staging/FormatAlpacaInit
         with:
           shell: pwsh
-
-
