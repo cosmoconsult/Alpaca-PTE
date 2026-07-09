@@ -1,4 +1,4 @@
-name: '_COSMO Alpaca - Update System Files'
+name: '_COSMO Alpaca - Update Settings Files'
 
 on:
   workflow_call:
@@ -11,16 +11,12 @@ on:
         description: Branch to update
         required: true
         type: string
-      templateUrl:
-        description: Template Repository URL
-        required: true
-        type: string
-      downloadLatest:
-        description: Download latest from template repository
-        type: boolean
-        default: true
       directCommit:
         description: Direct Commit?
+        type: boolean
+        default: false
+      dryRun:
+        description: Only check if settings are in sync without making changes
         type: boolean
         default: false
 
@@ -29,9 +25,7 @@ defaults:
     shell: pwsh
 
 permissions:
-  actions: read
   contents: read
-  id-token: write
 
 env:
   WorkflowEventName: ${{ inputs.caller && 'workflow_call' || github.event_name }}
@@ -39,8 +33,8 @@ env:
   ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
 
 jobs:
-  UpdateSystemFiles:
-    name: "Update COSMO Alpaca System Files"
+  UpdateSettingsFiles:
+    name: "COSMO Alpaca Settings Files ${{ inputs.dryRun && 'Check' || 'Update' }}"
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Checkout
@@ -71,31 +65,24 @@ jobs:
       - name: Calculate Commit Options
         env:
           directCommit: '${{ inputs.directCommit }}'
-          downloadLatest: '${{ inputs.downloadLatest }}'
         run: |
           $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
           if($env:WorkflowEventName -in 'workflow_dispatch', 'workflow_call') {
             Write-Host "Using inputs from $($env:WorkflowEventName) event"
             $directCommit = $env:directCommit
-            $downloadLatest = $env:downloadLatest
           }
           else {
             Write-Host "Using inputs from commitOptions setting"
             $commitOptions = $env:commitOptions | ConvertFrom-Json # Available from ReadSettings step
             $directCommit=$(-not $commitOptions.createPullRequest)
-            $downloadLatest=$true
           }
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
-          Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
 
-      - name: Update COSMO Alpaca system files
-        uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSystemFiles@v2.9
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: "${{ inputs.dryRun && 'Check' || 'Update' }} Settings Files"
+        uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSettingsFiles@v2.9
         with:
           shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
-          updateBranch: ${{ inputs.branch }}
-          templateUrl: ${{ inputs.templateUrl }}
-          downloadLatest: ${{ env.downloadLatest }}
+          branch: ${{ inputs.branch }}
           directCommit: ${{ env.directCommit }}
+          dryRun: ${{ inputs.dryRun }}

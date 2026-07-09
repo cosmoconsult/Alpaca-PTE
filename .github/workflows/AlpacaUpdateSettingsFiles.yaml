@@ -1,0 +1,66 @@
+name: 'COSMO Alpaca - Update Settings Files'
+
+on:
+  workflow_dispatch:
+    inputs:
+      directCommit:
+        description: Direct Commit?
+        type: boolean
+        default: false
+      includeBranches:
+        description: Specify a comma-separated list of branches to update. Wildcards are supported. Leave empty to update the current branch only.
+        required: false
+        default: ''
+      dryRun:
+        description: Only check if settings are in sync without making changes
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: pwsh
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
+jobs:
+  Initialize:
+    runs-on: ubuntu-latest
+    name: Initialize
+    outputs:
+      UpdateBranches: ${{ steps.GetBranches.outputs.Result }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Read settings
+        uses: microsoft/AL-Go-Actions/ReadSettings@v9.0
+        with:
+          shell: pwsh
+
+      - name: Get Workflow Multi-Run Branches
+        id: GetBranches
+        uses: microsoft/AL-Go-Actions/GetWorkflowMultiRunBranches@v9.0
+        with:
+          shell: pwsh
+          workflowEventName: ${{ github.event_name }}
+          includeBranches: ${{ inputs.includeBranches }}
+
+  UpdateSettingsFiles:
+    name: "[${{ matrix.branch }}] ${{ inputs.dryRun && 'Check' || 'Update' }} Settings Files"
+    needs: [ Initialize ]
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
+      fail-fast: false
+    uses: ./.github/workflows/_AlpacaUpdateSettingsFiles.yaml
+    secrets: inherit
+    with:
+      caller: ${{ github.workflow }}
+      branch: ${{ matrix.branch }}
+      directCommit: ${{ inputs.directCommit || false }}
+      dryRun: ${{ inputs.dryRun || false }}

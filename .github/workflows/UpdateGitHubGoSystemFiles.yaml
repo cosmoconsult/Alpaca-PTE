@@ -195,3 +195,17 @@ jobs:
       templateUrl: ${{ needs.Initialize.outputs.TemplateUrl }}
       directCommit: ${{ inputs.directCommit || false }}
       downloadLatest: ${{ inputs.downloadLatest || false }}
+
+  CustomJob-AlpacaUpdateSettingsFiles:
+    name: "[${{ matrix.branch }}] Update Settings Files"
+    needs: [ Initialize, UpdateALGoSystemFiles ]
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.Initialize.outputs.UpdateBranches).branches }}
+      fail-fast: false
+    uses: ./.github/workflows/_AlpacaUpdateSettingsFiles.yaml
+    secrets: inherit
+    with:
+      caller: ${{ inputs.caller }}
+      branch: ${{ matrix.branch }}
+      directCommit: ${{ inputs.directCommit || false }}
