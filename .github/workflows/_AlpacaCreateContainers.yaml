@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: CreateContainers
         name: Create Containers
-        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@v2.9
+        uses: cosmoconsult/Alpaca-Actions/Actions/CreateContainers@v2.10
         with:
           shell: pwsh
           token: ${{ secrets.GITHUB_TOKEN }}

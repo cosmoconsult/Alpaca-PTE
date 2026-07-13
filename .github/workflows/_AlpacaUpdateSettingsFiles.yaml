@@ -79,7 +79,7 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
 
       - name: "${{ inputs.dryRun && 'Check' || 'Update' }} Settings Files"
-        uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSettingsFiles@v2.9
+        uses: cosmoconsult/Alpaca-Actions/Actions/UpdateSettingsFiles@v2.10
         with:
           shell: pwsh
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}

@@ -38,7 +38,7 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.9
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.10
         with:
           shell: pwsh
 
@@ -48,5 +48,5 @@ jobs:
     secrets: inherit
     with:
       caller: ${{ github.workflow }}
-      branch: ${{ github.ref_name }}
+      branch: ${{ github.ref }}
       dryRun: true
