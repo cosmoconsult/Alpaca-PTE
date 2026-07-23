@@ -39,7 +39,7 @@ jobs:
   Sync:
     name: "Sync Alpaca Configs"
     secrets: inherit
-    uses: ./.github/workflows/_AlpacaSyncConfigs.yaml
+    uses: cosmoconsult/Alpaca-Actions/ReusableWorkflows/_AlpacaSyncConfigs.yaml@staging/movereusableworkflows
     with:
       backendUrl: ${{ vars.ALPACA_BACKEND_URL }}
       mode: ${{ inputs.mode || 'GetAndUpdate' }}

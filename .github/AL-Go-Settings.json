@@ -18,6 +18,10 @@
       {
         "sourceFolder": ".github/workflows",
         "filter": "_AlpacaSyncSecrets.yaml"
+      },
+      {
+        "sourceFolder": ".github/workflows",
+        "filter": "_AlpacaSyncConfigs.yaml"
       }
     ]
   }

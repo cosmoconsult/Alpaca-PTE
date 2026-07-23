@@ -1,71 +1,11 @@
-name: '_COSMO Alpaca - Sync Configs'
+name: '[DEPRECATED]_COSMO Alpaca - Sync Configs'
 
 on:
   workflow_call:
-    inputs:
-      backendUrl:
-        description: COSMO Alpaca backend URL
-        required: true
-        type: string
-      includeSecrets:
-        description: Comma-separated list of secret names to always include
-        required: false
-        type: string
-        default: 'GitHubPackagesContext,licenseFileUrl'
-      includeVariables:
-        description: Comma-separated list of variable names to always include
-        required: false
-        type: string
-        default: 'ALGoOrgSettings,ALGoRepoSettings'
-      mode:
-        description: GetAndUpdate searches AL-Go settings files and backend, Update only queries backend
-        required: false
-        type: string
-        default: 'GetAndUpdate'
-
-defaults:
-  run:
-    shell: pwsh
-
-env:
-  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
-  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
-  ALPACA_BACKEND_URL: ${{ inputs.backendUrl }}
-  # Settings must contain at least one property for ReadSecrets to function correctly.
-  Settings: '{"placeholder": "value"}'
 
 jobs:
-  SyncAlpacaConfigs:
-    name: Sync COSMO Alpaca Configs
-    runs-on: [ ubuntu-latest ]
+  Deprecated:
+    name: This workflow is deprecated
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Determine Configs To Sync
-        id: DetermineConfigsToSync
-        uses: cosmoconsult/Alpaca-Actions/Actions/DetermineConfigsToSync@v2.10
-        with:
-          shell: pwsh
-          token: ${{ secrets.GITHUB_TOKEN }}
-          mode: ${{ inputs.mode }}
-          gitHubVariablesJson: ${{ toJson(vars) }}
-          includeSecrets: ${{ inputs.includeSecrets }}
-          includeVariables: ${{ inputs.includeVariables }}
-
-      - name: Read secrets
-        id: ReadSecrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@v9.0
-        with:
-          shell: pwsh
-          gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: '${{ steps.DetermineConfigsToSync.outputs.secretNames }}'
-
-      - id: SyncConfigs
-        name: Sync Configs
-        uses: cosmoconsult/Alpaca-Actions/Actions/SyncConfigs@v2.10
-        with:
-          shell: pwsh
-          token: ${{ secrets.GITHUB_TOKEN }}
-          secretsJson: ${{ steps.ReadSecrets.outputs.Secrets }}
-          variablesJson: ${{ steps.DetermineConfigsToSync.outputs.variablesJson }}
+      - run: echo "::error::This reusable workflow has been moved and only exists for automatic removal in target repositories on update AL-Go system files. You can find the the moved files in the [Alpaca Actions](https://github.com/cosmoconsult/Alpaca-Actions) repository."
