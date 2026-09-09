@@ -1,4 +1,4 @@
-name: 'Sync COSMO Alpaca Configs'
+name: 'COSMO Alpaca - Sync Configs'
 
 on:
   workflow_dispatch:

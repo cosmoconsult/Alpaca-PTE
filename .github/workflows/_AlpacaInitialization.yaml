@@ -38,7 +38,7 @@ jobs:
     steps:
       - id: Initialization
         name: Initialization
-        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@v2.10
+        uses: cosmoconsult/Alpaca-Actions/Actions/Initialization@staging/copilot/al-go-pr-compiler-warnings
         with:
           shell: pwsh
 
@@ -48,5 +48,5 @@ jobs:
     secrets: inherit
     with:
       caller: ${{ github.workflow }}
-      branch: ${{ github.ref }}
+      branch: ${{ github.event_name == 'pull_request_target' && format('refs/pull/{0}/merge', github.event.pull_request.number) || github.ref }}
       dryRun: true

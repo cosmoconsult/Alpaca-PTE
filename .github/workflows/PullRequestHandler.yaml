@@ -200,3 +200,15 @@ jobs:
     secrets: inherit
     with:
       backendUrl: ${{ needs.CustomJob-Alpaca-Initialization.outputs.backendUrl }}
+
+  CustomJob-Alpaca-CompilerDiagnosticsReview:
+    name: 'Report Compiler Diagnostics As Review Comments'
+    needs: [ Initialization, Build ]
+    if: (!cancelled()) && (github.event_name != 'merge_group')
+    uses: ./.github/workflows/_AlpacaCompilerDiagnosticsReview.yaml
+    secrets: inherit
+    with:
+      repository: ${{ github.repository }}
+      pullRequestNumber: ${{ github.event.pull_request.number }}
+      baseRef: ${{ github.event.pull_request.base.ref }}
+      headSha: ${{ github.event.pull_request.head.sha }}

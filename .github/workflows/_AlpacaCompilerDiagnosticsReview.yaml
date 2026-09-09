@@ -1,0 +1,45 @@
+name: '_COSMO Alpaca - Compiler Diagnostics Review'
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        description: Repository in owner/name format
+        required: true
+        type: string
+      pullRequestNumber:
+        description: Pull request number
+        required: true
+        type: string
+      baseRef:
+        description: Base branch name
+        required: true
+        type: string
+      headSha:
+        description: Pull request head SHA
+        required: true
+        type: string
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  ReportCompilerDiagnosticsAsReviewComments:
+    name: Report Compiler Diagnostics As Review Comments
+    runs-on: [ ubuntu-latest ]
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Report compiler diagnostics as review comments
+        uses: cosmoconsult/Alpaca-Actions/Actions/ReportCompilerDiagnosticsAsReviewComments@staging/copilot/al-go-pr-compiler-warnings
+        with:
+          shell: pwsh
+          repository: ${{ inputs.repository }}
+          pullRequestNumber: ${{ inputs.pullRequestNumber }}
+          baseRef: ${{ inputs.baseRef }}
+          headSha: ${{ inputs.headSha }}
+          buildOutputPath: '${{ github.workspace }}/BuildOutput/'
+          gitHubSecrets: ${{ toJson(secrets) }}
