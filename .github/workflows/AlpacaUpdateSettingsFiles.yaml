@@ -38,13 +38,13 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@v9.0
+        uses: microsoft/AL-Go-Actions/ReadSettings@v9.2
         with:
           shell: pwsh
 
       - name: Get Workflow Multi-Run Branches
         id: GetBranches
-        uses: microsoft/AL-Go-Actions/GetWorkflowMultiRunBranches@v9.0
+        uses: microsoft/AL-Go-Actions/GetWorkflowMultiRunBranches@v9.2
         with:
           shell: pwsh
           workflowEventName: ${{ github.event_name }}
