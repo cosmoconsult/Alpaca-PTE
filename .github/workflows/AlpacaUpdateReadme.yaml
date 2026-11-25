@@ -73,7 +73,7 @@ jobs:
         Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "directCommit=$directCommit"
 
     - name: Update README
-      uses: cosmoconsult/Alpaca-Actions/Actions/UpdateReadme@v2.12
+      uses: cosmoconsult/Alpaca-Actions/Actions/UpdateReadme@staging/5180
       with:
         shell: pwsh
         token: ${{ steps.ReadSecrets.outputs.TokenForPush }}
